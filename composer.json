@@ -1,0 +1,19 @@
+{
+    "name": "northrook/support",
+    "description": "Classes with support and helper functions.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Northrook\\Support\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Martin,",
+            "email": "mn@northrook.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
