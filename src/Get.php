@@ -4,6 +4,8 @@ namespace Northrook\Support;
 
 final class Get {
 	
+	use SupportFunctions;
+	
 	
 	/** Extract numbers from a string, or an array of strings
 	 *

@@ -4,6 +4,11 @@ namespace Northrook\Support;
 
 final class Str {
 	
+	public static function filepath( string $path, ?string $fullPath = null ) : string {
+		$path = str_replace( [ '/', '\\' ], DIRECTORY_SEPARATOR, $path );
+		return str_replace( '\\\\', '\\', $fullPath ? Str::start( string : $fullPath, with : $path ) : $path );
+	}
+	
 	public static function asKey( ?string $string, bool $trim = false, string $separator = '_' ) : ?string {
 		if ( ! $string ) return null;
 		$string	= strtolower( $string );
