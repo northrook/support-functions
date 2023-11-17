@@ -10,9 +10,9 @@ final class Arr {
 	
 	private mixed $array = [];
 	
-	public static function dot( mixed $items, bool $returnThis = false, string $delimiter = ':' ) : array | Arr {
+	public static function dot( mixed $items, bool $getObject = false, string $delimiter = ':' ) : array | Arr {
 		$dot = new Arr( $items, $delimiter );
-		return $returnThis ? $dot : $dot->array;
+		return $getObject ? $dot : $dot->array;
 	}
 	
 	/**
@@ -42,8 +42,8 @@ final class Arr {
 		return (array) $items;
 	}
 	
-	public function all() : array {
-		return $this->array;
+	public function all( bool $filter = false ) : array {
+		return $filter ? array_filter( $this->array ) : $this->array;
 	}
 	
 	
@@ -71,7 +71,7 @@ final class Arr {
 					! isset( $items[ $key ] )
 					|| ! is_array( $items[ $key ] )
 				) {
-                    $items[ $key ] = [];
+					$items[ $key ] = [];
 				}
 				
 				$items = &$items[ $key ];
@@ -92,7 +92,7 @@ final class Arr {
 	 *
 	 * @return mixed
 	 */
-	public function get( $key = null, mixed$default = null ) : mixed {
+	public function get( $key = null, mixed $default = null ) : mixed {
 		if ( $key === null ) return $this->array;
 		
 		
@@ -148,12 +148,12 @@ final class Arr {
 			
 			if ( ! is_array( $array ) ) continue;
 			
-			foreach ( $array as $key => $value) {
-				if ( isset( $merged[ $key ] )
-                    && is_array( $value )
-                    && is_array( $merged[ $key ] )
+			foreach ( $array as $key => $value ) {
+				if (	isset( $merged[ $key ] )
+						&& is_array( $value )
+						&& is_array( $merged[ $key ] )
 				) {
-                    $merged[ $key ] = self::merge_nested( $merged[ $key ], $value );
+					$merged[ $key ] = self::merge_nested( $merged[ $key ], $value );
 				}
 				else $merged[ $key ] = $value;
 			}

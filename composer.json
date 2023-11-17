@@ -10,10 +10,12 @@
     },
     "authors": [
         {
-            "name": "Martin,",
+            "name": "Martin",
             "email": "mn@northrook.com"
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+        "ext-mbstring": "*"
+    }
 }
