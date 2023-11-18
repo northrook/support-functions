@@ -1,5 +1,6 @@
 <?php
 
+namespace Northrook\Support\HTML;
 
 abstract class Render {
 	

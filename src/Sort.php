@@ -16,7 +16,7 @@ final class Sort {
 		];
 		$sort		= [];
 		
-		foreach ( $order ?? self::ELEMENT_ATTRIBUTE_ORDER as $value ) {
+		foreach ( $order ?? $sortByList as $value ) {
 			if ( array_key_exists( $value, $attributes ) ) {
 				$sort[ $value ] = $attributes[ $value ];
 			}

@@ -2,6 +2,14 @@
 
 namespace Northrook\Support;
 
+if ( ! function_exists( 'mb_strtolower' ) ) {
+	function mb_strtolower( string $string ) : string {
+		var_dump( __FUNCTION__ );
+		return strtolower( $string );
+	}
+}
+
+
 final class Str {
 	
 	/** Extract acronym from a $string

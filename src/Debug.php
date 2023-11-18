@@ -105,3 +105,50 @@ final class Debug {
 		die( 1 );
 	}
 }
+
+//
+// function consoleDump( ...$_ ) : void {
+//
+// 	if ( $_ ) $_ = toJSON( $_ );
+//
+// 	echo "<script>console.log(";
+// 	echo $_;
+// 	echo ")</script>";
+// }
+
+
+// function pd( ...$var ) : void {
+// 	DocumentController::$pretty = false;
+// 	echo PHP_EOL;
+// 	foreach ( $var as $v ) {
+// 		echo( replaceEach( [
+// 			"Array\n" => '[] => ',
+// 		], print_r( $v, true ) ) );
+// 	}
+// 	echo PHP_EOL;
+// }
+//
+//
+// function pdp( ...$var ) : void {
+// 	DocumentController::$pretty	= false;
+// 	$debug						= [];
+// 	$debug[]					= '<pre style="margin: 0; z-index: 100">';
+// 	$debug[]					= '<code style="display: block; padding: 8px">';
+//
+// 	foreach ( $var as $v ) {
+// 		$debug[] = trim( replaceEach( [
+// 			"Array\n"	=> '[] => ',
+// 			"\n("		=> ' (',
+// 			// "  \n("		=> " (",
+// 			"\t"		=> '  ',
+// 			"    "		=> '  ',
+//
+// 		], print_r( $v, true ) ) );
+// 	}
+//
+// 	$debug[]	= '</code>';
+// 	$debug[]	= '</pre>';
+//
+// 	DocumentController::addDebug( implode( '', $debug ) );
+//
+// }
