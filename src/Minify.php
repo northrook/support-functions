@@ -11,7 +11,7 @@ final class Minify {
 	 *
 	 * @return string
 	 */
-	public static function string( string $string, bool $preserveComments = true ) : string {
+	public static function html( string $string, bool $preserveComments = true ) : string {
 		return Str::squish( $string, $preserveComments, $preserveComments );
 	}
 	
