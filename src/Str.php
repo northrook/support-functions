@@ -3,8 +3,13 @@
 namespace Northrook\Support;
 
 if ( ! function_exists( 'mb_strtolower' ) ) {
+	/** Fallback for mb_strtolower
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
 	function mb_strtolower( string $string ) : string {
-		var_dump( __FUNCTION__ );
 		return strtolower( $string );
 	}
 }

@@ -16,7 +16,6 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    //        "ext-mbstring": "*",
     "foroco/php-browser-detection": "^2.7"
   }
 }
