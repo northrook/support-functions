@@ -1,6 +1,27 @@
 <?php
 
 
-class Render {
+abstract class Render {
 	
+	/** Render a Core template
+	 *
+	 * @TODO [low] Implement direct string cache option
+	 * @TODO [low] Implement add link to docs
+	 *
+	 * @param string|null	$template
+	 * @param array			$data
+	 *
+	 * @return string|null
+	 */
+	public static function template( ?string $template, array $data = [] ) : ?string {
+		if ( ! $template ) return null;
+		return preg_replace_callback(
+			'/{{\s*+(\w.+?)\s*+}}/',
+			static function( $matches ) use ( $data ) {
+				$key = $matches[ 1 ];
+				return $data[ $key ] ?? null;
+			},
+			$template,
+		);
+	}
 }
