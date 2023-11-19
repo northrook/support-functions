@@ -2,33 +2,120 @@
 
 namespace Northrook\Support\HTML;
 
+use Northrook\Support\Arr;
+use Northrook\Support\Sort;
+use Northrook\Support\Str;
 final class Element {
 	
+	/** List of generated element IDs
+	 *
+	 * @var array
+	 */
+	private static array $generatedElementIdList = [];
+	
+	/** Get a list of generated element IDs
+	 *
+	 * * Useful for preventing duplicate IDs
+	 *
+	 * @return array
+	 */
+	public static function getGeneratedIdList() : array {
+		return Element::$generatedElementIdList;
+	}
+	
+	
+	/** Create a new HTML Element
+	 *
+	 * @param string		$tag
+	 * @param string|null	$innerHTML Note: HTML is escaped
+	 * @param array			$attributes
+	 */
 	public function __construct(
 		public string $tag,
 		public ?string $innerHTML = null,
 		public array $attributes = [],
 	) {}
 	
+	/** Get the HTML, parsing $innerHTML and $attributes
+	 *
+	 * @return string
+	 */
 	public function __toString() : string {
-		return implode( ' ', [
-			"<$this->tag",
-			Element::attributes( $this->attributes ),
-			'>',
-			$this->innerHTML ?? '',
-			'</' . $this->tag . '>',
-		] );
+		$tag = implode( ' ', [ "<$this->tag", Element::attributes( $this->attributes ) ] ) . '>';
+		return $tag . $this->innerHTML . '</' . $this->tag . '>';
 	}
 	
+	/**
+	 * @param array			$jit
+	 * @param array|null	$default
+	 *
+	 * @return string
+	 */
 	public static function attributes( array $jit, ?array $default = [] ) : string {
 		$attributes = [];
 		foreach ( $default + $jit as $key => $value ) {
 			
-			// TODO Flatten sub-arrays
+			$key = Str::key( string : $key, separator : '-' );
+			
+			if ( $key === 'id' ) $value = Element::id( $value );
+			if ( $key === 'class' ) $value = Element::classes( $value );
+			if ( $key === 'style' ) $value = Element::styles( $value );
+			
+			if ( in_array( $key, [ 'disabled', 'readonly', 'required' ] ) ) {
+				$attributes[ $key ] = $key;
+				continue;
+			}
+			
+			if ( is_bool( $value ) ) $value = $value ? 'true' : 'false';
 			if ( is_array( $value ) ) $value = implode( ' ', array_filter( $value ) );
 			
-			$attributes[] = $key . ( $value ? '="' . $value . '"' : '' );
+			$attributes[ $key ] = $key . ( $value ? '="' . $value . '"' : '' );
 		}
-		return implode( ' ', $attributes );
+		return implode( ' ', Sort::elementAttributes( $attributes ) );
+	}
+	
+	/** Get an element ID
+	 *
+	 * * The ID will be generated according to `Str::slug()` rules
+	 * * The ID will be appended to Element::$generatedElementIdList
+	 *
+	 *
+	 * @param string|null $id
+	 *
+	 * @return string
+	 */
+	public static function id( ?string $id ) : string {
+		$id = Str::slug( $id );
+		
+		Element::$generatedElementIdList[] = $id;
+		return $id;
+	}
+	
+	/**
+	 * @param string|array|null $value Pass either a string or an array
+	 *
+	 * @return string|null
+	 */
+	public static function classes( string | array | null $value ) : ?string {
+		if ( ! $value ) return null;
+		if ( is_string( $value ) ) $value = explode( ' ', $value );
+		return strtolower( implode( ' ', array_filter( $value ) ) );
+	}
+	
+	/** Parse element styles from $value and return a string
+	 *
+	 * @param string|array|null $value
+	 *
+	 * @return string|null
+	 */
+	public static function styles( string | array | null $value ) : ?string {
+		if ( ! $value ) return null;
+		if ( is_string( $value ) ) $value = explode( ';', $value );
+		$styles = [];
+		foreach ( array_filter( $value ) as $style ) {
+			$style					= explode( ':', $style, 2 );
+			$styles[ $style[ 0 ] ]	= implode( ':', $style );
+		}
+		return implode( '; ', $styles );
 	}
 }

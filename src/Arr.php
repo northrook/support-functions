@@ -37,7 +37,7 @@ final class Arr {
 	protected function getArrayItems( mixed $items ) : array {
 		if ( is_array( $items ) ) return $items;
 		
-		if ( $items instanceof self ) return $items->array;
+		if ( $items instanceof Arr ) return $items->array;
 		
 		return (array) $items;
 	}
@@ -50,7 +50,7 @@ final class Arr {
 	/**
 	 * Set a given key / value pair or pairs
 	 *
-	 * @param int|array|string	$keys
+	 * @param Num|array|string	$keys
 	 * @param mixed|null		$value
 	 *
 	 * @return $this
@@ -139,26 +139,65 @@ final class Arr {
 	
 	
 	public static function update( array $array, array ...$arrays ) : array {
-		return self::merge_nested( $array, ...$arrays );
+		return Arr::mergeNested( $array, ...$arrays );
 	}
 	
-	public static function merge_nested( array ...$arrays ) : array {
+	public static function mergeNested( array ...$arrays ) : array {
 		$merged = [];
 		foreach ( $arrays as $array ) {
 			
 			if ( ! is_array( $array ) ) continue;
 			
 			foreach ( $array as $key => $value ) {
-				if (	isset( $merged[ $key ] )
-						&& is_array( $value )
-						&& is_array( $merged[ $key ] )
+				if (
+					isset( $merged[ $key ] )
+					&& is_array( $value )
+					&& is_array( $merged[ $key ] )
 				) {
-					$merged[ $key ] = self::merge_nested( $merged[ $key ], $value );
+					$merged[ $key ] = Arr::mergeNested( $merged[ $key ], $value );
 				}
 				else $merged[ $key ] = $value;
 			}
 		}
 		
 		return $merged;
+	}
+	
+	
+	/** Implode array to string, omitting empty values
+	 *
+	 * @param array			$array
+	 *
+	 * @param string|null	$separator
+	 * @param bool			$withKeys
+	 *
+	 * @return string
+	 */
+	public static function implode( array $array, ?string $separator = null, bool $withKeys = false ) : string {
+		if ( $withKeys ) foreach ( $array as $key => $value ) $array[ $key ] = "$key$value";
+		$string = implode( $separator ?? '', $array );
+		return trim( $string );
+	}
+	
+	
+	public static function flatten( array $array, bool $filter = false ) : array {
+		$result = [];
+		
+		if ( $filter ) {
+			array_walk_recursive(
+				$array,
+				static function( $item ) use ( &$result ) {
+					if ( ! empty( $item ) ) $result[] = $item;
+				} );
+		}
+		else {
+			array_walk_recursive(
+				$array,
+				static function( $item ) use ( &$result ) {
+					$result[] = $item;
+				} );
+		}
+		
+		return $result;
 	}
 }

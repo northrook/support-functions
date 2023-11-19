@@ -19,15 +19,26 @@ if ( ! function_exists( 'mb_substr' ) ) {
 
 final class Str {
 	
+	private static string	$_ASCII_LANGUAGE	= 'en';
+	private static string	$_SLUG_SEPARATOR	= '-';
+	
+	public static function setSlugSeparator( string $separator ) : void {
+		Str::$_SLUG_SEPARATOR = $separator;
+	}
+	
+	public static function setAsciiLanguage( string $language ) : void {
+		Str::$_ASCII_LANGUAGE = $language;
+	}
+	
 	/** Convert $value to ASCII
 	 *
 	 * @param string	$value
-	 * @param string	$language
+	 * @param ?string	$language
 	 *
 	 * @return string
 	 */
-	public static function ascii( $value, $language = 'en' ) : string {
-		return ASCII::to_ascii( (string) $value, $language );
+	public static function ascii( string $value, ?string $language = null ) : string {
+		return ASCII::to_ascii( $value, $language ?? Str::$_ASCII_LANGUAGE );
 	}
 	
 	/** Extract acronym from a $string
@@ -127,8 +138,8 @@ final class Str {
 	
 	// Different from key() in that it trims unnecessary words, such as "the"; specific for slug use
 	// pass array of words to parse, e.g. [ 'the', 'of' ], pass key/value to replace, e.g. [ 'the', 'of', [ '@' => 'at' ], .. ]
-	public static function slug( ?string $string, bool $trim = false, string $separator = '-' ) : ?string {
-		return Str::key( $string, $trim, $separator );
+	public static function slug( ?string $string, bool $trim = false, ?string $separator = null ) : ?string {
+		return Str::key( $string, $trim, $separator ?? Str::$_SLUG_SEPARATOR );
 	}
 	
 	/** Returns a $string that starts $with a certain substring.
@@ -182,7 +193,7 @@ final class Str {
 	 * @param string|iterable	$substrings
 	 * @param bool				$caseSensitive
 	 *
-	 * @return bool
+	 * @return bool | string
 	 */
 	public static function contains( ?string $string, string | iterable $substrings, bool $caseSensitive = false ) : bool | string {
 		
@@ -241,8 +252,11 @@ final class Str {
 			: str_ireplace( $keys, $array, $string );
 	}
 	
-	/**
-	 * Wrap the string with the given strings.
+	/**  Wrap the string with the given strings.
+	 *
+	 * * If $before and $after are the same, $before will be used.
+	 * * If $before is a `<tag>`, $after will be used as the closing `</tag>`.
+	 * * * Supports tag attributes.
 	 *
 	 * @param ?string		$value
 	 * @param string		$before
@@ -251,8 +265,13 @@ final class Str {
 	 * @return string
 	 */
 	public static function wrap( ?string $value, string $before, ?string $after = null ) : string {
-		// if ( str_starts_with($before, '<')) .. wrap $after in </$before>
-		return $before . $value . ( $after ??= $before );
+		if ( ! $after && str_starts_with( $before, '<' ) ) {
+			$tag	= strstr( $before, ' ', true ) ?: $before;
+			$after	= str_replace( '<', '</', rtrim( $tag, '>' ) . '>' );
+		}
+		else $after ??= $before;
+		
+		return $before . $value . $after;
 	}
 	
 	/**
@@ -261,14 +280,10 @@ final class Str {
 	 * @param string		$callback
 	 * @param string|null	$default
 	 *
-	 * @return array<int, string|null>
+	 * @return array<Num, string|null>
 	 */
-	public static function parseCallback( $callback, $default = null ) {
+	public static function parseCallback( string $callback, ?string $default = null ) : array {
 		return Str::contains( $callback, '@' ) ? explode( '@', $callback, 2 ) : [ $callback, $default ];
-	}
-	
-	public static function case( ?string $string, string $case ) : ?string {
-		return $string;
 	}
 	
 	/** Convert a $string to camelCase.

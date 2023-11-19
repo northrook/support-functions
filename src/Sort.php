@@ -13,6 +13,7 @@ final class Sort {
 			'id',
 			'type',
 			'class',
+			'style',
 		];
 		$sort		= [];
 		
