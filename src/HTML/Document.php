@@ -18,7 +18,7 @@ final class Document {
 	}
 	
 	public static function meta( string $name, ?string $content = null ) : string {
-		return $content ? "<meta name='$name' content='$content'>" : '';
+		return $content ? "<meta name=\"$name\" content=\"$content\">" : '';
 	}
 	
 	
