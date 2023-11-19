@@ -44,6 +44,8 @@ final class Element {
 	
 	/** Get the HTML, parsing $innerHTML and $attributes
 	 *
+	 * @todo [low] Implement static cache function, potentially as a method of Northrook\Core\Render as wrapper
+	 *
 	 * @return string
 	 */
 	public function __toString() : string {

@@ -274,6 +274,22 @@ final class Str {
 		return $before . $value . $after;
 	}
 	
+	/** Split a string by the given separator, with flexible return options.
+	 *
+	 * @param ?string	$string
+	 * @param string	$return		= ['array', 'first', 'last'][any]
+	 * @param string	$separator	= ':'
+	 *
+	 * @return array | string | null
+	 */
+	public static function split( ?string $string, string $return = 'array', string $separator = ':' ) : array | string | null {
+		$array = array_filter( explode( $separator, $string ) );
+		if ( ! $array ) return null;
+		if ( $return === 'first' ) return array_shift( $array ) ?: null;
+		if ( $return === 'last' ) return array_pop( $array ) ?: null;
+		return $array;
+	}
+	
 	/**
 	 * Parse a Class[@]method style callback into class and method.
 	 *
