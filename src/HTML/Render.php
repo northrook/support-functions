@@ -7,6 +7,10 @@ use Northrook\Support\Str;
 
 abstract class Render {
 	
+	public static function document( string $html, bool $pretty = false ) : string {
+		return $html;
+	}
+	
 	public static function innerHTML( string | array | null $content = null, bool $pretty = false, bool $parseTemplate = false ) : ?string {
 		if ( is_array( $content ) ) $content = implode( '', $content );
 		if ( $parseTemplate ) $content = Render::template( $content );
