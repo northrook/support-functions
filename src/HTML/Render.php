@@ -2,10 +2,13 @@
 
 namespace Northrook\Support\HTML;
 
+use Northrook\Support\Str;
 abstract class Render {
 	
-	public static function innerHTML( string | array | null $content = null ) : ?string {
-		return (string) $content;
+	public static function innerHTML( string | array | null $content = null, bool $parseTemplate = false ) : ?string {
+		if ( is_array( $content ) ) $content = implode( '', $content );
+		if ( $parseTemplate ) $content = Render::template( $content );
+		return $content ? trim( $content ) : null;
 	}
 	
 	/** Render a Core template
@@ -20,6 +23,7 @@ abstract class Render {
 	 */
 	public static function template( ?string $template, array $data = [] ) : ?string {
 		if ( ! $template ) return null;
+		if ( ! Str::containsAll( $template, [ '{{', '}}' ] ) ) return $template;
 		return preg_replace_callback(
 			'/{{\s*+(\w.+?)\s*+}}/',
 			static function( $matches ) use ( $data ) {

@@ -36,8 +36,10 @@ final class Element {
 		public string $tag,
 		string | array | null $content = null,
 		public array $attributes = [],
+		private readonly bool $compress = false,
+		bool $parseTemplate = false,
 	) {
-		$this->innerHTML = Render::innerHTML( $content );
+		$this->innerHTML = Render::innerHTML( $content, $parseTemplate );
 	}
 	
 	/** Get the HTML, parsing $innerHTML and $attributes
@@ -45,8 +47,9 @@ final class Element {
 	 * @return string
 	 */
 	public function __toString() : string {
-		$tag = implode( ' ', [ "<$this->tag", Element::attributes( $this->attributes ) ] ) . '>';
-		return $tag . $this->innerHTML . '</' . $this->tag . '>';
+		$tag	= implode( ' ', [ "<$this->tag", Element::attributes( $this->attributes ) ] ) . '>';
+		$html	= $tag . $this->innerHTML . '</' . $this->tag . '>';
+		return $this->compress ? Str::squish( $html ) : $html;
 	}
 	
 	/**
