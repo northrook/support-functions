@@ -2,20 +2,33 @@
 
 namespace Northrook\Support;
 
+use JetBrains\PhpStorm\Pure;
+use voku\helper\ASCII;
 if ( ! function_exists( 'mb_strtolower' ) ) {
-	/** Fallback for mb_strtolower
-	 *
-	 * @param string $string
-	 *
-	 * @return string
-	 */
-	function mb_strtolower( string $string ) : string {
-		return strtolower( $string );
+	/** Fallback for mb_strtolower */
+	function mb_strtolower( ?string $string ) : string { return strtolower( $string ); }
+}
+
+if ( ! function_exists( 'mb_substr' ) ) {
+	/** Fallback for mb_substr */
+	function mb_substr( ?string $string, int $start = 0, int $length = null ) : string {
+		return substr( $string, $start, $length );
 	}
 }
 
 
 final class Str {
+	
+	/** Convert $value to ASCII
+	 *
+	 * @param string	$value
+	 * @param string	$language
+	 *
+	 * @return string
+	 */
+	public static function ascii( $value, $language = 'en' ) : string {
+		return ASCII::to_ascii( (string) $value, $language );
+	}
 	
 	/** Extract acronym from a $string
 	 *
@@ -87,17 +100,35 @@ final class Str {
 		return str_replace( '\\\\', '\\', $fullPath ? Str::start( string : $path, with : $fullPath ) : $path );
 	}
 	
-	public static function key( ?string $string, bool $trim = false, string $separator = '_' ) : ?string {
+	/**
+	 * @param string|null	$string
+	 * @param bool			$trim
+	 * @param string		$separator // [camelCase, kebabCase, snakeCase][%any
+	 *
+	 * @param string|null	$language
+	 *
+	 * @return string|null
+	 */
+	public static function key( ?string $string, bool $trim = false, string $separator = 'camelCase', ?string $language = 'en' ) : ?string {
+		
 		if ( ! $string ) return null;
-		$string	= strtolower( $string );
+		$string	= mb_strtolower( $string );
 		$string	= strip_tags( $string );
-		$string	= str_replace( ' ', $separator, $string );
-		return $trim ? trim( $string ) : $string;
+		
+		$string = $language ? Str::ascii( $string, $language ) : $string;
+		
+		$string = str_replace( [ ' ', '-', '_', $separator ], ' ', $trim ? trim( $string ) : $string );
+		
+		if ( $separator === 'camelCase' ) return Str::toCamel( $string );
+		
+		
+		return preg_replace( '/\W+/', $separator, $string );
 	}
 	
 	// Different from key() in that it trims unnecessary words, such as "the"; specific for slug use
+	// pass array of words to parse, e.g. [ 'the', 'of' ], pass key/value to replace, e.g. [ 'the', 'of', [ '@' => 'at' ], .. ]
 	public static function slug( ?string $string, bool $trim = false, string $separator = '-' ) : ?string {
-		return self::key( $string, $trim, $separator );
+		return Str::key( $string, $trim, $separator );
 	}
 	
 	/** Returns a $string that starts $with a certain substring.
@@ -153,17 +184,17 @@ final class Str {
 	 *
 	 * @return bool
 	 */
-	public static function contains( ?string $string, string | iterable $substrings, bool $caseSensitive = false ) : bool {
+	public static function contains( ?string $string, string | iterable $substrings, bool $caseSensitive = false ) : bool | string {
 		
 		if ( ! $caseSensitive ) $string = mb_strtolower( $string );
 		
 		if ( ! is_iterable( $substrings ) ) $substrings = (array) $substrings;
 		
 		foreach ( $substrings as $substring ) {
-			if ( $caseSensitive ) $substring = mb_strtolower( $substring );
+			if ( ! $caseSensitive ) $substring = mb_strtolower( $substring );
 			
 			if ( $substring !== '' && str_contains( $string, $substring ) ) {
-				return true;
+				return $substring;
 			}
 		}
 		
@@ -210,4 +241,60 @@ final class Str {
 			: str_ireplace( $keys, $array, $string );
 	}
 	
+	/**
+	 * Wrap the string with the given strings.
+	 *
+	 * @param ?string		$value
+	 * @param string		$before
+	 * @param string|null	$after
+	 *
+	 * @return string
+	 */
+	public static function wrap( ?string $value, string $before, ?string $after = null ) : string {
+		// if ( str_starts_with($before, '<')) .. wrap $after in </$before>
+		return $before . $value . ( $after ??= $before );
+	}
+	
+	/**
+	 * Parse a Class[@]method style callback into class and method.
+	 *
+	 * @param string		$callback
+	 * @param string|null	$default
+	 *
+	 * @return array<int, string|null>
+	 */
+	public static function parseCallback( $callback, $default = null ) {
+		return Str::contains( $callback, '@' ) ? explode( '@', $callback, 2 ) : [ $callback, $default ];
+	}
+	
+	public static function case( ?string $string, string $case ) : ?string {
+		return $string;
+	}
+	
+	/** Convert a $string to camelCase.
+	 *
+	 * @param ?string $string
+	 *
+	 * @return ?string
+	 */
+	#[Pure] public static function toCamel( ?string $string ) : ?string {
+		$delimiter	= Str::guessDelimiter( $string ) ?? ' ';
+		$string		= mb_strtolower( $string );
+		$camel		= [];
+		$each		= explode( $delimiter, $string );
+		
+		if ( ! $each ) return $string;
+		
+		foreach ( $each as $index => $segment ) {
+			if ( $index === 0 ) {
+				$camel[] = $segment;
+			}
+			else $camel[] = ucfirst( $segment );
+		}
+		return implode( '', $camel );
+	}
+	
+	#[Pure] public static function guessDelimiter( ?string $string ) : string {
+		return Str::contains( $string, [ ' ', '-', '_', '/', '\\', ':', ';' ] );
+	}
 }

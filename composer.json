@@ -16,6 +16,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "foroco/php-browser-detection": "^2.7"
+    "foroco/php-browser-detection": "^2.7",
+    "voku/portable-ascii": "^2.0"
   }
 }
