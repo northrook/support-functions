@@ -7,6 +7,8 @@ use Northrook\Support\Sort;
 use Northrook\Support\Str;
 final class Element {
 	
+	public ?string $innerHTML = null;
+	
 	/** List of generated element IDs
 	 *
 	 * @var array
@@ -26,15 +28,17 @@ final class Element {
 	
 	/** Create a new HTML Element
 	 *
-	 * @param string		$tag
-	 * @param string|null	$innerHTML Note: HTML is escaped
-	 * @param array			$attributes
+	 * @param string			$tag
+	 * @param string|array|null	$content Note: HTML is escaped
+	 * @param array				$attributes
 	 */
 	public function __construct(
 		public string $tag,
-		public ?string $innerHTML = null,
+		string | array | null $content = null,
 		public array $attributes = [],
-	) {}
+	) {
+		$this->innerHTML = Render::innerHTML( $content );
+	}
 	
 	/** Get the HTML, parsing $innerHTML and $attributes
 	 *

@@ -4,6 +4,10 @@ namespace Northrook\Support\HTML;
 
 abstract class Render {
 	
+	public static function innerHTML( string | array | null $content = null ) : ?string {
+		return (string) $content;
+	}
+	
 	/** Render a Core template
 	 *
 	 * @TODO [low] Implement direct string cache option
