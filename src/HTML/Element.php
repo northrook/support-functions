@@ -2,9 +2,10 @@
 
 namespace Northrook\Support\HTML;
 
-use Northrook\Support\Arr;
 use Northrook\Support\Sort;
 use Northrook\Support\Str;
+use Northrook\Support\UserAgent;
+
 final class Element {
 	
 	public ?string $innerHTML = null;
@@ -29,8 +30,12 @@ final class Element {
 	/** Create a new HTML Element
 	 *
 	 * @param string			$tag
-	 * @param string|array|null	$content Note: HTML is escaped
+	 * @param string|array|null	$content		Note: HTML is escaped
 	 * @param array				$attributes
+	 * @param bool				$compress		Compress the HTML with Str::squish
+	 * @param bool				$parseTemplate	Run the $content through Render::template
+	 *
+	 * @return void
 	 */
 	public function __construct(
 		public string $tag,
@@ -126,5 +131,12 @@ final class Element {
 			$styles[ $style[ 0 ] ]	= implode( ':', $style );
 		}
 		return implode( '; ', $styles );
+	}
+	
+	/// use Render::element(); instead, allow passing attributes
+	public static function keybind( ?string $string, ?string $tag = 'kbd' ) : ?string {
+		if ( ! $string ) return null;
+		if ( UserAgent::OS( 'apple' ) ) $string = str_replace( [ 'ctrl', 'alt' ], [ '⌘', '⌥' ], $string );
+		return "<$tag>$string</$tag>";
 	}
 }

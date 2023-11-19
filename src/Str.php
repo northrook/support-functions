@@ -4,6 +4,8 @@ namespace Northrook\Support;
 
 use JetBrains\PhpStorm\Pure;
 use voku\helper\ASCII;
+
+
 if ( ! function_exists( 'mb_strtolower' ) ) {
 	/** Fallback for mb_strtolower */
 	function mb_strtolower( ?string $string ) : string { return strtolower( $string ); }
@@ -59,13 +61,6 @@ final class Str {
 		return $capitalize
 			? strtoupper( $acronyms )
 			: $acronyms;
-	}
-	
-	/// use Render::element(); instead, allow passing attributes
-	public static function osKeybind( ?string $string, ?string $tag = 'kbd' ) : ?string {
-		if ( ! $string ) return null;
-		if ( UserAgent::OS( 'apple' ) ) $string = str_replace( [ 'ctrl', 'alt' ], [ '⌘', '⌥' ], $string );
-		return "<$tag>$string</$tag>";
 	}
 	
 	/** Remove all "extra" blank space from the given string.

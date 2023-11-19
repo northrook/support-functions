@@ -3,6 +3,8 @@
 namespace Northrook\Support\HTML;
 
 use Northrook\Support\Str;
+
+
 abstract class Render {
 	
 	public static function innerHTML( string | array | null $content = null, bool $pretty = false, bool $parseTemplate = false ) : ?string {
