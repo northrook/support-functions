@@ -19,6 +19,14 @@ if ( ! function_exists( 'dump' ) ) {
 final class Debug {
 	
 	
+	public static function handleError( string | callable $do, string $message = '' ) {
+		if ( is_callable( $do ) ) {
+			return $do( $message );
+		}
+		else trigger_error( $do, E_USER_ERROR );
+	}
+	
+	
 	#[NoReturn]
 	public static function dump( mixed ...$vars ) : void {
 		

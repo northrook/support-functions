@@ -3,10 +3,16 @@
 
 namespace Northrook\Support;
 
-
-final class File {
+abstract class File {
 	
-	public static function path( string $path ) : string {
+	
+	public static function get( string $path, string $onError = null ) : ?string {
+		$path = Str::filepath( path : $path );
+		if ( ! file_exists( $path ) ) return $onError;
+		return file_get_contents( $path ) ?: $onError;
+	}
+	
+	public static function path( string $path, ?string $onError = null ) : string {
 		return File::mkdir( path : $path );
 	}
 	
