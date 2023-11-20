@@ -6,6 +6,10 @@ namespace Northrook\Support;
 
 final class File {
 	
+	public static function path( string $path ) : string {
+		return File::mkdir( path : $path );
+	}
+	
 	/**
 	 * @param string	$path
 	 * @param int		$permissions
