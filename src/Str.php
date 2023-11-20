@@ -187,11 +187,14 @@ final class Str {
 	 * @param ?string			$string
 	 * @param string|iterable	$substrings
 	 * @param bool				$caseSensitive
+	 * @param string			$callback // ['str_contains', 'str_starts_with', 'str_ends_with'][%any
 	 *
 	 * @return bool | string
 	 */
-	public static function contains( ?string $string, string | iterable $substrings, bool $caseSensitive = false ) : bool | string {
-		
+	public static function contains( ?string $string, string | iterable $substrings, bool $caseSensitive = false, string $callback = 'str_contains' ) : bool | string {
+		if ( ! in_array( $callback, [ 'str_contains', 'str_starts_with', 'str_ends_with' ] ) ) {
+			$callback = 'str_contains';
+		}
 		if ( ! $caseSensitive ) $string = mb_strtolower( $string );
 		
 		if ( ! is_iterable( $substrings ) ) $substrings = (array) $substrings;
@@ -199,13 +202,14 @@ final class Str {
 		foreach ( $substrings as $substring ) {
 			if ( ! $caseSensitive ) $substring = mb_strtolower( $substring );
 			
-			if ( $substring !== '' && str_contains( $string, $substring ) ) {
+			if ( $substring !== '' && $callback( $string, $substring ) ) {
 				return $substring;
 			}
 		}
 		
 		return false;
 	}
+	
 	
 	/** Determine if a $string contains all $substrings.
 	 *
@@ -229,6 +233,7 @@ final class Str {
 		}
 		return true;
 	}
+	
 	
 	/** Replace each key from $array with its value, when found in $string.
 	 *
