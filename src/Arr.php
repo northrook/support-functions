@@ -2,6 +2,7 @@
 
 namespace Northrook\Support;
 
+use JsonException;
 /**
  * TODO [low] Integrate features from https://github.com/adbario/php-dot-notation/blob/3.x/src/Dot.php
  *   ✅ Dot notation
@@ -148,15 +149,11 @@ final class Arr {
 			
 			if ( ! is_array( $array ) ) continue;
 			
-			foreach ( $array as $key => $value ) {
-				if (
-					isset( $merged[ $key ] )
-					&& is_array( $value )
-					&& is_array( $merged[ $key ] )
-				) {
-					$merged[ $key ] = Arr::mergeNested( $merged[ $key ], $value );
+			foreach ( $array as $index => $value ) {
+				if ( isset( $merged[ $index ] ) && is_array( $value ) && is_array( $merged[ $index ] ) ) {
+					$merged[ $index ] = Arr::mergeNested( $merged[ $index ], $value );
 				}
-				else $merged[ $key ] = $value;
+				else $merged[ $index ] = $value;
 			}
 		}
 		
@@ -199,5 +196,18 @@ final class Arr {
 		}
 		
 		return $result;
+	}
+	
+	
+	public static function asObject( array | object $array, bool $filter = false ) : object {
+		
+		if ( $filter && is_array( $array ) ) $array = array_filter( $array );
+		
+		
+		try {
+			return json_decode( json_encode( $array, JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT ), false, 512, JSON_THROW_ON_ERROR );
+		} catch ( JsonException ) {
+			return (object) $array;
+		}
 	}
 }

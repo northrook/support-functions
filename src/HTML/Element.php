@@ -33,15 +33,16 @@ final class Element {
 	 * @param string|array|null	$content		Note: HTML is escaped
 	 * @param array				$attributes
 	 * @param bool				$compress		Compress the HTML with Str::squish
+	 * @param bool				$pretty			Pretty print the HTML, overrides $compress
 	 * @param bool				$parseTemplate	Run the $content through Render::template
 	 *
-	 * @return void
 	 */
 	public function __construct(
 		public string $tag,
 		string | array | null $content = null,
 		public array $attributes = [],
 		private readonly bool $compress = false,
+		private readonly bool $pretty = false,
 		bool $parseTemplate = false,
 	) {
 		$this->innerHTML = Render::innerHTML( $content, $parseTemplate );
@@ -50,12 +51,14 @@ final class Element {
 	/** Get the HTML, parsing $innerHTML and $attributes
 	 *
 	 * @todo [low] Implement static cache function, potentially as a method of Northrook\Core\Render as wrapper
+	 *       This may be irrelevant, if we parse Latte templates at compile time
 	 *
 	 * @return string
 	 */
 	public function __toString() : string {
 		$tag	= implode( ' ', [ "<$this->tag", Element::attributes( $this->attributes ) ] ) . '>';
 		$html	= $tag . $this->innerHTML . '</' . $this->tag . '>';
+		if ( $this->pretty ) return new PrettyHTML( $html );
 		return $this->compress ? Str::squish( $html ) : $html;
 	}
 	

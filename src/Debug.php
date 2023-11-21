@@ -18,6 +18,23 @@ if ( ! function_exists( 'dump' ) ) {
 
 final class Debug {
 	
+	private static string $env = 'dev';
+	
+	/** Match against the current environment
+	 *
+	 * @param string $is = [ 'dev', 'prod' ][$any]
+	 *
+	 * @return bool
+	 */
+	public static function env( string $is ) : bool {
+		return Debug::$env === strtolower( $is );
+	}
+	
+	
+	public static function setEnv( mixed $APP_ENV ) : void {
+		Debug::$env = strtolower( $APP_ENV );
+	}
+	
 	
 	public static function handleError( string | callable $do, string $message = '' ) {
 		if ( is_callable( $do ) ) {
