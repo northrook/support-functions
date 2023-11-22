@@ -5,7 +5,6 @@ namespace Northrook\Support;
 
 abstract class File {
 	
-	
 	public static function get( string $path, string $onError = null ) : ?string {
 		$path = Str::filepath( path : $path );
 		if ( ! file_exists( $path ) ) return $onError;
@@ -55,8 +54,11 @@ abstract class File {
 		// return false;
 	}
 	
-	public static function path( string $path, ?string $onError = null ) : string {
-		return File::makeDirectory( path : $path );
+	public static function path( string $path, bool $create = false, ?string $onError = null ) : ?string {
+		if ( $create ) return File::makeDirectory( path : $path );
+		$path = Str::filepath( path : $path );
+		if ( ! file_exists( $path ) ) return $onError;
+		return $path;
 	}
 	
 	/**
