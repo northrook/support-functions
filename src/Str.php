@@ -102,7 +102,8 @@ final class Str {
 	}
 	
 	public static function filepath( string $path, ?string $fullPath = null ) : string {
-		$path = str_replace( [ '/', '\\' ], DIRECTORY_SEPARATOR, $path );
+		$path	= str_replace( [ '/', '\\' ], DIRECTORY_SEPARATOR, $path );
+		$path	= mb_strtolower( $path );
 		return str_replace( '\\\\', '\\', $fullPath ? Str::start( string : $path, with : $fullPath ) : $path );
 	}
 	
