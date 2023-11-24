@@ -5,6 +5,7 @@ namespace Northrook\Support;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use UnexpectedValueException;
 abstract class File {
 	
 	public static function getContents( string $path, string $onError = null ) : ?string {
@@ -108,17 +109,37 @@ abstract class File {
 		return substr( $name, 0, $hasExtension );
 	}
 	
-	public static function scanDirectories( string ...$path ) : array {
-		$files = [];
-		foreach ( $path as $scan ) {
-			
-			$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $scan ) );
-			
+	public static function scanDirectories( string | array $path, bool $includeDirectories = false, bool $addUnexpectedValue = false ) : array {
+		$files			= [];
+		$underscored	= [];
+		foreach ( (array) $path as $scan ) {
+			try {
+				$iterator = new RecursiveIteratorIterator(
+					new RecursiveDirectoryIterator( $scan ),
+					RecursiveIteratorIterator::CHILD_FIRST
+				);
+			} catch ( UnexpectedValueException ) {
+				if ( $addUnexpectedValue ) {
+					$files[] = $scan;
+				}
+				continue;
+			}
 			foreach ( $iterator as $file ) {
+				if ( ! $includeDirectories && $file->isDir() ) {
+					continue;
+				}
+				if ( str_starts_with( File::getFileName( $file->getPathname() ), '_' ) ) {
+					// var_dump( File::getDirectoryPath( $file->getPathname() ) );
+					// array_unshift( $underscored, $file->getPathname() );
+					$underscored[] = $file->getPathname();
+					continue;
+				}
 				$files[] = $file->getPathname();
 			}
 		}
 		
-		return $files;
+		usort( $underscored, static fn( $a, $b ) => strlen( $a ) <=> strlen( $b ) );
+		
+		return $underscored + $files;
 	}
 }
