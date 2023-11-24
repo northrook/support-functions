@@ -3,6 +3,8 @@
 
 namespace Northrook\Support;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 abstract class File {
 	
 	public static function getContents( string $path, string $onError = null ) : ?string {
@@ -104,5 +106,19 @@ abstract class File {
 		}
 		
 		return substr( $name, 0, $hasExtension );
+	}
+	
+	public static function scanDirectories( string ...$path ) : array {
+		$files = [];
+		foreach ( $path as $scan ) {
+			
+			$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $scan ) );
+			
+			foreach ( $iterator as $file ) {
+				$files[] = $file->getPathname();
+			}
+		}
+		
+		return $files;
 	}
 }
