@@ -110,7 +110,7 @@ final class Str {
 	/**
 	 * @param string|null	$string
 	 * @param bool			$trim
-	 * @param string		$separator // [camelCase, kebabCase, snakeCase][%any
+	 * @param string		$separator // [camelCase, kebabCase, snakeCase][%any]
 	 *
 	 * @param string|null	$language
 	 *

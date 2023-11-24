@@ -161,6 +161,19 @@ final class Arr {
 	}
 	
 	
+	public static function replaceKey( array $array, string $target, string $replacement ) : array {
+		$keys	= array_keys( $array );
+		$index	= array_search( $target, $keys, true );
+		
+		if ( $index !== false ) {
+			$keys[ $index ]	= $replacement;
+			$array			= array_combine( $keys, $array );
+		}
+		
+		return $array;
+	}
+	
+	
 	/** Implode array to string, omitting empty values
 	 *
 	 * @param array			$array

@@ -38,8 +38,11 @@ final class Debug {
 	}
 	
 	
-	public static function log( string $message ) {
-		Debug::$sessionLogs[] = $message;
+	public static function log( string $message, mixed $dump = null, ?string $severity = null ) : void {
+		Debug::$sessionLogs[] = [
+			'message'	=> $message,
+			'dump'		=> $dump,
+		];
 	}
 	
 	public static function getLogs() : array {
