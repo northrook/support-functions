@@ -6,7 +6,7 @@ use Northrook\Support\Sort;
 use Northrook\Support\Str;
 use Northrook\Support\UserAgent;
 
-final class Element {
+final class Element extends Render {
 	
 	public ?string $innerHTML = null;
 	
@@ -26,7 +26,6 @@ final class Element {
 		return Element::$generatedElementIdList;
 	}
 	
-	
 	/** Create a new HTML Element
 	 *
 	 * @param string			$tag
@@ -43,9 +42,9 @@ final class Element {
 		public array $attributes = [],
 		private readonly bool $compress = false,
 		private readonly bool $pretty = false,
-		bool $parseTemplate = false,
+		private readonly bool $parseTemplate = false,
 	) {
-		$this->innerHTML = Render::innerHTML( $content, $parseTemplate );
+		$this->innerHTML = $content;
 	}
 	
 	/** Get the HTML, parsing $innerHTML and $attributes
@@ -57,7 +56,7 @@ final class Element {
 	 */
 	public function __toString() : string {
 		$tag	= implode( ' ', [ "<$this->tag", Element::attributes( $this->attributes ) ] ) . '>';
-		$html	= $tag . $this->innerHTML . '</' . $this->tag . '>';
+		$html	= $tag . Element::innerHTML( $this->innerHTML, $this->pretty, $this->parseTemplate ) . '</' . $this->tag . '>';
 		if ( $this->pretty ) return new PrettyHTML( $html );
 		return $this->compress ? Str::squish( $html ) : $html;
 	}

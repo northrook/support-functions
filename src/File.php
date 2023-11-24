@@ -69,6 +69,7 @@ abstract class File {
 		if ( $create ) {
 			return File::makeDirectory( path : $path );
 		}
+		
 		$path = Str::filepath( path : $path );
 		
 		return ! file_exists( $path ) ? $onError : $path;
