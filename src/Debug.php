@@ -18,6 +18,8 @@ if ( ! function_exists( 'dump' ) ) {
 
 final class Debug {
 	
+	private static array $sessionLogs = [];
+	
 	private static string $env = 'dev';
 	
 	/** Match against the current environment
@@ -33,6 +35,20 @@ final class Debug {
 	
 	public static function setEnv( mixed $APP_ENV ) : void {
 		Debug::$env = strtolower( $APP_ENV );
+	}
+	
+	
+	public static function log( string $message ) {
+		Debug::$sessionLogs[] = $message;
+	}
+	
+	public static function getLogs() : array {
+		return Debug::$sessionLogs;
+	}
+	
+	public static function dumpLogs() : void {
+		if ( ! Debug::$sessionLogs ) return;
+		dump( Debug::$sessionLogs );
 	}
 	
 	
