@@ -68,7 +68,7 @@ final class Debug {
 		
 		echo <<<HTML
 		<head>
-			<title>Debug</title/>
+			<title>Debug</title>
 			<style>
 			*, *:before, *:after {
 				box-sizing: border-box;

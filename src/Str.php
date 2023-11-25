@@ -68,13 +68,16 @@ final class Str {
 	 * * Removes Twig, CSS, inline JavaScript, and HTML comments by default
 	 * * Does not perform __any__ sanitization
 	 *
-	 * @param string	$string
+	 * @param ?string	$string
 	 * @param bool		$preserveComments
 	 * @param bool		$spacesOnly Preserve newlines
 	 *
 	 * @return string minified string
 	 */
-	public static function squish( string $string, bool $preserveComments = false, bool $spacesOnly = false ) : string {
+	public static function squish( ?string $string, bool $preserveComments = false, bool $spacesOnly = false ) : string {
+		if ( ! $string ) {
+			return '';
+		}
 		if ( ! $preserveComments ) {
 			$string = preg_replace(
 				[
