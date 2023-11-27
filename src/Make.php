@@ -8,7 +8,7 @@ abstract class Make {
         return $content ? "<meta name=\"$name\" content=\"$content\">" : '';
     }
 
-    public static function keywords( string | array | null $content, string $separator = ', '  ) : ?string {
+    public static function keywords( string | array | null $content, string $separator = ', '  ) : ?array {
 
         if ( $content === null ) {
             return null;
@@ -34,6 +34,6 @@ abstract class Make {
             }
         }
         
-        return implode( ', ', $keywords );
+        return $keywords;
     }
 }
