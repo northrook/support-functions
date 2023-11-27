@@ -312,7 +312,8 @@ final class Str {
 	 *
 	 * @return ?string
 	 */
-	#[Pure] public static function toCamel( ?string $string ) : ?string {
+    
+     public static function toCamel( ?string $string ) : ?string {
 		$delimiter	= Str::guessDelimiter( $string ) ?? ' ';
 		$string		= mb_strtolower( $string );
 		$camel		= [];
@@ -328,8 +329,8 @@ final class Str {
 		}
 		return implode( '', $camel );
 	}
-	
-	#[Pure] public static function guessDelimiter( ?string $string ) : string {
+
+    public static function guessDelimiter( ?string $string ) : string {
 		return Str::contains( $string, [ ' ', '-', '_', '/', '\\', ':', ';' ] );
 	}
 }

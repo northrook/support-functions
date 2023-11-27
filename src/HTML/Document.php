@@ -30,6 +30,23 @@ final class Document {
 			throw new RuntimeException( "Assets directory not found: $dir" );
 		}
 	}
+
+    public static function keywords( string | array | null $keywords, string $separator = ', '  ) : ?string {
+
+        if ( $keywords === null ) {
+            return null;
+        }
+
+        if ( is_string( $keywords ) ) {
+            $keywords = mb_strtolower($keywords);
+            $keywords = str_replace([' ', ','], ' ', $keywords);
+            $keywords = array_filter(explode( ' ', $keywords ));
+        }
+        
+        if ( is_array( $keywords ) ) {
+            $keywords = implode( $separator, $keywords );
+        }
+    }
 	
 	
 }
