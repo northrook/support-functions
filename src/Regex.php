@@ -4,14 +4,34 @@ namespace Northrook\Support;
 
 final class Regex {
 
-    public static function extractHtmlTag( string $string, string $tag, bool $returnFirst = false ): ?array {
-        preg_match( "/<$tag\s*[^>]*>(.*?)<\/$tag>/is", $string, $matches );
+    /**
+     * Extracts HTML tags from a given string based on the specified tag.
+     *
+     * @param  string            $string      The input string to extract tags from.
+     * @param  string            $tag         The HTML tag to extract.
+     * @param  bool              $returnFirst Whether to return only the first occurrence of the tag. Default is false.
+     * @return null|array|object Returns an array of objects representing the extracted tags. Each object has properties 'element' and 'content'.
+     */
+    public static function extractHåtmlTags( string $string, string $tag, bool $returnFirst = false ): array | object | null {
+        preg_match_all(
+            "/<$tag\s*[^>]*>(.*?)<\/$tag>/",
+            $string,
+            $tags,
+            PREG_SET_ORDER
+        );
 
-        if ( $returnFirst ) {
-            return $matches[1] ?? null;
+        foreach ( $tags as $key => $value ) {
+            $tags[$key] = (object) array_combine(
+                ['element', 'content'],
+                $value
+            );
         }
 
-        return $matches;
+        if ( $returnFirst ) {
+            return $tags[1] ?? null;
+        }
+
+        return $tags;
     }
 
     /**
