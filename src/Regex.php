@@ -28,7 +28,7 @@ final class Regex {
         }
 
         if ( $returnFirst ) {
-            return $tags[1] ?? null;
+            return $tags[0] ?? null;
         }
 
         return $tags;
