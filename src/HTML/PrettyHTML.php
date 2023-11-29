@@ -10,6 +10,7 @@ use Northrook\Support\Str;
  * @stability	prototype
  * @package		Northrook\Support
  * @version		alpha
+ * @return string
  */
 final class PrettyHTML {
 	
@@ -43,9 +44,9 @@ final class PrettyHTML {
 		'script',
 	];
 	
-	/** @noinspection DuplicatedCode */
+	/** @return string  */
 	public function __toString() : string {
-		$metrics = null;
+		// $metrics = null;
 		// if ( ENV === 'dev' ) {
 		// 	/** @noinspection PhpUndefinedConstantInspection */
 		// 	$log = [
@@ -64,8 +65,12 @@ final class PrettyHTML {
 		// 	}
 		// 	$metrics = PHP_EOL . $this::implode( $metrics, PHP_EOL ) . PHP_EOL . PHP_EOL;
 		// }
-		return $metrics . $this->html;
+		return (string) $this->html;
 	}
+
+    public static function string (string $html) : string {
+        return (new self($html))->html;
+    }
 	
 	public function __construct( private string $html, public bool $squish = true ) {
 		// $this->stopwatch = hrtime( true );

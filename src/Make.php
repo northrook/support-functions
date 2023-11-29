@@ -13,10 +13,10 @@ abstract class Make {
         $title   = null;
         if ( str_contains( $content, '<h1' ) ) {
             $title = Regex::extractHtmlTags( $content, 'h1', true );
+            $title = $title->content;
         }
-        print_r( $title );
 
-        return $content;
+        return $title;
     }
 
     public static function keywords( string | array | null $content, string $separator = ', ', ?int $limit = null ): ?array {
@@ -28,6 +28,7 @@ abstract class Make {
         $keywords = [];
 
         if ( is_string( $content ) ) {
+            $content = strip_tags( $content );
             $content = str_replace( ["'", '"', '.', ',', ';', "\n", "\r"], '', $content );
             $content = explode( ' ', $content );
         }
