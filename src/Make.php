@@ -8,9 +8,16 @@ abstract class Make {
         return $content ? "<meta name=\"$name\" content=\"$content\">" : '';
     }
 
-    // Find a <H1> tag, else first paragraph
-    public static function title(string $content): ?string {
-        $title = 'title from content';
+    public static function title( string $content ): ?string {
+        $content = Str::squish( strip_tags( $content, ['h1', 'h2', 'h3', 'p'] ) );
+        $title   = null;
+        if ( str_contains( $content, '<h1' ) ) {
+            $open  = strpos( $content, '<h1' );
+            $close = strpos( $content, '</h1>' );
+            $title = substr( $content, $open, $close );
+        }
+        var_dump( $title );
+
         return $content;
     }
 
