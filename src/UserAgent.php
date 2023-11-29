@@ -5,7 +5,10 @@ namespace Northrook\Support;
 use foroco\BrowserDetection;
 
 if ( ! defined( 'USER_AGENT' ) ) {
-    define( 'USER_AGENT', $_SERVER['HTTP_USER_AGENT'] ?? null );
+    define(
+        'USER_AGENT',
+        $_SERVER['HTTP_USER_AGENT'] ?? null
+    );
 }
 
 /**

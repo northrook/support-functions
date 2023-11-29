@@ -2,7 +2,6 @@
 
 namespace Northrook\Support;
 
-use JetBrains\PhpStorm\Pure;
 use voku\helper\ASCII;
 
 

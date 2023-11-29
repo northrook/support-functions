@@ -21,7 +21,6 @@ final class Document {
 		return $content ? "<meta name=\"$name\" content=\"$content\">" : '';
 	}
 	
-	
 	private function assignDirectory( string $dir ) : void {
 		if ( is_dir( $dir ) ) {
 			$this->assetsDir = $dir;
@@ -47,6 +46,5 @@ final class Document {
             $keywords = implode( $separator, $keywords );
         }
     }
-	
 	
 }
