@@ -12,7 +12,7 @@ final class Regex {
      * @param  bool              $returnFirst Whether to return only the first occurrence of the tag. Default is false.
      * @return null|array|object Returns an array of objects representing the extracted tags. Each object has properties 'element' and 'content'.
      */
-    public static function extractHåtmlTags( string $string, string $tag, bool $returnFirst = false ): array | object | null {
+    public static function extractHtmlTags( string $string, string $tag, bool $returnFirst = false ): array | object | null {
         preg_match_all(
             "/<$tag\s*[^>]*>(.*?)<\/$tag>/",
             $string,

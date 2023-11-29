@@ -9,14 +9,12 @@ abstract class Make {
     }
 
     public static function title( string $content ): ?string {
-        $content = Str::squish( strip_tags( $content, ['h1', 'h2', 'h3', 'p'] ) );
+        $content = strip_tags( $content, ['h1', 'h2', 'h3', 'p'] );
         $title   = null;
         if ( str_contains( $content, '<h1' ) ) {
-            $open  = strpos( $content, '<h1' );
-            $close = strpos( $content, '</h1>' );
-            $title = substr( $content, $open, $close );
+            $title = Regex::extractHtmlTags( $content, 'h1', true );
         }
-        var_dump( $title );
+        print_r( $title );
 
         return $content;
     }
