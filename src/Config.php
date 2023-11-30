@@ -19,13 +19,13 @@ final class Config {
     public function __construct(
         string $rootDir,
         string $assetsDir,
-            ?string $cacheDir,
+            ?string $cacheDir = null,
             ?array $settings = null
     ) {
-        $this->settings  = $settings ?? $this->settings;
         $this->rootDir   = $rootDir;
         $this->assetsDir = $assetsDir;
-        $this->cacheDir  = $cacheDir ?? $this->rootDir . '/cache';
+        $this->cacheDir  = $cacheDir ?? $this->rootDir . 'cache';
+        $this->settings  = $settings ?? $this->settings;
         static::$config  = $this;
     }
 

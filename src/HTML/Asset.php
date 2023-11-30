@@ -15,6 +15,7 @@ final class Asset {
     public readonly string $url;
     public readonly string $type;
     public readonly string $version;
+    public readonly bool $exists;
 
     public function __construct( string $path, ?string $type = 'auto' ) {
         $this->path    = $this->assetPath( $path );
@@ -32,13 +33,18 @@ final class Asset {
         return "<link rel=\"$type\" href=\"$this->url\">";
     }
 
-    private function assetPath( string $path ): string {
+    private function assetPath( string $path ): ?string {
         $providedPath = Str::filepath( $path, $this::config()->assetsDir );
         if ( file_exists( $providedPath ) ) {
+
+            $this->exists = true;
+
             return $providedPath;
         }
 
-        // @todo Throw an exception
+        // @todo Log to debug
+
+        $this->exists = false;
 
         return null;
     }
