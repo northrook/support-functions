@@ -24,7 +24,15 @@ abstract class Make {
         return $content ? "<meta name=\"$name\" content=\"$content\">" : '';
     }
 
-    public static function title( string $content, ?string $tryTag = 'h1' ): ?string {
+    /**
+     * Generate a title from the content
+     *
+     * @param  string        $content   The content to generate a title from, will be stripped of unwanted HTML, and cached
+     * @param  null|string   $length    Pass a number to limit the title length, or as min:max to limit the length to a range
+     * @param  null|string   $preferTag Pass a tag name to prefer that tag for the title
+     * @return null|string
+     */
+    public static function title( string $content, ?string $length = null, ?string $preferTag = 'h1' ): ?string {
 
         $title   = null;
         $content = self::cache( $content );
@@ -33,11 +41,11 @@ abstract class Make {
             return null;
         }
 
-        if ( $tryTag && str_contains(
+        if ( $preferTag && str_contains(
             $content,
-            "<$tryTag",
+            "<$preferTag",
         ) ) {
-            $tags  = Regex::extractHtmlTags( $content, $tryTag, true );
+            $tags  = Regex::extractHtmlTags( $content, $preferTag, true );
             $title = $tags->content;
         }
 
