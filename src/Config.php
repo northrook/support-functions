@@ -7,7 +7,7 @@ final class Config {
     private static Config $config;
 
     public readonly string $rootDir;
-    public readonly string $assetsDir;
+    public readonly string $publicDir;
     public readonly string $cacheDir;
 
     private array $settings = [
@@ -18,12 +18,12 @@ final class Config {
 
     public function __construct(
         string $rootDir,
-        string $assetsDir,
+        string $publicDir,
             ?string $cacheDir = null,
             ?array $settings = null
     ) {
         $this->rootDir   = $rootDir;
-        $this->assetsDir = $assetsDir;
+        $this->publicDir = $publicDir;
         $this->cacheDir  = $cacheDir ?? $this->rootDir . 'cache';
         $this->settings  = $settings ?? $this->settings;
         static::$config  = $this;

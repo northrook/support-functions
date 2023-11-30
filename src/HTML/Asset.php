@@ -34,7 +34,7 @@ final class Asset {
     }
 
     private function assetPath( string $path ): ?string {
-        $providedPath = Str::filepath( $path, $this::config()->assetsDir );
+        $providedPath = Str::filepath( $path, $this::config()->publicDir );
         if ( file_exists( $providedPath ) ) {
 
             $this->exists = true;
