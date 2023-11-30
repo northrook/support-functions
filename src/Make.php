@@ -20,10 +20,6 @@ abstract class Make {
         return Make::$_contentCache;
     }
 
-    public static function meta( string $name, ?string $content = null ): string {
-        return $content ? "<meta name=\"$name\" content=\"$content\">" : '';
-    }
-
     /**
      * Generate a title from the content
      *

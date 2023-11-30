@@ -48,15 +48,15 @@ final class Asset {
 
         return null;
     }
-
+    
     private function assetUrl( bool $withVersion = false, bool $relative = false ): string {
-        $url = str_replace( $this::config()->rootDir, '', $this->path );
+        $url = str_replace( [$this::config()->publicDir, '\\'], ['', '/'], $this->path );
 
         if ( $withVersion ) {
             $url = $url . self::VERSION_PREFIX . $this->version;
         }
 
-        return Str::start( $url, '\\' );
+        return Str::start( $url, '/' );
     }
 
     private function assetType( ?string $type = 'auto' ): string {
