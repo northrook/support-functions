@@ -27,7 +27,7 @@ final class Config {
         $this->rootDir   = $rootDir;
         $this->publicDir = $publicDir;
         $this->cacheDir  = $cacheDir ?? $this->rootDir . 'cache';
-        $this->iconsDir  = $iconsDir ?? $this->rootDir . '/assets/icons';
+        $this->iconsDir  = $iconsDir ?? $this->rootDir . 'assets'. DIRECTORY_SEPARATOR . 'icons';
         $this->settings  = $settings ?? $this->settings;
         static::$config  = $this;
     }
