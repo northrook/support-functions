@@ -41,8 +41,8 @@ final class Element extends Render {
      */
     public function __construct(
         public string $tag,
-        string | array | null $content = null,
         public array $attributes = [],
+        string | array | null $content = null,
         private readonly bool $compress = false,
         private readonly bool $pretty = false,
         private readonly bool $parseTemplate = false,
@@ -192,6 +192,10 @@ final class Element extends Render {
         $attributes = [];
 
         $node = $dom->getElementsByTagName( $tag )->item( 0 );
+        
+        foreach ( $node->attributes as $attribute ) {
+            $attributes[$attribute->name] = $attribute->value;
+        }
 
         return $attributes;
     }
