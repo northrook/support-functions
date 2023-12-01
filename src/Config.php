@@ -9,6 +9,7 @@ final class Config {
     public readonly string $rootDir;
     public readonly string $publicDir;
     public readonly string $cacheDir;
+    public readonly string $iconsDir;
 
     private array $settings = [
         'cache' => [
@@ -20,11 +21,13 @@ final class Config {
         string $rootDir,
         string $publicDir,
             ?string $cacheDir = null,
+            ?string $iconsDir = null,
             ?array $settings = null
     ) {
         $this->rootDir   = $rootDir;
         $this->publicDir = $publicDir;
         $this->cacheDir  = $cacheDir ?? $this->rootDir . 'cache';
+        $this->iconsDir  = $iconsDir ?? $this->rootDir . '/assets/icons';
         $this->settings  = $settings ?? $this->settings;
         static::$config  = $this;
     }
