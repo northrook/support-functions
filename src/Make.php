@@ -23,12 +23,12 @@ abstract class Make {
     /**
      * Generate a title from the content
      *
-     * @param  string        $content   The content to generate a title from, will be stripped of unwanted HTML, and cached
+     * @param  ?string        $content   The content to generate a title from, will be stripped of unwanted HTML, and cached
      * @param  null|string   $length    Pass a number to limit the title length, or as min:max to limit the length to a range
      * @param  null|string   $preferTag Pass a tag name to prefer that tag for the title
      * @return null|string
      */
-    public static function title( string $content, ?string $length = null, ?string $preferTag = 'h1' ): ?string {
+    public static function title( ?string $content, ?string $length = null, ?string $preferTag = 'h1' ): ?string {
 
         $title   = null;
         $content = self::cache( $content );
@@ -48,7 +48,7 @@ abstract class Make {
         return $title;
     }
 
-    public static function description( string $content ): ?string {
+    public static function description( ?string $content ): ?string {
 
         $description = null;
         $content     = self::cache( $content );

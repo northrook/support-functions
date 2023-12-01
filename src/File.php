@@ -17,13 +17,37 @@ abstract class File {
         return file_exists( $path );
     }
 
-    public static function getContents( string $path, string $onError = null ): ?string {
+    /**
+     * Get the file size of a given file.
+     *
+     *
+     * @param  string $path
+     * @return int
+     */
+    public static function size( string $path ): int {
+
+        $path = Str::filepath( $path, static::config()->rootDir );
+
+        return filesize( $path );
+    }
+
+    public static function getContents( string $path, string $onError = null, bool $asJson = false ): ?string {
         $path = Str::filepath( path: $path );
         if ( ! file_exists( $path ) ) {
-            return $onError;
+            return null;
         }
 
-        return file_get_contents( $path ) ?: $onError;
+        $content = file_get_contents( $path );
+
+        if ( $content === false ) {
+            return null;
+        }
+
+        if ( $asJson ) {
+            $content = json_decode( $content, true );
+        }
+
+        return $content;
     }
 
     public static function putContents( ?string $content, string $filename, int $flags = 0, bool $override = true ): false | int {

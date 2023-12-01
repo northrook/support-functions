@@ -17,7 +17,7 @@ final class Asset {
     public readonly string $version;
     public readonly bool $exists;
 
-    public function __construct( string $path, ?string $type = 'auto' ) {
+    public function __construct( string $path, ?string $type = 'auto', private bool $cacheBusting = false ) {
         $this->path    = $this->assetPath( $path );
         $this->type    = $this->assetType( $type );
         $this->version = $this->assetVersion();
@@ -48,7 +48,7 @@ final class Asset {
 
         return null;
     }
-    
+
     private function assetUrl( bool $withVersion = false, bool $relative = false ): string {
         $url = str_replace( [$this::config()->publicDir, '\\'], ['', '/'], $this->path );
 
@@ -64,9 +64,12 @@ final class Asset {
     }
 
     private function assetVersion(): string {
-        $version = filemtime( $this->path );
 
-        return $version;
+        if ( $this::config()->cache()->invalidateAll || $this->cacheBusting ) {
+            return time();
+        }
+
+        return filemtime( $this->path );
     }
 
 }
