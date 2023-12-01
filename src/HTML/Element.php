@@ -2,6 +2,7 @@
 
 namespace Northrook\Support\HTML;
 
+use DOMDocument;
 use Northrook\Support\Sort;
 use Northrook\Support\Str;
 use Northrook\Support\UserAgent;
@@ -61,7 +62,7 @@ final class Element extends Render {
         $tag  = implode( ' ', ["<$this->tag", Element::attributes( $this->attributes )] ) . '>';
         $html = $tag . Element::innerHTML( $this->innerHTML, $this->pretty, $this->parseTemplate ) . '</' . $this->tag . '>';
         if ( $this->pretty ) {
-            return PrettyHTML::string($html);
+            return PrettyHTML::string( $html );
         }
 
         return $this->compress ? Str::squish( $html ) : $html;
@@ -182,5 +183,16 @@ final class Element extends Render {
         }
 
         return "<$tag>$string</$tag>";
+    }
+
+    public static function extractAttributes( string $html, string $tag ): array {
+        $dom = new DOMDocument();
+        $dom->loadHTML( $html );
+
+        $attributes = [];
+
+        $node = $dom->getElementsByTagName( $tag )->item( 0 );
+
+        return $attributes;
     }
 }
