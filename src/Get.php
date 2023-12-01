@@ -33,7 +33,7 @@ class Get {
             'pack' => $get[1] ?? $pack ?? 'lucide',
         ];
 
-        $path = Str::filepath( Get::config()->iconsDir . $icon['pack'] . '/' . $icon['name'] . '.svg' );
+        $path = Str::filepath( Get::config()->iconsDir . '/' . $icon['pack'] . '/' . $icon['name'] . '.svg' );
         if ( ! file_exists( $path ) ) {
             return null;
         }
