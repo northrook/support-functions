@@ -238,6 +238,29 @@ final class Str {
 	}
 	
 	
+	/** Determine if a $string starts with any $substrings.
+	 *
+	 *  * Case Insensitive by default
+	 *
+	 * @param ?string	$string
+	 * @param iterable	$substrings
+	 * @param bool		$caseSensitive
+	 *
+	 * @return bool
+	 */
+	public static function startsWith( ?string $string, string | iterable $substrings, bool $caseSensitive = false ) : bool {
+		foreach ( $substrings as $substring ) {
+            if ( ! $caseSensitive ) $substring = mb_strtolower( $substring );
+			if ( str_starts_with(
+				$string,
+				$substring,
+			) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/** Replace each key from $array with its value, when found in $string.
 	 *
 	 * @param array		$array Must be key => value
