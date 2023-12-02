@@ -22,6 +22,7 @@ class Get {
             ?string $class = null,
             ?float $stroke = null,
         bool $raw = false,
+        bool $xmlns = false
     ): ?string {
         if ( ! $get ) {
             return null;
@@ -39,11 +40,16 @@ class Get {
         }
 
         $icon = file_get_contents( $path );
+
+        if ( ! $xmlns ) {
+            $icon = str_replace( ' xmlns="http://www.w3.org/2000/svg"', '', $icon );
+        }
         $stroke ??= 1.5;
         $icon = preg_replace( '/ stroke-width=".*?"/', " stroke-width=\"$stroke\"", $icon );
         if ( $raw ) {
             return $icon;
         }
+
 
         return "<i class=\"icon\">$icon</i>";
     }
