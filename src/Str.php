@@ -37,8 +37,8 @@ final class Str {
      * Convert $value to ASCII
      *
      *
-     * @param  string    $value
-     * @param  ?string    $language
+     * @param  string   $value
+     * @param  ?string  $language
      * @return string
      */
     public static function ascii( string $value, ?string $language = null ): string {
@@ -49,10 +49,10 @@ final class Str {
      * Extract acronym from a $string
      *
      *
-     * @param  ?string    $string        The       string   to process
-     * @param  bool        $capitalize    Defaults to       true
-     * @param  string    $separator    Defaults to       single whitespace
-     * @return ?string                    Acronym, or null if $string is null
+     * @param  ?string $string     The string to process
+     * @param  bool    $capitalize Defaults to true
+     * @param  string  $separator  Defaults to single whitespace
+     * @return ?string Acronym, or null if $string is null
      */
     public static function acronym( ?string $string, bool $capitalize = true, string $separator = ' ' ): ?string {
         if ( ! $string ) {
@@ -77,10 +77,10 @@ final class Str {
      *  Does not perform __any__ sanitization
      *
      *
-     * @param  ?string    $string
-     * @param  bool        $preserveComments
-     * @param  bool        $spacesOnly          Preserve newlines
-     * @return string                     minified string
+     * @param  ?string $string
+     * @param  bool    $preserveComments
+     * @param  bool    $spacesOnly          Preserve newlines
+     * @return string  minified string
      */
     public static function squish( ?string $string, bool $preserveComments = false, bool $spacesOnly = false ): string {
         if ( ! $string ) {
@@ -121,14 +121,14 @@ final class Str {
 
     /**
      *
+     * @lin https://stackoverflow.com/a/68254092
      *
-     * @param  string|null    $string
-     * @param  bool            $trim
-     * @param  string        $separator       // [camelCase, kebabCase, snakeCase][%any]
-     * @param  string|null    $language
+     * @param  string|null   $string
+     * @param  bool          $trim
+     * @param  string        $separator   // [camelCase, kebabCase, snakeCase][%any]
+     * @param  string|null   $language
      * @return string|null
      */
-    
     public static function isUrl( ?string $string, ?string $scheme = null ) {
         // Bail if the $source is null, empty, or does not contain a scheme
         if ( ! $string || strpos( $string, '://' ) === false ) {
@@ -177,10 +177,10 @@ final class Str {
      *  Passed null values will be stringified before comparison
      *
      *
-     * @param  ?string    $string    The    original string
-     * @param  ?string    $with    The      desired  starting substring
-     * @param  bool        $trim    Determines if       the strings should be trimmed before parsing
-     * @return string                 The processed string
+     * @param  ?string $string The original string
+     * @param  ?string $with   The desired starting substring
+     * @param  bool    $trim   Determines if the strings should be trimmed before parsing
+     * @return string  The processed string
      */
     public static function start( ?string $string, ?string $with, bool $trim = false ): string {
 
@@ -202,10 +202,10 @@ final class Str {
      *  Avoid $trim when used in loops
      *
      *
-     * @param  ?string    $string    The    original string
-     * @param  ?string    $with    The      desired  ending substring
-     * @param  bool        $trim    Determines if       the strings should be trimmed before parsing
-     * @return string                 The processed string
+     * @param  ?string $string The original string
+     * @param  ?string $with   The desired ending substring
+     * @param  bool    $trim   Determines if the strings should be trimmed before parsing
+     * @return string  The processed string
      */
     public static function end( ?string $string, ?string $with, bool $trim = false ): string {
 
@@ -226,11 +226,11 @@ final class Str {
      *  Case Insensitive by default
      *
      *
-     * @param  ?string            $string
-     * @param  string|iterable    $substrings
-     * @param  bool                $caseSensitive
-     * @param  string            $callback             // ['str_contains', 'str_starts_with', 'str_ends_with'][%any
-     * @return bool                           | string
+     * @param  ?string         $string
+     * @param  string|iterable $substrings
+     * @param  bool            $caseSensitive
+     * @param  string          $callback         // ['str_contains', 'str_starts_with', 'str_ends_with'][%any
+     * @return bool            | string
      */
     public static function contains( ?string $string, string | iterable $substrings, bool $caseSensitive = false, string $callback = 'str_contains' ): bool | string {
         if ( ! in_array( $callback, ['str_contains', 'str_starts_with', 'str_ends_with'] ) ) {
@@ -263,9 +263,9 @@ final class Str {
      *  * Case Insensitive by default
      *
      *
-     * @param  ?string    $string
-     * @param  iterable    $substrings
-     * @param  bool        $caseSensitive
+     * @param  ?string  $string
+     * @param  iterable $substrings
+     * @param  bool     $caseSensitive
      * @return bool
      */
     public static function containsAll( ?string $string, iterable $substrings, bool $caseSensitive = false ): bool {
@@ -288,9 +288,9 @@ final class Str {
      *  * Case Insensitive by default
      *
      *
-     * @param  ?string    $string
-     * @param  iterable    $substrings
-     * @param  bool        $caseSensitive
+     * @param  ?string  $string
+     * @param  iterable $substrings
+     * @param  bool     $caseSensitive
      * @return bool
      */
     public static function startsWith( ?string $string, string | iterable $substrings, bool $caseSensitive = false ): bool {
@@ -314,10 +314,10 @@ final class Str {
      * Replace each key from $array with its value, when found in $string.
      *
      *
-     * @param  array        $array           Must be key => value
-     * @param  ?string    $string
-     * @param  bool        $caseSensitive
-     * @return ?string                 The processed string, or null if $string is null
+     * @param  array   $array            Must be key => value
+     * @param  ?string $string
+     * @param  bool    $caseSensitive
+     * @return ?string The processed string, or null if $string is null
      */
     public static function replaceEach( array $array, ?string $string, bool $caseSensitive = true ): ?string {
         if ( ! $string ) {
@@ -339,9 +339,9 @@ final class Str {
      *  * Supports tag attributes.
      *
      *
-     * @param  ?string        $value
-     * @param  string        $before
-     * @param  string|null    $after
+     * @param  ?string     $value
+     * @param  string      $before
+     * @param  string|null $after
      * @return string
      */
     public static function wrap( ?string $value, string $before, ?string $after = null ): string {
@@ -359,10 +359,10 @@ final class Str {
      * Split a string by the given separator, with flexible return options.
      *
      *
-     * @param  ?string    $string
-     * @param  string    $return        =   ['array', 'first', 'last'][any]
-     * @param  string    $separator    = ':'
-     * @return array               | string | null
+     * @param  ?string $string
+     * @param  string  $return    = ['array', 'first', 'last'][any]
+     * @param  string  $separator = ':'
+     * @return array   | string | null
      */
     public static function split( ?string $string, string $return = 'array', string $separator = ':' ): array | string | null {
         $array = array_filter( explode( $separator, $string ) );
@@ -385,9 +385,9 @@ final class Str {
      * Parse a Class[@]method style callback into class and method.
      *
      *
-     * @param  string        $callback
-     * @param  string|null    $default
-     * @return array<Num,              string|null>
+     * @param  string      $callback
+     * @param  string|null $default
+     * @return array<Num,  string|null>
      */
     public static function parseCallback( string $callback, ?string $default = null ): array {
         return Str::contains( $callback, '@' ) ? explode( '@', $callback, 2 ) : [$callback, $default];
