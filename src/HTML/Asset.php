@@ -17,7 +17,7 @@ final class Asset {
     public readonly string $version;
     public readonly bool $exists;
 
-    public function __construct( string $path, ?string $type = 'auto', private bool $cacheBusting = false ) {
+    public function __construct( string $path, ?string $type = 'auto', private bool $cacheBusting = false, public ?bool $defer = null ) {
         $this->path    = $this->assetPath( $path );
         $this->type    = $this->assetType( $type );
         $this->version = $this->assetVersion();
@@ -30,7 +30,17 @@ final class Asset {
             'js'  => 'script',
         ][$this->type];
 
-        return "<link rel=\"$type\" href=\"$this->url\">";
+        return match ( $this->type ) {
+            'css' => "<link rel=\"stylesheet\" href=\"$this->url\">",
+            'js' => '<script src="' . $this->url . '"' . $this->deferAsset() . '></script>',
+        };
+    }
+
+    private function deferAsset( string $output = 'defer' ): string {
+        return match ( $this->type ) {
+            'js' => ( $this->defer !== false ) ? " $output" : '',
+            'css' => ( $this->defer !== null ) ? " $output" : '',
+        };
     }
 
     private function assetPath( string $path ): ?string {

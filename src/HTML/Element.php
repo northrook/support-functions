@@ -192,9 +192,9 @@ final class Element extends Render {
         $attributes = [];
 
         $node = $dom->getElementsByTagName( $tag )->item( 0 );
-        
+
         foreach ( $node->attributes as $attribute ) {
-            $attributes[$attribute->name] = $attribute->value;
+            $attributes[$attribute->nodeName] = $attribute->nodeValue;
         }
 
         return $attributes;
