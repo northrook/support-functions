@@ -6,9 +6,9 @@ abstract class Make {
 
     private static ?string $_contentCache = null;
 
-    private static function cache( ?string $content = null ): string {
+    private static function cache( ?string $content = null ): ?string {
 
-        if ( Make::$_contentCache === null ) {
+        if ( $content && Make::$_contentCache === null ) {
             $content = strip_tags(
                 $content,
                 ['h1', 'h2', 'h3', 'p']
@@ -23,7 +23,7 @@ abstract class Make {
     /**
      * Generate a title from the content
      *
-     * @param  ?string        $content   The content to generate a title from, will be stripped of unwanted HTML, and cached
+     * @param  ?string       $content   The content to generate a title from, will be stripped of unwanted HTML, and cached
      * @param  null|string   $length    Pass a number to limit the title length, or as min:max to limit the length to a range
      * @param  null|string   $preferTag Pass a tag name to prefer that tag for the title
      * @return null|string
