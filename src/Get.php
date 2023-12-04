@@ -53,4 +53,5 @@ class Get {
 
         return "<i class=\"icon\">$icon</i>";
     }
+
 }
