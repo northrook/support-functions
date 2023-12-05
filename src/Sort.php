@@ -35,11 +35,11 @@ final class Sort {
 	 *
 	 * @param				$a
 	 * @param				$b
-	 * @param iterable|null	$sortByList
+	 * @param array|null	$sortByList
 	 *
 	 * @return int
 	 */
-	public static function stylesheetDeclarations( $a, $b, ?iterable $sortByList = null ) : int {
+	public static function stylesheetDeclarations( $a, $b, ?array $sortByList = null ) : int {
 		
 		$sortByList ??= [
 			'content',
