@@ -7,7 +7,7 @@ use Northrook\Support\Sort;
 use Northrook\Support\Str;
 use Northrook\Support\UserAgent;
 
-final class Element extends Render {
+class Element extends Render {
 
     public ?string $innerHTML = null;
 
@@ -39,7 +39,7 @@ final class Element extends Render {
      * @param bool              $pretty        Pretty print the HTML, overrides $compress
      * @param bool              $parseTemplate Run the $content through Render::template
      */
-    public function __construct(
+    public final function __construct(
         public string $tag,
         public array $attributes = [],
         string | array | null $content = null,
@@ -187,7 +187,7 @@ final class Element extends Render {
 
     public static function extractAttributes( string $html, string $tag ): array {
         $dom = new DOMDocument();
-        $dom->loadHTML( $html );
+        $dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
 
         $attributes = [];
 
