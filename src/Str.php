@@ -98,18 +98,27 @@ final class Str {
                 $string );
         }
         if ( $spacesOnly ) {
-            return preg_replace(
+            $string = preg_replace(
                 [
                     '/^\s*?$\n/m',
                     '/ +/',
                 ],
                 ' ',
-                $string );
+                $string
+            );
+        } else {
+            $string = preg_replace(
+                '~(\s|\x{3164})+~u',
+                ' ',
+                preg_replace(
+                    '~^[\s\x{FEFF}]+|[\s\x{FEFF}]+$~u',
+                    '',
+                    $string
+                )
+            );
         }
 
-        return preg_replace(
-            '~(\s|\x{3164})+~u', ' ',
-            preg_replace( '~^[\s\x{FEFF}]+|[\s\x{FEFF}]+$~u', '', $string ) );
+        return str_replace( [' >', ' />', '> <'], ['>', '/>', '><'], $string );
     }
 
     public static function filepath( string $path, ?string $fullPath = null ): string {

@@ -144,7 +144,9 @@ class Element extends Render {
             $value = explode( ' ', $value );
         }
 
-        return strtolower( implode( ' ', array_filter( $value ) ) );
+        $classes = array_flip( array_flip( array_filter( $value ) ) );
+
+        return strtolower( implode( ' ', $classes ) );
     }
 
     /**
@@ -198,5 +200,33 @@ class Element extends Render {
         }
 
         return $attributes;
+    }
+
+    public static function extractElements( string $html, string $tag ): array {
+        $dom = new DOMDocument();
+        $dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
+
+        $elements = [];
+
+        $nodes = $dom->getElementsByTagName( $tag );
+
+        foreach ( $nodes as $node ) {
+            $element            = $dom->saveHTML( $node );
+            $elements[$element] = [];
+            foreach ( $node->attributes as $attribute ) {
+                $value                                    = $attribute->nodeValue === '' ? true : $attribute->nodeValue;
+                $elements[$element][$attribute->nodeName] = $value;
+            }
+        }
+        // dd( $elements );
+
+        return $elements;
+    }
+
+    public static function loadHTML( string $html ): DOMDocument {
+        $dom = new DOMDocument();
+        $dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
+
+        return $dom;
     }
 }
