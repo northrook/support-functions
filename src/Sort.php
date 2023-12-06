@@ -12,6 +12,8 @@ final class Sort {
 		$sortByList	??= [
 			'id',
 			'type',
+            'name',
+            'value',
 			'class',
 			'style',
 		];
