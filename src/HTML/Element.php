@@ -187,6 +187,15 @@ class Element extends Render {
         return "<$tag>$string</$tag>";
     }
 
+    /// use Render::element(); instead, allow passing attributes
+    public static function tooltip( ?string $string, ?string $placement = 'top' ): ?string {
+        if ( ! $string ) {
+            return null;
+        }
+
+        return "<tooltip placement=\"$placement\">$string</tooltip>";
+    }
+
     public static function extractAttributes( string $html, string $tag ): array {
         $dom = new DOMDocument();
         $dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
