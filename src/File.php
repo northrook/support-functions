@@ -176,6 +176,6 @@ abstract class File {
 
         usort( $underscored, static fn( $a, $b ) => strlen( $a ) <=> strlen( $b ) );
 
-        return $underscored + $files;
+        return array_merge( $underscored,$files );
     }
 }

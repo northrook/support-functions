@@ -3,6 +3,7 @@
 namespace Northrook\Support\HTML;
 
 use DOMDocument;
+use DOMNode;
 use Northrook\Support\Sort;
 use Northrook\Support\Str;
 use Northrook\Support\UserAgent;
@@ -59,7 +60,7 @@ class Element extends Render {
      * @return string
      */
     public function __toString(): string {
-        $tag  = implode( ' ', ["<$this->tag", Element::attributes( $this->attributes )] ) . '>';
+        $tag  = implode( ' ', array_filter( ["<$this->tag", Element::attributes( $this->attributes )] ) ) . '>';
         $html = $tag . Element::innerHTML( $this->innerHTML, $this->pretty, $this->parseTemplate ) . '</' . $this->tag . '>';
         if ( $this->pretty ) {
             return PrettyHTML::string( $html );
@@ -106,6 +107,10 @@ class Element extends Render {
             }
 
             $attributes[$key] = $key . ( $value ? '="' . $value . '"' : '' );
+        }
+        
+        if ( empty( $attributes ) ) {
+            return '';
         }
 
         return implode( ' ', Sort::elementAttributes( $attributes ) );
@@ -193,7 +198,7 @@ class Element extends Render {
             return null;
         }
 
-        return "<tooltip placement=\"$placement\">$string</tooltip>";
+        return "<tooltip>$string</tooltip>";
     }
 
     public static function extractAttributes( string $html, string $tag ): array {
@@ -237,5 +242,23 @@ class Element extends Render {
         $dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
 
         return $dom;
+    }
+
+    public static function nodeContent( ?DOMNode $node, DOMDocument $dom,bool $entityDecode = true, bool $revertEmptySelfClosing = true ): string {
+
+        $childNodes = $node->childNodes;
+
+        $innerHTML = '';
+        foreach ( $childNodes as $child ) {
+            $innerHTML .= $dom->saveHTML( $child );
+        }
+
+        $content = $entityDecode ? html_entity_decode( $innerHTML ) : $innerHTML;
+
+        if ( $revertEmptySelfClosing && str_contains( $content, "<" ) ) {
+            $content = preg_replace( '/<(\w.+?)>\W*?<\/\1>/ms', '<$1/>', $content );
+        }
+
+        return $content ??= $node->textContent;
     }
 }
