@@ -105,10 +105,14 @@ class Element extends Render {
             if ( is_array( $value ) ) {
                 $value = implode( ' ', array_filter( $value ) );
             }
-
-            $attributes[$key] = $key . ( $value ? '="' . $value . '"' : '' );
+            
+            if ( $value !== null ) {
+                $attributes[$key] = $key . ( $value ? '="' . $value . '"' : '' );
+            }
         }
-        
+
+        $attributes = array_filter( $attributes );
+
         if ( empty( $attributes ) ) {
             return '';
         }
