@@ -154,6 +154,13 @@ final class Str {
 
     }
 
+    public static function url( ?string $string, bool $relative = true,bool $trailing = false) : ?string {
+     
+        $url = 'urli';
+
+        return $url;
+    }
+
     public static function key( ?string $string, bool $trim = false, string $separator = 'camelCase', ?string $language = 'en' ): ?string {
 
         if ( ! $string ) {
