@@ -226,6 +226,16 @@ final class Arr {
         return $result;
     }
 
+    public static function hasKeys( array $array, array $keys ): bool {
+
+        foreach ( $keys as $key ) {
+            if ( ! array_key_exists( $key, $array ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static function asObject( array | object $array, bool $filter = false ): object {
 
         if ( $filter && is_array( $array ) ) {

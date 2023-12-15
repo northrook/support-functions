@@ -154,9 +154,24 @@ final class Str {
 
     }
 
-    public static function url( ?string $string, bool $relative = true,bool $trailing = false) : ?string {
+    public static function url( ?string $string, bool $absolute = false,bool $trailing = false) : ?string {
      
-        $url = 'urli';
+        $url = filter_var( $string, FILTER_SANITIZE_URL );
+
+        $url = trim( $url, '/' );
+
+        if ( $trailing ) {
+            $url = rtrim( $url, '/' );
+        }
+
+        if ( !$absolute ) {
+            $url = '/'. $url;
+        } else {
+            $url =  $_SERVER['SERVER_NAME']. '/' . $url;
+        }
+
+        // $url = parse_url( $url);
+        // dump();
 
         return $url;
     }

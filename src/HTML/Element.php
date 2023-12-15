@@ -48,7 +48,12 @@ class Element extends Render {
         private readonly bool $pretty = false,
         private readonly bool $parseTemplate = false,
     ) {
-        $this->innerHTML = $content;
+
+        if ( $this->tag === 'button' && ! isset($this->attributes['type']) ) {
+            $this->attributes['type'] = 'button';
+        }
+
+        $this->innerHTML = implode( ' ', (array) $content );
     }
 
     /**
@@ -93,7 +98,7 @@ class Element extends Render {
                 $value = Element::styles( $value );
             }
 
-            if ( in_array( $key, ['disabled', 'readonly', 'required'] ) ) {
+            if ( in_array( $key, ['disabled', 'readonly', 'required', 'checked', 'hidden'] ) ) {
                 $attributes[$key] = $key;
                 continue;
             }
@@ -110,6 +115,8 @@ class Element extends Render {
                 $attributes[$key] = $key . ( $value ? '="' . $value . '"' : '' );
             }
         }
+
+        // var_dump($jit,$attributes);
 
         $attributes = array_filter( $attributes );
 
@@ -129,9 +136,12 @@ class Element extends Render {
      *
      *
      * @param  string|null $id
-     * @return string
+     * @return ?string
      */
-    public static function id( ?string $id ): string {
+    public static function id( ?string $id ): ?string {
+        if ( Str::containsAll( $id, ['{', '}'] ) ) {
+            return $id;
+        }
         $id = Str::slug( $id );
 
         Element::$generatedElementIdList[] = $id;

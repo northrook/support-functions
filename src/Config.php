@@ -6,6 +6,7 @@ final class Config {
 
     private static Config $config;
 
+    public readonly string $baseUrl;
     public readonly string $rootDir;
     public readonly string $publicDir;
     public readonly string $cacheDir;
@@ -22,13 +23,16 @@ final class Config {
         string $publicDir,
             ?string $cacheDir = null,
             ?string $iconsDir = null,
-            ?array $settings = null
+            ?array $settings = null,
+            ?string $baseUrl = null
     ) {
         $this->rootDir   = $rootDir;
         $this->publicDir = $publicDir;
         $this->cacheDir  = $cacheDir ?? $this->rootDir . 'cache';
         $this->iconsDir  = $iconsDir ?? $this->rootDir . 'assets'. DIRECTORY_SEPARATOR . 'icons';
         $this->settings  = $settings ?? $this->settings;
+
+        $this->baseUrl = $baseUrl ?? '/';
         static::$config  = $this;
     }
 
