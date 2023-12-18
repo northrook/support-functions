@@ -29,18 +29,19 @@ final class Config {
         $this->rootDir   = $rootDir;
         $this->publicDir = $publicDir;
         $this->cacheDir  = $cacheDir ?? $this->rootDir . 'cache';
-        $this->iconsDir  = $iconsDir ?? $this->rootDir . 'assets'. DIRECTORY_SEPARATOR . 'icons';
+        $this->iconsDir  = $iconsDir ?? $this->rootDir . 'assets' . DIRECTORY_SEPARATOR . 'icons';
         $this->settings  = $settings ?? $this->settings;
 
-        $this->baseUrl = $baseUrl ?? '/';
-        static::$config  = $this;
+        $this->baseUrl  = $baseUrl ?? '/';
+        static::$config = $this;
     }
 
     public static function get(): Config {
         return static::$config;
     }
 
-    public function cache(): object {
-        return (object) $this->settings['cache'];
+    public function settings(): array {
+        return $this->settings;
     }
+
 }

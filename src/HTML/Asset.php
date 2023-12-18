@@ -75,7 +75,7 @@ final class Asset {
 
     private function assetVersion(): string {
 
-        if ( $this::config()->cache()->invalidateAll || $this->cacheBusting ) {
+        if ( $this::config('var.cache.invalidateAll') || $this->cacheBusting ) {
             return time();
         }
 
