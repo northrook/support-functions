@@ -68,7 +68,7 @@ class Element extends Render {
      * @return string
      */
     public function __toString(): string {
-        $element = array_filter( ["<$this->tag", Element::attributes( $this->attributes )] );
+        $element = array_filter( ["$this->tag", Element::attributes( $this->attributes )] );
         $html    = '<' . implode( ' ', $element ) . '>';
 
         if ( $this->innerHTML ) {
