@@ -118,7 +118,11 @@ final class Str {
             );
         }
 
-        return str_replace( [' >', ' />', '> <'], ['>', '/>', '><'], $string );
+        return str_replace(
+            [' >', ' />', '> <', '> ', ' <'],
+            ['>', '/>', '><', '>', '<'],
+            $string
+        );
     }
 
     public static function filepath( string $path, ?string $fullPath = null ): string {
@@ -154,8 +158,8 @@ final class Str {
 
     }
 
-    public static function url( ?string $string, bool $absolute = false,bool $trailing = false) : ?string {
-     
+    public static function url( ?string $string, bool $absolute = false, bool $trailing = false ): ?string {
+
         $url = filter_var( $string, FILTER_SANITIZE_URL );
 
         $url = trim( $url, '/' );
@@ -164,10 +168,10 @@ final class Str {
             $url = rtrim( $url, '/' );
         }
 
-        if ( !$absolute ) {
-            $url = '/'. $url;
+        if ( ! $absolute ) {
+            $url = '/' . $url;
         } else {
-            $url =  $_SERVER['SERVER_NAME']. '/' . $url;
+            $url = $_SERVER['SERVER_NAME'] . '/' . $url;
         }
 
         // $url = parse_url( $url);
@@ -341,6 +345,22 @@ final class Str {
         return false;
     }
 
+    public static function after( string $string, string $needle, bool $last = false ): ?string {
+
+        if ( $last ) {
+            $needle = strrpos( $string, $needle );
+        } else {
+            $needle = strpos( $string, $needle );
+        }
+
+        if ( $needle !== false ) {
+            return substr( $string, $needle + 1 );
+        }
+
+        return $string;
+
+    }
+
     /**
      * Replace each key from $array with its value, when found in $string.
      *
@@ -360,6 +380,20 @@ final class Str {
         return $caseSensitive
             ? str_replace( $keys, $array, $string )
             : str_ireplace( $keys, $array, $string );
+    }
+
+    /**
+     * @param  iterable            $iterable
+     * @param  callable<key:value> $callback    Must accept $key and $value, and return ?string
+     * @return null|string
+     */
+    public static function foreach( iterable $iterable, callable $callback ): ?string {
+        $return = [];
+        foreach ( $iterable as $key => $value ) {
+            $return[] = $callback( $key, $value );
+        }
+
+        return implode( '', $return ) ?? null;
     }
 
     /**

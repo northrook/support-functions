@@ -47,13 +47,16 @@ class Element extends Render {
         private readonly bool $compress = false,
         private readonly bool $pretty = false,
         private readonly bool $parseTemplate = false,
+        private readonly bool $close = true
     ) {
 
-        if ( $this->tag === 'button' && ! isset($this->attributes['type']) ) {
+        if ( $this->tag === 'button' && ! isset( $this->attributes['type'] ) ) {
             $this->attributes['type'] = 'button';
         }
 
-        $this->innerHTML = implode( ' ', (array) $content );
+        if ( $content ) {
+            $this->innerHTML = Element::innerHTML( $content, $this->pretty, $this->parseTemplate );
+        }
     }
 
     /**
@@ -65,8 +68,17 @@ class Element extends Render {
      * @return string
      */
     public function __toString(): string {
-        $tag  = implode( ' ', array_filter( ["<$this->tag", Element::attributes( $this->attributes )] ) ) . '>';
-        $html = $tag . Element::innerHTML( $this->innerHTML, $this->pretty, $this->parseTemplate ) . '</' . $this->tag . '>';
+        $element = array_filter( ["<$this->tag", Element::attributes( $this->attributes )] );
+        $html    = '<' . implode( ' ', $element ) . '>';
+
+        if ( $this->innerHTML ) {
+            $html .= $this->innerHTML;
+        }
+
+        if ( $this->close ) {
+            $html .= '</' . $this->tag . '>';
+        }
+
         if ( $this->pretty ) {
             return PrettyHTML::string( $html );
         }
@@ -110,7 +122,7 @@ class Element extends Render {
             if ( is_array( $value ) ) {
                 $value = implode( ' ', array_filter( $value ) );
             }
-            
+
             if ( $value !== null ) {
                 $attributes[$key] = $key . ( $value ? '="' . $value . '"' : '' );
             }
@@ -258,7 +270,7 @@ class Element extends Render {
         return $dom;
     }
 
-    public static function nodeContent( ?DOMNode $node, DOMDocument $dom,bool $entityDecode = true, bool $revertEmptySelfClosing = true ): string {
+    public static function nodeContent( ?DOMNode $node, DOMDocument $dom, bool $entityDecode = true, bool $revertEmptySelfClosing = true ): string {
 
         $childNodes = $node->childNodes;
 
