@@ -124,7 +124,7 @@ class Element extends Render {
             }
 
             if ( $value !== null ) {
-                $attributes[$key] = $key . ( $value ? '="' . $value . '"' : '' );
+                $attributes[$key] = $key . ( $value !== null ? '="' . $value . '"' : '' );
             }
         }
 
