@@ -180,10 +180,16 @@ final class Str {
         return $url;
     }
 
-    public static function key( ?string $string, bool $trim = false, string $separator = 'camelCase', ?string $language = 'en' ): ?string {
+    public static function key( ?string $string, bool $trim = false, ?string $separator = 'camelCase', ?string $preserve = 'n:', ?string $language = 'en' ): ?string {
 
         if ( ! $string ) {
             return null;
+        }
+
+        $preserve = null;
+
+        if ( $preserve && str_starts_with( $string, $preserve ) ) {
+            $string = substr( $string, strlen( $preserve ) );
         }
 
         $string = mb_strtolower( $string );
@@ -191,13 +197,17 @@ final class Str {
 
         $string = $language ? Str::ascii( $string, $language ) : $string;
 
-        $string = str_replace( [' ', '-', '_', $separator], ' ', $trim ? trim( $string ) : $string );
+        if ( $separator !== null ) {
+            $string = str_replace( [' ', '-', '_', $separator], ' ', $trim ? trim( $string ) : $string );
+        }
 
         if ( $separator === 'camelCase' ) {
             return Str::toCamel( $string );
         }
 
-        return preg_replace( '/\W+/', $separator, $string );
+        $key = preg_replace( '/\W+/', $separator, $string );
+
+        return $preserve . $key;
     }
 
     // Different from key() in that it trims unnecessary words, such as "the"; specific for slug use
@@ -387,13 +397,19 @@ final class Str {
      * @param  callable<key:value> $callback    Must accept $key and $value, and return ?string
      * @return null|string
      */
-    public static function foreach( iterable $iterable, callable $callback ): ?string {
+    public static function foreach( iterable $iterable, callable $callback, string | bool $implode = false ): mixed {
+
         $return = [];
+
         foreach ( $iterable as $key => $value ) {
             $return[] = $callback( $key, $value );
         }
 
-        return implode( '', $return ) ?? null;
+        if ( $implode ) {
+            return implode( $implode === true ? '' : $implode, $return ) ?? null;
+        }
+
+        return $return;
     }
 
     /**
