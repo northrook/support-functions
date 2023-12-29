@@ -2,56 +2,82 @@
 
 namespace Northrook\Support;
 
-class Get {
+use Northrook\Support\HTML\Element;
 
-    use ConfigParameters;
+class Get extends Make {
 
-    /**
-     * @TODO [mid] Add $class support
-     *
-     *
-     * @param  string|null   $get
-     * @param  string|null   $pack
-     * @param  string|null   $class
-     * @param  float|null    $stroke
-     * @return string|null
-     */
-    public static function icon(
-            ?string $get,
-            ?string $pack = null,
-            ?string $class = null,
-            ?float $stroke = null,
-        bool $raw = false,
-        bool $xmlns = false
-    ): ?string {
-        if ( ! $get ) {
-            return null;
-        }
+	public static function element(
+		string $tag,
+		array $attributes = [],
+		array $content = [],
+		bool $compress = false,
+		bool $pretty = false,
+		bool $parseTemplate = false,
+		?bool $close = null,
+	): string {
 
-        $get  = array_filter( explode( ':', $get ) );
-        $icon = [
-            'name' => $get[0] ?? null,
-            'pack' => $get[1] ?? $pack ?? 'lucide',
-        ];
+		if ( $close === null && in_array( $tag, [
+			'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
+			] ) ) {
+			$close = false;
+		}
 
-        $path = Str::filepath( Get::config()->iconsDir . '/' . $icon['pack'] . '/' . $icon['name'] . '.svg' );
-        if ( ! file_exists( $path ) ) {
-            return null;
-        }
+		return (string) new Element(
+			$tag,
+			$attributes,
+			$content,
+			$compress,
+			$pretty,
+			$parseTemplate,
+			close: $close 
+		);
+	}
 
-        $icon = file_get_contents( $path );
+	/**
+	 * @TODO [mid] Add $class support
+	 *
+	 *
+	 * @param  string|null   $get
+	 * @param  string|null   $pack
+	 * @param  string|null   $class
+	 * @param  float|null    $stroke
+	 * @return string|null
+	 */
+	public static function icon(
+			?string $get,
+			?string $pack = null,
+			?string $class = null,
+			?float $stroke = null,
+		bool $raw = false,
+		bool $xmlns = false
+	): ?string {
+		if ( ! $get ) {
+			return null;
+		}
 
-        if ( ! $xmlns ) {
-            $icon = str_replace( ' xmlns="http://www.w3.org/2000/svg"', '', $icon );
-        }
-        $stroke ??= 1.5;
-        $icon = preg_replace( '/ stroke-width=".*?"/', " stroke-width=\"$stroke\"", $icon );
-        if ( $raw ) {
-            return $icon;
-        }
+		$get  = array_filter( explode( ':', $get ) );
+		$icon = [
+			'name' => $get[0] ?? null,
+			'pack' => $get[1] ?? $pack ?? 'lucide',
+		];
 
+		$path = Str::filepath( Get::config()->iconsDir . '/' . $icon['pack'] . '/' . $icon['name'] . '.svg' );
+		if ( ! file_exists( $path ) ) {
+			return null;
+		}
 
-        return "<i class=\"icon\">$icon</i>";
-    }
+		$icon = file_get_contents( $path );
+
+		if ( ! $xmlns ) {
+			$icon = str_replace( ' xmlns="http://www.w3.org/2000/svg"', '', $icon );
+		}
+		$stroke ??= 1.5;
+		$icon = preg_replace( '/ stroke-width=".*?"/', " stroke-width=\"$stroke\"", $icon );
+		if ( $raw ) {
+			return $icon;
+		}
+
+		return "<i class=\"icon\">$icon</i>";
+	}
 
 }

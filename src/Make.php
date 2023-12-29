@@ -4,114 +4,116 @@ namespace Northrook\Support;
 
 abstract class Make {
 
-    private static ?string $_contentCache = null;
+	use ConfigParameters;
 
-    private static function cache( ?string $content = null ): ?string {
+	private static ?string $_contentCache = null;
 
-        if ( $content && Make::$_contentCache === null ) {
-            $content = strip_tags(
-                $content,
-                ['h1', 'h2', 'h3', 'p']
-            );
+	protected static function cache( ?string $content = null ): ?string {
 
-            Make::$_contentCache = $content;
-        }
+		if ( $content && Make::$_contentCache === null ) {
+			$content = strip_tags(
+				$content,
+				['h1', 'h2', 'h3', 'p']
+			);
 
-        return Make::$_contentCache;
-    }
+			Make::$_contentCache = $content;
+		}
 
-    /**
-     * Generate a title from the content
-     *
-     * @param  ?string       $content   The content to generate a title from, will be stripped of unwanted HTML, and cached
-     * @param  null|string   $length    Pass a number to limit the title length, or as min:max to limit the length to a range
-     * @param  null|string   $preferTag Pass a tag name to prefer that tag for the title
-     * @return null|string
-     */
-    public static function title( ?string $content, ?string $length = null, ?string $preferTag = 'h1' ): ?string {
+		return Make::$_contentCache;
+	}
 
-        $title   = null;
-        $content = self::cache( $content );
+	/**
+	 * Generate a title from the content
+	 *
+	 * @param  ?string       $content   The content to generate a title from, will be stripped of unwanted HTML, and cached
+	 * @param  null|string   $length    Pass a number to limit the title length, or as min:max to limit the length to a range
+	 * @param  null|string   $preferTag Pass a tag name to prefer that tag for the title
+	 * @return null|string
+	 */
+	public static function title( ?string $content, ?string $length = null, ?string $preferTag = 'h1' ): ?string {
 
-        if ( ! $content ) {
-            return null;
-        }
+		$title   = null;
+		$content = self::cache( $content );
 
-        if ( $preferTag && str_contains(
-            $content,
-            "<$preferTag",
-        ) ) {
-            $tags  = Regex::extractHtmlTags( $content, $preferTag, true );
-            $title = $tags->content;
-        }
+		if ( ! $content ) {
+			return null;
+		}
 
-        return $title;
-    }
+		if ( $preferTag && str_contains(
+			$content,
+			"<$preferTag",
+		) ) {
+			$tags  = Regex::extractHtmlTags( $content, $preferTag, true );
+			$title = $tags->content;
+		}
 
-    public static function description( ?string $content ): ?string {
+		return $title;
+	}
 
-        $description = null;
-        $content     = self::cache( $content );
-        $maxLengh    = 180;
+	public static function description( ?string $content ): ?string {
 
-        if ( ! $content ) {
-            return null;
-        }
+		$description = null;
+		$content     = self::cache( $content );
+		$maxLengh    = 180;
 
-        if ( str_contains(
-            $content,
-            "<p",
-        ) ) {
-            $tags = Regex::extractHtmlTags( $content, 'p', true );
-            // @todo Ensure we get the correct string length, we may need to use several paragraphs
-            $description = $tags->content;
-        } else {
-            $description = substr( strip_tags( $content ), 0, $maxLengh );
-        }
+		if ( ! $content ) {
+			return null;
+		}
 
-        return $description;
-    }
+		if ( str_contains(
+			$content,
+			"<p",
+		) ) {
+			$tags = Regex::extractHtmlTags( $content, 'p', true );
+			// @todo Ensure we get the correct string length, we may need to use several paragraphs
+			$description = $tags->content;
+		} else {
+			$description = substr( strip_tags( $content ), 0, $maxLengh );
+		}
 
-    public static function keywords( string | array | null $content, ?string $separator = null, ?int $limit = null, bool $string = false ): string | array | null {
+		return $description;
+	}
 
-        if ( $content === null ) {
-            return null;
-        }
+	public static function keywords( string | array | null $content, ?string $separator = null, ?int $limit = null, bool $string = false ): string | array | null {
 
-        $keywords = [];
+		if ( $content === null ) {
+			return null;
+		}
 
-        if ( is_string( $content ) ) {
-            $content = strip_tags( self::cache( $content ) );
+		$keywords = [];
 
-            if ( ! $content ) {
-                return null;
-            }
+		if ( is_string( $content ) ) {
+			$content = strip_tags( self::cache( $content ) );
 
-            $content = str_replace( ["'", '"', '.', ',', ';', "\n", "\r"], '', $content );
-            $content = explode( ' ', $content );
-        }
+			if ( ! $content ) {
+				return null;
+			}
 
-        if ( is_array( $content ) ) {
-            $content = array_filter( $content );
-        }
+			$content = str_replace( ["'", '"', '.', ',', ';', "\n", "\r"], '', $content );
+			$content = explode( ' ', $content );
+		}
 
-        foreach ( $content as $key => $value ) {
-            $value = mb_strtolower( $value );
-            if ( in_array( $value, Stopwords::get( 'en' ) ) || in_array( $value, $keywords ) ) {
-                continue;
-            } else {
-                $keywords[] = $value;
-            }
-        }
+		if ( is_array( $content ) ) {
+			$content = array_filter( $content );
+		}
 
-        if ( $limit !== null && $limit > 0 ) {
-            $keywords = array_slice( $keywords, 0, $limit );
-        }
+		foreach ( $content as $key => $value ) {
+			$value = mb_strtolower( $value );
+			if ( in_array( $value, Stopwords::get( 'en' ) ) || in_array( $value, $keywords ) ) {
+				continue;
+			} else {
+				$keywords[] = $value;
+			}
+		}
 
-        if ( $string ) {
-            return implode( $separator, $keywords );
-        }
+		if ( $limit !== null && $limit > 0 ) {
+			$keywords = array_slice( $keywords, 0, $limit );
+		}
 
-        return $keywords;
-    }
+		if ( $string ) {
+			return implode( $separator, $keywords );
+		}
+
+		return $keywords;
+	}
 }

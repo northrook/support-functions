@@ -10,281 +10,300 @@ use Northrook\Support\UserAgent;
 
 class Element extends Render {
 
-    public ?string $innerHTML = null;
+	public ?string $innerHTML = null;
 
-    /**
-     * List of generated element IDs
-     *
-     * @var array
-     */
-    private static array $generatedElementIdList = [];
+	/**
+	 * List of generated element IDs
+	 *
+	 * @var array
+	 */
+	private static array $generatedElementIdList = [];
+	private readonly bool $close;
 
-    /**
-     * Get a list of generated element IDs
-     *
-     *  Useful for preventing duplicate IDs
-     *
-     * @return array
-     */
-    public static function getGeneratedIdList(): array {
-        return Element::$generatedElementIdList;
-    }
+	/**
+	 * Get a list of generated element IDs
+	 *
+	 *  Useful for preventing duplicate IDs
+	 *
+	 * @return array
+	 */
+	public static function getGeneratedIdList(): array {
+		return Element::$generatedElementIdList;
+	}
 
-    /**
-     * Create a new HTML Element
-     *
-     * @param string            $tag
-     * @param string|array|null $content       Note: HTML is escaped
-     * @param array             $attributes
-     * @param bool              $compress      Compress the HTML with Str::squish
-     * @param bool              $pretty        Pretty print the HTML, overrides $compress
-     * @param bool              $parseTemplate Run the $content through Render::template
-     */
-    public final function __construct(
-        public string $tag,
-        public array $attributes = [],
-        string | array | null $content = null,
-        private readonly bool $compress = false,
-        private readonly bool $pretty = false,
-        private readonly bool $parseTemplate = false,
-        private readonly bool $close = true
-    ) {
+	/**
+	 * Create a new HTML Element
+	 *
+	 * @param string            $tag
+	 * @param string|array|null $content       Note: HTML is escaped
+	 * @param array             $attributes
+	 * @param bool              $compress      Compress the HTML with Str::squish
+	 * @param bool              $pretty        Pretty print the HTML, overrides $compress
+	 * @param bool              $parseTemplate Run the $content through Render::template
+	 */
+	public final function __construct(
+		public string $tag,
+		public array $attributes = [],
+		string | array | null $content = null,
+		private readonly bool $compress = false,
+		private readonly bool $pretty = false,
+		private readonly bool $parseTemplate = false,
+			?bool $close = null
+	) {
 
-        if ( $this->tag === 'button' && ! isset( $this->attributes['type'] ) ) {
-            $this->attributes['type'] = 'button';
-        }
+		if ( $this->tag === 'button' && ! isset( $this->attributes['type'] ) ) {
+			$this->attributes['type'] = 'button';
+		}
 
-        if ( $content ) {
-            $this->innerHTML = Element::innerHTML( $content, $this->pretty, $this->parseTemplate );
-        }
-    }
+		if ( $close === null && in_array( $tag, [
+			'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
+			] ) ) {
+			$close = false;
+		}
 
-    /**
-     * Get the HTML, parsing $innerHTML and $attributes
-     *
-     * @todo [low] Implement static cache function, potentially as a method of Northrook\Core\Render as wrapper
-     *       This may be irrelevant, if we parse Latte templates at compile time
-     *
-     * @return string
-     */
-    public function __toString(): string {
-        $element = array_filter( ["$this->tag", Element::attributes( $this->attributes )] );
-        $html    = '<' . implode( ' ', $element ) . '>';
+		if ( $content ) {
+			$this->innerHTML = Element::innerHTML( $content, $this->pretty, $this->parseTemplate );
+		}
+	}
 
-        if ( $this->innerHTML ) {
-            $html .= $this->innerHTML;
-        }
+	/**
+	 * Get the HTML, parsing $innerHTML and $attributes
+	 *
+	 * @todo [low] Implement static cache function, potentially as a method of Northrook\Core\Render as wrapper
+	 *       This may be irrelevant, if we parse Latte templates at compile time
+	 *
+	 * @return string
+	 */
+	public function __toString(): string {
+		$element = array_filter( ["$this->tag", Element::attributes( $this->attributes )] );
+		$html    = '<' . implode( ' ', $element ) . '>';
 
-        if ( $this->close ) {
-            $html .= '</' . $this->tag . '>';
-        }
+		if ( $this->innerHTML ) {
+			$html .= $this->innerHTML;
+		}
 
-        if ( $this->pretty ) {
-            return PrettyHTML::string( $html );
-        }
+		if ( $this->close ) {
+			$html .= '</' . $this->tag . '>';
+		}
 
-        return $this->compress ? Str::squish( $html ) : $html;
-    }
+		if ( $this->pretty ) {
+			return PrettyHTML::string( $html );
+		}
 
-    /**
-     *
-     * @param  array      $jit
-     * @param  array|null $default
-     * @return string
-     */
-    public static function attributes( array $jit, ?array $default = [] ): string {
-        $attributes = [];
-        foreach ( $default + $jit as $key => $value ) {
+		return $this->compress ? Str::squish( $html ) : $html;
+	}
 
-            $key = Str::key( string: $key, separator: '-' );
+	/**
+	 *
+	 * @param  array      $jit
+	 * @param  array|null $default
+	 * @return string
+	 */
+	public static function attributes( array $jit, ?array $default = [] ): string {
 
-            if ( $key === 'id' ) {
-                $value = Element::id( $value );
-            }
+		$attributes = [];
 
-            if ( $key === 'class' ) {
-                $value = Element::classes( $value );
-            }
+		foreach ( $default + $jit as $attribute => $value ) {
 
-            if ( $key === 'style' ) {
-                $value = Element::styles( $value );
-            }
+			$attribute = Str::key( string: $attribute, separator: '-' );
 
-            if ( in_array( $key, ['disabled', 'readonly', 'required', 'checked', 'hidden'] ) ) {
-                $attributes[$key] = $key;
-                continue;
-            }
+			$value = match ( $attribute ) {
+				'id' => Element::id( $value ),
+				'class' => Element::classes( $value ),
+				'style' => Element::styles( $value ),
+				default => $value
+			};
 
-            if ( is_bool( $value ) ) {
-                $value = $value ? 'true' : 'false';
-            }
+			// if ( $attribute === 'id' ) {
+			// 	$value = Element::id( $value );
+			// }
 
-            if ( is_array( $value ) ) {
-                $value = implode( ' ', array_filter( $value ) );
-            }
+			// if ( $attribute === 'class' ) {
+			// 	$value = Element::classes( $value );
+			// }
 
-            if ( $value !== null ) {
-                $attributes[$key] = $key . ( $value !== null ? '="' . $value . '"' : '' );
-            }
-        }
+			// if ( $attribute === 'style' ) {
+			// 	$value = Element::styles( $value );
+			// }
 
-        // var_dump($jit,$attributes);
+			if ( in_array( $attribute, ['disabled', 'readonly', 'required', 'checked', 'hidden'] ) ) {
+				$value = is_bool( $value ) ? $attribute : $value;
 
-        $attributes = array_filter( $attributes );
+				$attributes[$attribute] = $value;
+			}
 
-        if ( empty( $attributes ) ) {
-            return '';
-        }
+			if ( is_bool( $value ) ) {
+				$value = $value ? 'true' : 'false';
+			}
 
-        return implode( ' ', Sort::elementAttributes( $attributes ) );
-    }
+			if ( is_array( $value ) ) {
+				$value = implode( ' ', array_filter( $value ) );
+			}
 
-    /**
-     * Get an element ID
-     *
-     *  The ID will be generated according to `Str::slug()` rules
-     *  The ID will be appended to Element::$generatedElementIdList
-     *
-     *
-     *
-     * @param  string|null $id
-     * @return ?string
-     */
-    public static function id( ?string $id ): ?string {
-        if ( Str::containsAll( $id, ['{', '}'] ) ) {
-            return $id;
-        }
-        $id = Str::slug( $id );
+			if ( $value !== null ) {
+				if ( $attribute === $value ) {
+					$attributes[$attribute] = $attribute;
+				} else {
+					$attributes[$attribute] = $attribute . ( $value !== null ? '="' . $value . '"' : '' );
+				}
+			}
+		}
 
-        Element::$generatedElementIdList[] = $id;
+		$attributes = array_filter( $attributes );
 
-        return $id;
-    }
+		if ( empty( $attributes ) ) {
+			return '';
+		}
 
-    /**
-     *
-     * @param  string|array|null $value Pass either a string or an array
-     * @return string|null
-     */
-    public static function classes( string | array | null $value ): ?string {
-        if ( ! $value ) {
-            return null;
-        }
+		return implode( ' ', Sort::elementAttributes( $attributes ) );
+	}
 
-        if ( is_string( $value ) ) {
-            $value = explode( ' ', $value );
-        }
+	/**
+	 * Get an element ID
+	 *
+	 *  The ID will be generated according to `Str::slug()` rules
+	 *  The ID will be appended to Element::$generatedElementIdList
+	 *
+	 *
+	 *
+	 * @param  string|null $id
+	 * @return ?string
+	 */
+	public static function id( ?string $id ): ?string {
+		if ( Str::containsAll( $id, ['{', '}'] ) ) {
+			return $id;
+		}
+		$id = Str::slug( $id );
 
-        $classes = array_flip( array_flip( array_filter( $value ) ) );
+		Element::$generatedElementIdList[] = $id;
 
-        return strtolower( implode( ' ', $classes ) );
-    }
+		return $id;
+	}
 
-    /**
-     * Parse element styles from $value and return a string
-     *
-     *
-     * @param  string|array|null $value
-     * @return string|null
-     */
-    public static function styles( string | array | null $value ): ?string {
-        if ( ! $value ) {
-            return null;
-        }
+	/**
+	 *
+	 * @param  string|array|null $value Pass either a string or an array
+	 * @return string|null
+	 */
+	public static function classes( string | array | null $value ): ?string {
+		if ( ! $value ) {
+			return null;
+		}
 
-        if ( is_string( $value ) ) {
-            $value = explode( ';', $value );
-        }
+		if ( is_string( $value ) ) {
+			$value = explode( ' ', $value );
+		}
 
-        $styles = [];
-        foreach ( array_filter( $value ) as $style ) {
-            $style             = explode( ':', $style, 2 );
-            $styles[$style[0]] = implode( ':', $style );
-        }
+		$classes = array_flip( array_flip( array_filter( $value ) ) );
 
-        return implode( '; ', $styles );
-    }
+		return strtolower( implode( ' ', $classes ) );
+	}
 
-    /// use Render::element(); instead, allow passing attributes
-    public static function keybind( ?string $string, ?string $tag = 'kbd' ): ?string {
-        if ( ! $string ) {
-            return null;
-        }
+	/**
+	 * Parse element styles from $value and return a string
+	 *
+	 *
+	 * @param  string|array|null $value
+	 * @return string|null
+	 */
+	public static function styles( string | array | null $value ): ?string {
+		if ( ! $value ) {
+			return null;
+		}
 
-        if ( UserAgent::OS( 'apple' ) ) {
-            $string = str_replace( ['ctrl', 'alt'], ['⌘', '⌥'], $string );
-        }
+		if ( is_string( $value ) ) {
+			$value = explode( ';', $value );
+		}
 
-        return "<$tag>$string</$tag>";
-    }
+		$styles = [];
+		foreach ( array_filter( $value ) as $style ) {
+			$style             = explode( ':', $style, 2 );
+			$styles[$style[0]] = implode( ':', $style );
+		}
 
-    /// use Render::element(); instead, allow passing attributes
-    public static function tooltip( ?string $string, ?string $placement = 'top' ): ?string {
-        if ( ! $string ) {
-            return null;
-        }
+		return implode( '; ', $styles );
+	}
 
-        return "<tooltip>$string</tooltip>";
-    }
+	/// use Render::element(); instead, allow passing attributes
+	public static function keybind( ?string $string, ?string $tag = 'kbd' ): ?string {
+		if ( ! $string ) {
+			return null;
+		}
 
-    public static function extractAttributes( string $html, string $tag ): array {
-        $dom = new DOMDocument();
-        $dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
+		if ( UserAgent::OS( 'apple' ) ) {
+			$string = str_replace( ['ctrl', 'alt'], ['⌘', '⌥'], $string );
+		}
 
-        $attributes = [];
+		return "<$tag>$string</$tag>";
+	}
 
-        $node = $dom->getElementsByTagName( $tag )->item( 0 );
+	/// use Render::element(); instead, allow passing attributes
+	public static function tooltip( ?string $string, ?string $placement = 'top' ): ?string {
+		if ( ! $string ) {
+			return null;
+		}
 
-        foreach ( $node->attributes as $attribute ) {
-            $attributes[$attribute->nodeName] = $attribute->nodeValue;
-        }
+		return "<tooltip>$string</tooltip>";
+	}
 
-        return $attributes;
-    }
+	public static function extractAttributes( string $html, string $tag ): array {
+		$dom = new DOMDocument();
+		$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
 
-    public static function extractElements( string $html, string $tag ): array {
-        $dom = new DOMDocument();
-        $dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
+		$attributes = [];
 
-        $elements = [];
+		$node = $dom->getElementsByTagName( $tag )->item( 0 );
 
-        $nodes = $dom->getElementsByTagName( $tag );
+		foreach ( $node->attributes as $attribute ) {
+			$attributes[$attribute->nodeName] = $attribute->nodeValue;
+		}
 
-        foreach ( $nodes as $node ) {
-            $element            = $dom->saveHTML( $node );
-            $elements[$element] = [];
-            foreach ( $node->attributes as $attribute ) {
-                $value                                    = $attribute->nodeValue === '' ? true : $attribute->nodeValue;
-                $elements[$element][$attribute->nodeName] = $value;
-            }
-        }
-        // dd( $elements );
+		return $attributes;
+	}
 
-        return $elements;
-    }
+	public static function extractElements( string $html, string $tag ): array {
+		$dom = new DOMDocument();
+		$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
 
-    public static function loadHTML( string $html ): DOMDocument {
-        $dom = new DOMDocument();
-        $dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
+		$elements = [];
 
-        return $dom;
-    }
+		$nodes = $dom->getElementsByTagName( $tag );
 
-    public static function nodeContent( ?DOMNode $node, DOMDocument $dom, bool $entityDecode = true, bool $revertEmptySelfClosing = true ): string {
+		foreach ( $nodes as $node ) {
+			$element            = $dom->saveHTML( $node );
+			$elements[$element] = [];
+			foreach ( $node->attributes as $attribute ) {
+				$value                                    = $attribute->nodeValue === '' ? true : $attribute->nodeValue;
+				$elements[$element][$attribute->nodeName] = $value;
+			}
+		}
+		// dd( $elements );
 
-        $childNodes = $node->childNodes;
+		return $elements;
+	}
 
-        $innerHTML = '';
-        foreach ( $childNodes as $child ) {
-            $innerHTML .= $dom->saveHTML( $child );
-        }
+	public static function loadHTML( string $html ): DOMDocument {
+		$dom = new DOMDocument();
+		$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
 
-        $content = $entityDecode ? html_entity_decode( $innerHTML ) : $innerHTML;
+		return $dom;
+	}
 
-        if ( $revertEmptySelfClosing && str_contains( $content, "<" ) ) {
-            $content = preg_replace( '/<(\w.+?)>\W*?<\/\1>/ms', '<$1/>', $content );
-        }
+	public static function nodeContent( ?DOMNode $node, DOMDocument $dom, bool $entityDecode = true, bool $revertEmptySelfClosing = true ): string {
 
-        return $content ??= $node->textContent;
-    }
+		$childNodes = $node->childNodes;
+
+		$innerHTML = '';
+		foreach ( $childNodes as $child ) {
+			$innerHTML .= $dom->saveHTML( $child );
+		}
+
+		$content = $entityDecode ? html_entity_decode( $innerHTML ) : $innerHTML;
+
+		if ( $revertEmptySelfClosing && str_contains( $content, "<" ) ) {
+			$content = preg_replace( '/<(\w.+?)>\W*?<\/\1>/ms', '<$1/>', $content );
+		}
+
+		return $content ??= $node->textContent;
+	}
 }
