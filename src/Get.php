@@ -13,14 +13,8 @@ class Get extends Make {
 		bool $compress = false,
 		bool $pretty = false,
 		bool $parseTemplate = false,
-		?bool $close = null,
+			?bool $close = null,
 	): string {
-
-		if ( $close === null && in_array( $tag, [
-			'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
-			] ) ) {
-			$close = false;
-		}
 
 		return (string) new Element(
 			$tag,
@@ -29,7 +23,7 @@ class Get extends Make {
 			$compress,
 			$pretty,
 			$parseTemplate,
-			close: $close 
+			$close
 		);
 	}
 

@@ -55,11 +55,9 @@ class Element extends Render {
 			$this->attributes['type'] = 'button';
 		}
 
-		if ( $close === null && in_array( $tag, [
-			'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
-			] ) ) {
-			$close = false;
-		}
+		$this->close = $close ?? ! in_array( $tag, [
+			'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr',
+		] );
 
 		if ( $content ) {
 			$this->innerHTML = Element::innerHTML( $content, $this->pretty, $this->parseTemplate );
