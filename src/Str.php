@@ -371,6 +371,21 @@ final class Str {
 
 	}
 
+	public static function before( string $string, string $needle, bool $last = false ): ?string {
+
+		if ( $last ) {
+			$needle = strrpos( $string, $needle );
+		} else {
+			$needle = strpos( $string, $needle );
+		}
+
+		if ( $needle !== false ) {
+			return substr( $string, 0, $needle );
+		}
+
+		return $string;
+	}
+
 	/**
 	 * Replace each key from $array with its value, when found in $string.
 	 *
