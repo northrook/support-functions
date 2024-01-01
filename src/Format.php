@@ -22,26 +22,33 @@ class Format {
 		return Arr::implode( $array, wrap: 'span' );
 	}
 
-	public static function nl2p( string $string, string $whitespace = " " ): string {
-		// $string = str_replace( [ '<p>', '</p>', ], [ '<span>', '</span>', ], $string );
+	public static function nl2p( ?string $string, string $whitespace = " " ): ?string {
+
+		if ( ! $string ) {
+			return null;
+		}
+		
 		$explode = Arr::explode( "\n", $string );
 
-        
 		return Arr::implode( $explode, wrap: 'p' );
 	}
 
-	public static function nl2Auto( string $string, string $whitespace = " " ): string {
+	public static function nl2Auto( ?string $string, string $whitespace = " " ): ?string {
+
+		if ( ! $string ) {
+			return null;
+		}
 
 		$array = Arr::explode( "\n", $string );
 
-        if ( empty($array)) {
-            $wrap = 'span';
-        }
+		if ( empty( $array ) ) {
+			return null;
+		}
 
-        if ( count( $array ) === 1 ) {
-            return "<span>$string</span>";
-        }
-        
+		if ( count( $array ) === 1 ) {
+			return "<span>$string</span>";
+		}
+
 		return Arr::implode( $array, wrap: 'p' );
 	}
 }
