@@ -2,25 +2,11 @@
 
 namespace Northrook\Support;
 
+use Northrook\Support\Functions\StringFunctions;
 use voku\helper\ASCII;
-
-if ( ! function_exists( 'mb_strtolower' ) ) {
-	/**
-	 * Fallback for mb_strtolower
-	 */
-	function mb_strtolower( ?string $string ): string {return strtolower( $string );}
-}
-
-if ( ! function_exists( 'mb_substr' ) ) {
-	/**
-	 * Fallback for mb_substr
-	 */
-	function mb_substr( ?string $string, int $start = 0, int $length = null ): string {
-		return substr( $string, $start, $length );
-	}
-}
-
 final class Str {
+
+    use StringFunctions;
 
 	private static string $_ASCII_LANGUAGE = 'en';
 	private static string $_SLUG_SEPARATOR = '-';
@@ -123,13 +109,6 @@ final class Str {
 			['>', '/>', '><', '>', '<'],
 			$string
 		);
-	}
-
-	public static function filepath( string $path, ?string $fullPath = null ): string {
-		$path = str_replace( ['/', '\\'], DIRECTORY_SEPARATOR, $path );
-		$path = mb_strtolower( $path );
-
-		return str_replace( '\\\\', '\\', $fullPath ? Str::start( string : $path, with: Str::end( string: $fullPath, with: DIRECTORY_SEPARATOR ) ): $path );
 	}
 
 	/**
