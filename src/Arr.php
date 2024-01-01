@@ -208,11 +208,12 @@ final class Arr {
                     } else if ( is_string( $wrap ) && ! Str::contains( $wrap, [' ', '-', '_', '/', '\\', ':', ';'] ) ) {
                         $value =  "<$wrap>" . $value . "</$wrap>";
                     }
-					// $value = $value;
 				}
 
 				if ( $withKeys ) {
 					$array[$key] = "$key$value";
+				} else {
+					$array[$key] = $value;
 				}
 			}
 		}
