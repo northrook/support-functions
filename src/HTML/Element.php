@@ -47,7 +47,7 @@ class Element extends Render {
 		string | array | null $content = null,
 		private readonly bool $compress = false,
 		private readonly bool $pretty = false,
-		private readonly bool $parseTemplate = false,
+		private readonly ?string $template = null,
 			?bool $close = null
 	) {
 
@@ -60,7 +60,7 @@ class Element extends Render {
 		] );
 
 		if ( $content ) {
-			$this->innerHTML = Element::innerHTML( $content, $this->pretty, $this->parseTemplate );
+			$this->innerHTML = Element::innerHTML( $content, $this->pretty, $this->template );
 		}
 	}
 
