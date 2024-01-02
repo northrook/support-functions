@@ -60,7 +60,7 @@ class Element extends Render {
 		] );
 
 		if ( $content ) {
-			$this->innerHTML = Element::innerHTML( $content, $this->pretty, $this->template );
+			$this->innerHTML = Element::innerHTML( $content, $this->template );
 		}
 	}
 
@@ -106,10 +106,10 @@ class Element extends Render {
 			$attribute = Str::key( string: $attribute, separator: '-' );
 
 			$value = match ( $attribute ) {
-				'id' => Element::id( $value ),
-				'class' => Element::classes( $value ),
-				'style' => Element::styles( $value ),
-				default => $value
+				'id', 'for' => Element::id( $value ),
+				'class'     => Element::classes( $value ),
+				'style'     => Element::styles( $value ),
+				default     => $value
 			};
 
 			// if ( $attribute === 'id' ) {
@@ -125,9 +125,11 @@ class Element extends Render {
 			// }
 
 			if ( in_array( $attribute, ['disabled', 'readonly', 'required', 'checked', 'hidden'] ) ) {
-				$value = is_bool( $value ) ? $attribute : $value;
-
-				$attributes[$attribute] = $value;
+				if ( $value === true ) {
+					$attributes[$attribute] = $attribute;
+				} else {
+					continue;
+				}
 			}
 
 			if ( is_bool( $value ) ) {
