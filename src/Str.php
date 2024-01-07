@@ -138,6 +138,19 @@ final class Str {
 
 	}
 
+	/** Check if a string contains only numbers
+	 *
+	 * * Returns `false` if the string contains non-numeric characters
+	 * * Returns `$string` cast to int if the string contains only numbers
+	 *
+	 * @param null|string $string
+	 * @return int|bool
+	 */
+	public static function isNumeric( ?string $string ): int | bool {
+
+		return ( preg_match( '/^\d+$/', $string ) ) ? (int) $string : false;
+	}
+
 	public static function url( ?string $string, bool $absolute = false, bool $trailing = false ): ?string {
 
 		$url = filter_var( $string, FILTER_SANITIZE_URL );
@@ -153,7 +166,7 @@ final class Str {
 		} else {
 			$url = $_SERVER['SERVER_NAME'] . '/' . $url;
 		}
-		
+
 		return $url;
 	}
 
@@ -303,26 +316,21 @@ final class Str {
 		return true;
 	}
 
-	/**
-	 * Determine if a $string starts with any $substrings.
+	/** Determine if a $string starts with any $substrings.
 	 *
 	 *  * Case Insensitive by default
 	 *
 	 *
 	 * @param  ?string  $string
-	 * @param  iterable $substrings
+	 * @param  string|array $substrings
 	 * @param  bool     $caseSensitive
 	 * @return bool
 	 */
-	public static function startsWith( ?string $string, string | iterable $substrings, bool $caseSensitive = false ): bool {
-		foreach ( $substrings as $substring ) {
-			if ( ! $caseSensitive ) {
-				$substring = mb_strtolower( $substring );
-			}
-
+	public static function startsWith( ?string $string, string | array $substrings, bool $caseSensitive = false ): bool {
+		foreach ( (array) $substrings as $substring ) {
 			if ( str_starts_with(
 				$string,
-				$substring,
+				$caseSensitive ? $substring : mb_strtolower( $substring ),
 			) ) {
 				return true;
 			}
@@ -362,25 +370,28 @@ final class Str {
 		return $string;
 	}
 
-	/**
-	 * Replace each key from $array with its value, when found in $string.
+	/** Replace each key from `$map` with its value, when found in `$content`.
 	 *
-	 *
-	 * @param  array   $array           Must be key => value
-	 * @param  ?string $string
-	 * @param  bool    $caseSensitive
-	 * @return ?string The processed string, or null if $string is null
+	 * @param  array			$map search:replace
+	 * @param  string|array $content
+	 * @param  bool    		$caseSensitive
+	 * @return ?string The processed `$content`, or null if `$content` is empty
 	 */
-	public static function replaceEach( array $array, ?string $string, bool $caseSensitive = true ): ?string {
-		if ( ! $string ) {
-			return $string;
+	public static function replaceEach(
+		array $map,
+		string | array $content,
+		bool $caseSensitive = true
+	): string | array | null {
+
+		if ( ! $content ) {
+			return $content;
 		}
 
-		$keys = array_keys( $array );
+		$keys = array_keys( $map );
 
 		return $caseSensitive
-			? str_replace( $keys, $array, $string )
-			: str_ireplace( $keys, $array, $string );
+			? str_replace( $keys, $map, $content )
+			: str_ireplace( $keys, $map, $content );
 	}
 
 	/**
@@ -497,5 +508,57 @@ final class Str {
 
 	public static function guessDelimiter( ?string $string ): string {
 		return Str::contains( $string, [' ', '-', '_', '/', '\\', ':', ';'] );
+	}
+
+	public static function containsValidHTML( ?string $string, ?string $mustContain = null ): string | bool {
+		// debug( $html );
+		if ( ! $string || ( str_starts_with( $string, '<' ) && ! str_ends_with( $string, '>' ) ) ) {
+			return false;
+		}
+
+		if ( $mustContain && ! str_contains( $string, $mustContain ) ) {
+			return false;
+		}
+
+		preg_match_all( '#<(?!meta|img|br|hr|input\b)\b([a-z]+)(?: .*)?(?<![/| ])>#iU', $string, $result );
+		$openedTags = $result[1];
+		preg_match_all( '#</([a-z]+)>#iU', $string, $result );
+		$closedTags = $result[1];
+		$len_opened = count( $openedTags );
+		if ( count( $closedTags ) == $len_opened ) {
+			return $string;
+		}
+
+		return false;
+	}
+
+	/** Generate URL-safe ID from string
+	 *
+	 * * `$trim` calculates a random sequence from the full hash
+	 *
+	 * @param string|null $input String to convert
+	 * @param int         $trim  Length of the returned hash
+	 * @param bool        $lower Return only lowercase
+	 * @return string
+	 */
+	public static function hash( ?string $input = null, int $trim = 8, bool $lower = false ): string {
+		$input ??= srand( hrtime()[1] ) . rand( 1, 128 );
+
+		$int  = crc32( $input );
+		$hash = base64_encode( hash( 'sha256', $input, true ) );
+		$out  = $hash;
+
+		if ( $trim ) {
+			srand( $int );
+			$max    = strlen( $out ) - $trim;
+			$offset = rand( 0, $max );
+			$out    = substr( $out, $offset, $trim );
+		}
+
+		if ( $lower === true ) {
+			return strtolower( $out );
+		}
+
+		return $out;
 	}
 }

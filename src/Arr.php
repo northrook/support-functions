@@ -181,10 +181,7 @@ final class Arr {
 		return $array;
 	}
 
-	/**
-	 * Implode array to string, omitting empty values
-	 *
-	 *
+	/** Implode array to string, omitting empty values
 	 *
 	 * @param  array       $array
 	 * @param  string|null $separator
@@ -198,16 +195,16 @@ final class Arr {
 		string | array | null $wrap = null
 	): string {
 
-		if ( $withKeys | ! is_null( $wrap ) ) {
+		if ( $withKeys | $wrap !== null ) {
 			foreach ( $array as $key => $value ) {
 
-				if ( ! is_null( $wrap ) ) {
+				if ( $wrap !== null ) {
 
-                    if ( is_array( $wrap ) ) {
-                        $value = $wrap[0] . $key . $wrap[1];
-                    } else if ( is_string( $wrap ) && ! Str::contains( $wrap, [' ', '-', '_', '/', '\\', ':', ';'] ) ) {
-                        $value =  "<$wrap>" . $value . "</$wrap>";
-                    }
+					if ( is_array( $wrap ) ) {
+						$value = $wrap[0] . $key . $wrap[1];
+					} else if ( is_string( $wrap ) && ! Str::contains( $wrap, [' ', '-', '_', '/', '\\', ':', ';'] ) ) {
+						$value = "<$wrap>" . $value . "</$wrap>";
+					}
 				}
 
 				if ( $withKeys ) {
