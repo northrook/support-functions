@@ -4,9 +4,10 @@ namespace Northrook\Support;
 
 use Northrook\Support\Functions\StringFunctions;
 use voku\helper\ASCII;
+
 final class Str {
 
-    use StringFunctions;
+	use StringFunctions;
 
 	private static string $_ASCII_LANGUAGE = 'en';
 	private static string $_SLUG_SEPARATOR = '-';
@@ -159,16 +160,14 @@ final class Str {
 		return $url;
 	}
 
-	public static function key( ?string $string, bool $trim = false, ?string $separator = 'camelCase', ?string $preserve = 'n:', ?string $language = 'en' ): ?string {
+	public static function key( ?string $string, bool $trim = false, ?string $separator = 'camelCase', ?string $preservePrefix = null, ?string $language = 'en' ): ?string {
 
 		if ( ! $string ) {
 			return null;
 		}
 
-		$preserve = null;
-
-		if ( $preserve && str_starts_with( $string, $preserve ) ) {
-			$string = substr( $string, strlen( $preserve ) );
+		if ( $preservePrefix && str_starts_with( $string, $preservePrefix ) ) {
+			$string = substr( $string, strlen( $preservePrefix ) );
 		}
 
 		$string = mb_strtolower( $string );
@@ -186,7 +185,7 @@ final class Str {
 
 		$key = preg_replace( '/\W+/', $separator, $string );
 
-		return $preserve . $key;
+		return $preservePrefix ? $preservePrefix . $key : $key;
 	}
 
 	// Different from key() in that it trims unnecessary words, such as "the"; specific for slug use
