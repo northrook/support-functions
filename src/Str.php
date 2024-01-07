@@ -153,21 +153,19 @@ final class Str {
 		} else {
 			$url = $_SERVER['SERVER_NAME'] . '/' . $url;
 		}
-
-		// $url = parse_url( $url);
-		// dump();
-
+		
 		return $url;
 	}
 
-	public static function key( ?string $string, bool $trim = false, ?string $separator = 'camelCase', ?string $preservePrefix = null, ?string $language = 'en' ): ?string {
+	public static function key(
+			?string $string,
+			?string $separator = 'camelCase',
+			?string $preserve = null,
+			?string $language = 'en'
+	): ?string {
 
 		if ( ! $string ) {
 			return null;
-		}
-
-		if ( $preservePrefix && str_starts_with( $string, $preservePrefix ) ) {
-			$string = substr( $string, strlen( $preservePrefix ) );
 		}
 
 		$string = mb_strtolower( $string );
@@ -176,16 +174,16 @@ final class Str {
 		$string = $language ? Str::ascii( $string, $language ) : $string;
 
 		if ( $separator !== null ) {
-			$string = str_replace( [' ', '-', '_', $separator], ' ', $trim ? trim( $string ) : $string );
+			$string = str_replace( [' ', '-', '_', $separator], ' ', trim( $string ) );
 		}
 
 		if ( $separator === 'camelCase' ) {
 			return Str::toCamel( $string );
 		}
 
-		$key = preg_replace( '/\W+/', $separator, $string );
+		$key = preg_replace( "/[^\w$preserve]+/", $separator, $string );
 
-		return $preservePrefix ? $preservePrefix . $key : $key;
+		return $key;
 	}
 
 	// Different from key() in that it trims unnecessary words, such as "the"; specific for slug use

@@ -103,7 +103,7 @@ class Element extends Render {
 
 		foreach ( $default + $jit as $attribute => $value ) {
 
-			$attribute = Str::key( string: $attribute, separator: '-' );
+			$attribute = Str::key( string: $attribute, separator: '-', preserve: ':' );
 
 			$value = match ( $attribute ) {
 				'id', 'for' => Element::id( $value ),
@@ -111,19 +111,7 @@ class Element extends Render {
 				'style'     => Element::styles( $value ),
 				default     => $value
 			};
-
-			// if ( $attribute === 'id' ) {
-			// 	$value = Element::id( $value );
-			// }
-
-			// if ( $attribute === 'class' ) {
-			// 	$value = Element::classes( $value );
-			// }
-
-			// if ( $attribute === 'style' ) {
-			// 	$value = Element::styles( $value );
-			// }
-
+			
 			if ( in_array( $attribute, ['disabled', 'readonly', 'required', 'checked', 'hidden'] ) ) {
 				if ( $value === true ) {
 					$attributes[$attribute] = $attribute;
