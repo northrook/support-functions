@@ -201,8 +201,8 @@ final class Str {
 
 	// Different from key() in that it trims unnecessary words, such as "the"; specific for slug use
 	// pass array of words to parse, e.g. [ 'the', 'of' ], pass key/value to replace, e.g. [ 'the', 'of', [ '@' => 'at' ], .. ]
-	public static function slug( ?string $string, bool $trim = false, ?string $separator = null ): ?string {
-		return Str::key( $string, $trim, $separator ?? Str::$_SLUG_SEPARATOR );
+	public static function slug( ?string $string, ?string $separator = null ): ?string {
+		return Str::key( $string, $separator ?? Str::$_SLUG_SEPARATOR );
 	}
 
 	/**
