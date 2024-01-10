@@ -267,6 +267,11 @@ final class Str {
 	 * @return bool            | string
 	 */
 	public static function contains( ?string $string, string | iterable $substrings, bool $caseSensitive = false, string $callback = 'str_contains' ): bool | string {
+
+		if ( ! $string ) {
+			return false;
+		}
+
 		if ( ! in_array( $callback, ['str_contains', 'str_starts_with', 'str_ends_with'] ) ) {
 			$callback = 'str_contains';
 		}
