@@ -196,7 +196,7 @@ final class Str {
 
 		$key = preg_replace( "/[^\w$preserve]+/", $separator, $string );
 
-		return $key;
+		return trim( $key, $separator );
 	}
 
 	// Different from key() in that it trims unnecessary words, such as "the"; specific for slug use
