@@ -15,7 +15,7 @@ abstract class AbstractCollection  {
 			if ( property_exists( $this, $key ) ) {
 				$this->{$key} = $value;
 			} else if ( $strict ) {
-				throw new \UnexpectedValueException( 'The "' . $this::class . '" does not have the property "' . $key . '" defined.' );
+				throw new \UnexpectedValueException( 'The "' . $this::class . '" does not have the property "' . gettype( $key ) . ' $' . $key . '" defined.' );
 			}
 		}
 	}
