@@ -15,6 +15,29 @@ class Format {
 		return preg_replace( '/[^0-9]/', '', $number );
 	}
 
+	public static function quotes( string $string, array $options = [] ): string {
+		// ‘ ’ &lsquo; &rsquo;
+		// ‚ &bdquo; <- NOT A COMMA
+		// “ ” 	&ldquo; &rdquo;
+		// ′ ″ 	&prime; &Prime;
+		// ' " `
+
+		/// RULES
+		// - Must not be within a HTML tag
+		// - Must not be within a HTML attribute
+
+		$options = array_merge(
+			[
+				'quotes'     => '"',
+				'openQuote'  => '«',
+				'closeQuote' => '»',
+			],
+			$options
+		);
+
+		return preg_replace( '/"/', '&quot;', $string );
+	}
+
 	public static function nl2span( string $string, string $whitespace = " " ): string {
 		$string = str_replace( ['<p>', '</p>'], ['<span>', '</span>'], $string );
 		$array  = Arr::explode( PHP_EOL, $string );
@@ -27,7 +50,7 @@ class Format {
 		if ( ! $string ) {
 			return null;
 		}
-		
+
 		$explode = Arr::explode( "\n", $string );
 
 		return Arr::implode( $explode, wrap: 'p' );
