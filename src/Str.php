@@ -214,12 +214,12 @@ final class Str {
 	 *
 	 *
 	 * @param  ?string         $string
-	 * @param  string|iterable $any
+	 * @param  string|iterable $substring
 	 * @param  bool            $caseSensitive
 	 * @param  string          $callback        // ['str_contains', 'str_starts_with', 'str_ends_with'][%any
 	 * @return bool            | string
 	 */
-	public static function contains( ?string $string, string | iterable $any, bool $caseSensitive = false, string $callback = 'str_contains' ): bool | string {
+	public static function contains( ?string $string, string | iterable $substring, iterable $all = [], bool $caseSensitive = false, string $callback = 'str_contains' ): bool | string {
 
 		if ( ! $string ) {
 			return false;
@@ -228,15 +228,21 @@ final class Str {
 		if ( ! in_array( $callback, ['str_contains', 'str_starts_with', 'str_ends_with'] ) ) {
 			$callback = 'str_contains';
 		}
+
 		if ( ! $caseSensitive ) {
 			$string = mb_strtolower( $string );
 		}
 
-		if ( ! is_iterable( $any ) ) {
-			$any = (array) $any;
+		if ( ! is_iterable( $substring ) ) {
+			$substring = (array) $substring;
 		}
 
-		foreach ( $any as $substring ) {
+		if ( false === empty( $all ) && false === Str::containsAll( $string, $all, $caseSensitive ) ) {
+
+			return false;
+		}
+
+		foreach ( $substring as $substring ) {
 			if ( ! $caseSensitive ) {
 				$substring = mb_strtolower( $substring );
 			}
@@ -265,6 +271,7 @@ final class Str {
 			if ( ! Str::contains(
 				$string,
 				$substring,
+				[],
 				$caseSensitive
 			) ) {
 				return false;

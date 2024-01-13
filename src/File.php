@@ -101,7 +101,7 @@ abstract class File {
 	public static function isPathTraversable( string $path ): bool {
 		return Str::contains(
 			string: $path,
-			any: [".", "../", ".." . DIRECTORY_SEPARATOR],
+			substring: [".", "../", ".." . DIRECTORY_SEPARATOR],
 			callback: 'str_starts_with'
 		);
 	}

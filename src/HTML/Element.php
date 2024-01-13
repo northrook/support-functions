@@ -143,7 +143,7 @@ class Element extends Render {
 			return '';
 		}
 
-		return implode( ' ', Sort::elementAttributes( $attributes ) );
+		return implode(  ' ', Sort::elementAttributes( $attributes ) );
 	}
 
 	/**
