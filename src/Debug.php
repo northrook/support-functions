@@ -34,6 +34,10 @@ final class Debug {
         Debug::$env = strtolower( $APP_ENV );
     }
 
+	 public static function consoleLog( string $message ): void {
+		echo '<script>console.log("' . $message . '");</script>';
+	 }
+
     public static function log( string $message, mixed $dump = null, ?string $severity = null ): void {
         Debug::$sessionLogs[] = [
             'message' => $message,
