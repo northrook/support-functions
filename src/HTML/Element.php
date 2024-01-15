@@ -234,7 +234,13 @@ class Element extends Render {
 		return "<tooltip>$string</tooltip>";
 	}
 
-	public static function extractAttributes( string $html, string $tag ): array {
+	public static function extractAttributes( string $html, ?string $tag = null ): array {
+
+		if ( ! $html || false === \str_starts_with( $html, '<' ) ) {
+			return [];
+		}
+
+		$tag ??= \substr( $html, 1, \strpos( $html, ' ' ) - 1 );
 		$dom = new DOMDocument();
 		$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
 
