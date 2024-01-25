@@ -195,23 +195,25 @@ final class Arr {
 		string | array | null $wrap = null
 	): string {
 
-		if ( $withKeys | $wrap !== null ) {
-			foreach ( $array as $key => $value ) {
+		$array = array_filter( $array );
 
-				if ( $wrap !== null ) {
+		foreach ( $array as $key => $value ) {
+			if ( is_array( $value ) ) {
+				$value = self::implode( $value, $separator, $withKeys, $wrap );
+			}
+			if ( $wrap !== null ) {
 
-					if ( is_array( $wrap ) ) {
-						$value = $wrap[0] . $key . $wrap[1];
-					} else if ( is_string( $wrap ) && ! Str::contains( $wrap, [' ', '-', '_', '/', '\\', ':', ';'] ) ) {
-						$value = "<$wrap>" . $value . "</$wrap>";
-					}
+				if ( is_array( $wrap ) ) {
+					$value = $wrap[0] . $key . $wrap[1];
+				} else if ( is_string( $wrap ) && ! Str::contains( $wrap, [' ', '-', '_', '/', '\\', ':', ';'] ) ) {
+					$value = "<$wrap>" . $value . "</$wrap>";
 				}
+			}
 
-				if ( $withKeys ) {
-					$array[$key] = "$key$value";
-				} else {
-					$array[$key] = $value;
-				}
+			if ( $withKeys ) {
+				$array[$key] = "$key$value";
+			} else {
+				$array[$key] = $value;
 			}
 		}
 
