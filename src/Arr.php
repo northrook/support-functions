@@ -181,6 +181,29 @@ final class Arr {
 		return $array;
 	}
 
+	public static function searchKeys( array $array, string | array $key ): array {
+
+		$key = (array) $key;
+		$get = [];
+
+
+		foreach ( $key as $match ) {
+
+			if ( isset( $array[$match] ) ) {
+				$get[$match] = $array[$match];
+			}
+
+		}
+
+		return $get;
+
+
+	}
+
+	public static function unique( array $array ): array {
+		return array_flip( array_flip( $array ) );
+	}
+
 	/** Implode array to string, omitting empty values
 	 *
 	 * @param  array       $array
@@ -222,7 +245,7 @@ final class Arr {
 		return trim( $string );
 	}
 
-	public static function explode( string $separator, string $string ): array {
+	public static function explode( string $separator, string $string, bool $unique = false ): array {
 		$array = explode( $separator, $string ) ?? [];
 		foreach ( $array as $key => $value ) {
 			$value = trim( $value );
@@ -233,10 +256,14 @@ final class Arr {
 			}
 		}
 
+		if ( $unique ) {
+			$array = Arr::unique( $array );
+		}
+
 		return $array;
 	}
 
-	public static function flatten( array $array, bool $filter = false ): array {
+	public static function flatten( array $array, bool $filter = false, bool $unique = false ): array {
 		$result = [];
 
 		if ( $filter ) {
@@ -254,6 +281,10 @@ final class Arr {
 				static function ( $item ) use ( &$result ) {
 					$result[] = $item;
 				} );
+		}
+
+		if ( $unique ) {
+			$result = Arr::unique( $result );
 		}
 
 		return $result;
