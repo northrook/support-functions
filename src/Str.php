@@ -281,67 +281,46 @@ final class Str {
 		return true;
 	}
 
-	/** Determine if a $string starts with any $substrings.
-	 *
-	 *  * Case Insensitive by default
-	 *
-	 *
-	 * @param  ?string  $string
-	 * @param  string|array $substrings
-	 * @param  bool     $caseSensitive
-	 * @return bool
-	 */
-	public static function startsWith( ?string $string, string | array $substrings, bool $caseSensitive = false ): bool {
-		foreach ( (array) $substrings as $substring ) {
-			if ( str_starts_with(
-				$string,
-				$caseSensitive ? $substring : mb_strtolower( $substring ),
-			) ) {
-				return true;
+	public static function replace(
+			?string $search,
+		string $replace,
+			?string $subject,
+			?int $limit = null,
+		bool $caseSensitive = true ): ?string {
+
+		if ( ! $search || ! $subject || 0 === $limit ) {
+			return $subject;
+		}
+
+		if ( null === $limit ) {
+			return $caseSensitive
+				? str_replace( $search, $replace, $subject )
+				: str_ireplace( $search, $replace, $subject );
+		}
+
+		$match = mb_stripos( $subject, $search );
+
+		for ( $i = 0; $i < $limit; $i++ ) {
+
+			if ( false === $match ) {
+				return $subject;
 			}
+
+			$subject = substr_replace( $subject, $replace, $match, strlen( $search ) );
+			$match   = stripos( $subject, $search, $match + strlen( $replace ) );
 		}
 
-		return false;
-	}
-
-	public static function after( string $string, string $needle, bool $last = false ): ?string {
-
-		if ( $last ) {
-			$needle = strrpos( $string, $needle );
-		} else {
-			$needle = strpos( $string, $needle );
-		}
-
-		if ( $needle !== false ) {
-			return substr( $string, $needle + 1 );
-		}
-
-		return $string;
+		return $subject;
 
 	}
 
-	public static function before( string $string, string $needle, bool $last = false ): ?string {
-
-		if ( $last ) {
-			$needle = strrpos( $string, $needle );
-		} else {
-			$needle = strpos( $string, $needle );
-		}
-
-		if ( $needle !== false ) {
-			return substr( $string, 0, $needle );
-		}
-
-		return $string;
-	}
-
-	/** Replace each key from `$map` with its value, when found in `$content`.
-	 *
-	 * @param  array			$map search:replace
-	 * @param  string|array $content
-	 * @param  bool    		$caseSensitive
-	 * @return ?string The processed `$content`, or null if `$content` is empty
-	 */
+/** Replace each key from `$map` with its value, when found in `$content`.
+ *
+ * @param  array			$map search:replace
+ * @param  string|array $content
+ * @param  bool    		$caseSensitive
+ * @return ?string The processed `$content`, or null if `$content` is empty
+ */
 	public static function replaceEach(
 		array $map,
 		string | array $content,
