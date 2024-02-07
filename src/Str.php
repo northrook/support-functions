@@ -505,4 +505,14 @@ final class Str {
 
 		return $out;
 	}
+
+	public static function href( string $string ): string {
+		$string = strtolower( trim( $string ) );
+
+		if ( filter_var( $string, FILTER_VALIDATE_EMAIL ) ) {
+			$string = Str::start( $string, 'mailto:' );
+		}
+		
+		return $string;
+	}
 }

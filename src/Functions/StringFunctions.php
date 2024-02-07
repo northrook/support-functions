@@ -6,7 +6,7 @@ if ( ! function_exists( 'mb_strtolower' ) ) {
 	/**
 	 * Fallback for mb_strtolower
 	 */
-	function mb_strtolower( ?string $string ): string {return strtolower( $string );}
+	function mb_strtolower( string $string ): string {return strtolower( $string );}
 }
 
 if ( ! function_exists( 'mb_substr' ) ) {
@@ -43,6 +43,13 @@ trait StringFunctions {
 		string | array $substrings,
 		bool $caseSensitive = false
 	): bool {
+
+		if ( ! $string ) {
+			return false;
+		}
+
+		$string = $caseSensitive ? $string : mb_strtolower( $string );
+
 		foreach ( (array) $substrings as $substring ) {
 			if ( str_starts_with(
 				$string,
@@ -69,6 +76,13 @@ trait StringFunctions {
 		string | array $substrings,
 		bool $caseSensitive = false
 	): bool {
+
+		if ( ! $string ) {
+			return false;
+		}
+
+		$string = $caseSensitive ? $string : mb_strtolower( $string );
+		
 		foreach ( (array) $substrings as $substring ) {
 			if ( str_ends_with(
 				$string,

@@ -48,11 +48,16 @@ class Element extends Render {
 		private readonly bool $compress = false,
 		private readonly bool $pretty = false,
 		private readonly ?string $template = null,
-			?bool $close = null
+			?bool $close = null,
 	) {
 
 		if ( $this->tag === 'button' && ! isset( $this->attributes['type'] ) ) {
 			$this->attributes['type'] = 'button';
+		}
+
+		if ( $this->tag === 'button' && isset( $attributes['label'] ) && ! isset( $attributes['aria-label'] ) ) {
+			$this->attributes['aria-label'] = $attributes['label'];
+			unset( $this->attributes['label'] );
 		}
 
 		$this->close = $close ?? ! in_array( $tag, [
@@ -111,7 +116,7 @@ class Element extends Render {
 				'style'     => Element::styles( $value ),
 				default     => $value
 			};
-			
+
 			if ( in_array( $attribute, ['disabled', 'readonly', 'required', 'checked', 'hidden'] ) ) {
 				if ( $value === true ) {
 					$attributes[$attribute] = $attribute;
@@ -143,7 +148,7 @@ class Element extends Render {
 			return '';
 		}
 
-		return implode(  ' ', Sort::elementAttributes( $attributes ) );
+		return implode( ' ', Sort::elementAttributes( $attributes ) );
 	}
 
 	/**
@@ -151,8 +156,6 @@ class Element extends Render {
 	 *
 	 *  The ID will be generated according to `Str::slug()` rules
 	 *  The ID will be appended to Element::$generatedElementIdList
-	 *
-	 *
 	 *
 	 * @param  string|null $id
 	 * @return ?string
