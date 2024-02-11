@@ -10,21 +10,20 @@ trait ArrayFunctions {
 	 * @param null|string $condition = 'contains' | 'startsWith' | 'endsWith'
 	 * @return bool
 	 */
-	public static function has( array $array, mixed $value, ?string $condition = 'contains' ): bool {
+	public static function has( array $array, mixed $value, ?string $condition = 'contains' ): bool | string {
 
 		if ( ! $array ) {
 			return false;
 		}
 
-		if ( is_string( $value ) ) {
-
+		if ( is_string( $value ) ) {			
 			foreach ( $array as $item ) {
 				if ( $condition === 'contains' && strpos( $item, $value ) !== false ) {
-					return true;
+					return $item;
 				} elseif ( $condition === 'startsWith' && str_starts_with( $item, $value ) ) {
-					return true;
+					return $item;
 				} elseif ( $condition === 'endsWith' && str_ends_with( $item, $value ) ) {
-					return true;
+					return $item;
 				}
 			}
 		}
