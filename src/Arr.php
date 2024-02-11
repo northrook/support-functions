@@ -3,12 +3,15 @@
 namespace Northrook\Support;
 
 use JsonException;
+use Northrook\Support\Functions\ArrayFunctions;
 
 /**
  * TODO [low] Integrate features from https://github.com/adbario/php-dot-notation/blob/3.x/src/Dot.php
  *   ✅ Dot notation
  */
 final class Arr {
+
+	use ArrayFunctions;
 
 	private mixed $array = [];
 
