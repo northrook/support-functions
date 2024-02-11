@@ -6,6 +6,32 @@ use Northrook\Support\Str;
 
 trait PathFunctions {
 
+	/**
+	 *
+	 * @lin https://stackoverflow.com/a/68254092
+	 *
+	 * @param  string|null   $string
+	 * @param  bool          $trim
+	 * @param  string        $separator  // [camelCase, kebabCase, snakeCase][%any]
+	 * @param  string|null   $language
+	 * @return string|null
+	 */
+	public static function isUrl( ?string $string, ?string $scheme = null ) {
+		// Bail if the $source is null, empty, or does not contain a scheme
+		if ( ! $string || strpos( $string, '://' ) === false ) {
+			return false;
+		}
+
+		$url = parse_url( $string );
+
+		return match ( $url['scheme'] ?? null ) {
+			'http' => true, // @todo report warning to Debug, check if https version is valid, if not, return false
+			'https' => true,
+			default => false,
+		};
+
+	}
+
 	public static function filepath( string $path, ?string $fullPath = null ): string {
 		$path = str_replace( ['/', '\\'], DIRECTORY_SEPARATOR, $path );
 		$path = mb_strtolower( $path );

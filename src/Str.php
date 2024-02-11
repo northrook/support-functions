@@ -114,32 +114,6 @@ final class Str {
 		);
 	}
 
-	/**
-	 *
-	 * @lin https://stackoverflow.com/a/68254092
-	 *
-	 * @param  string|null   $string
-	 * @param  bool          $trim
-	 * @param  string        $separator  // [camelCase, kebabCase, snakeCase][%any]
-	 * @param  string|null   $language
-	 * @return string|null
-	 */
-	public static function isUrl( ?string $string, ?string $scheme = null ) {
-		// Bail if the $source is null, empty, or does not contain a scheme
-		if ( ! $string || strpos( $string, '://' ) === false ) {
-			return false;
-		}
-
-		$url = parse_url( $string );
-
-		return match ( $url['scheme'] ?? null ) {
-			'http' => true, // @todo report warning to Debug, check if https version is valid, if not, return false
-			'https' => true,
-			default => false,
-		};
-
-	}
-
 	/** Check if a string contains only numbers
 	 *
 	 * * Returns `false` if the string contains non-numeric characters

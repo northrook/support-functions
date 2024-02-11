@@ -239,8 +239,13 @@ class Element extends Render {
 
 	public static function extractAttributes( string $html, ?string $tag = null ): array {
 
-		if ( ! $html || false === \str_starts_with( $html, '<' ) ) {
+		if ( ! $html ) {
 			return [];
+		}
+
+		if ( false === str_starts_with( $html, '<' ) && false === str_starts_with( $html, '>' ) ) {
+			$tag ??= 'div';
+			$html = "<$tag $html>";
 		}
 
 		$tag ??= \substr( $html, 1, \strpos( $html, ' ' ) - 1 );
