@@ -109,16 +109,16 @@ class Element extends Render {
 		foreach ( $default + $jit as $attribute => $value ) {
 
 			$attribute = Str::key( string: $attribute, separator: '-', preserve: ':' );
-
+			
 			$value = match ( $attribute ) {
 				'id', 'for' => Element::id( $value ),
 				'class'     => Element::classes( $value ),
 				'style'     => Element::styles( $value ),
 				default     => $value
 			};
-
+			
 			if ( in_array( $attribute, ['disabled', 'readonly', 'required', 'checked', 'hidden'] ) ) {
-				if ( $value === true ) {
+				if ( $value === true || $value === '' || $value === $attribute ) {
 					$attributes[$attribute] = $attribute;
 				} else {
 					continue;
