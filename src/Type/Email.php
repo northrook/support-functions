@@ -21,9 +21,9 @@ class Email extends Type {
 		return (string) $this->string;
 	}
 
-	public function __construct( public ?string $string = null, public bool $validate = true ) {
+	public function __construct( public ?string $string = null, bool $validate = true ) {
 
-		if ( $this->validate ) {
+		if ( $validate ) {
 			$this->validate();
 		}
 
@@ -37,7 +37,7 @@ class Email extends Type {
 			return false;
 		}
 
-		if ( false === self::$validator ) {
+		if ( false === isset( self::$validator ) ) {
 			self::$validator = new EmailValidator();
 		}
 

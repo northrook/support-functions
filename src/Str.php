@@ -2,6 +2,7 @@
 
 namespace Northrook\Support;
 
+use JsonException;
 use Northrook\Support\Functions\PathFunctions;
 use Northrook\Support\Functions\StringFunctions;
 use voku\helper\ASCII;
@@ -486,7 +487,15 @@ final class Str {
 		if ( filter_var( $string, FILTER_VALIDATE_EMAIL ) ) {
 			$string = Str::start( $string, 'mailto:' );
 		}
-		
+
 		return $string;
+	}
+
+	public static function asJson( mixed $value ): string | false {
+		try {
+			return json_encode( $value, JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT );
+		} catch ( JsonException ) {
+			return false;
+		}
 	}
 }

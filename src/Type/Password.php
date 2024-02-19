@@ -19,29 +19,31 @@ class Password extends Type {
 
 	public function __construct(
 		public ?string $string = null,
-		public int $strength = 3,
-		public array $context = [],
-		public bool $validate = true
+		public readonly int $strength = 3,
+		public readonly array $context = [],
+		bool $validate = true
 	) {
 
-		$this->strength = max( 0, min( 4, $this->strength ) );
-
-		if ( $this->validate ) {
+		if ( $validate ) {
 			$this->validate();
 		}
 
 	}
 
-	public function validate(): bool {
+	private function validate( ?int $strength = null ): void {
+
+		$strength ??= $this->strength;
+
+		$strength = max( 0, min( 4, $strength ) );
 
 		$validator = new Zxcvbn();
 
 		$this->score = $validator->passwordStrength( $this->string ?? '', $this->context );
 
-		if ( $this->score['score'] < $this->strength ) {
-			return false;
+		if ( $this->score['score'] < $strength ) {
+			$this->isValid = false;
+		} else {
+			$this->isValid = true;
 		}
-
-		return true;
 	}
 }
