@@ -2,73 +2,88 @@
 
 namespace Northrook\Support;
 
-if ( ! function_exists( 'dump' ) ) {
-    function dump( mixed...$vars ): void {
-        $dump = [];
-        foreach ( $vars as $var ) {
-            $dump[] = print_r( $var, true );
-        }
+use Northrook\Support\Debug\Log;
+use Psr\Log\LogLevel;
 
-        echo implode( PHP_EOL, $dump );
-    }
+if ( !function_exists( 'dump' ) ) {
+	function dump( mixed...$vars ) : void {
+		$dump = [];
+		foreach ( $vars as $var ) {
+			$dump[] = print_r( $var, true );
+		}
+
+		echo implode( PHP_EOL, $dump );
+	}
 }
 
-final class Debug {
+final class Debug
+{
 
-    private static array $sessionLogs = [];
+	private static array $sessionLogs = [];
 
-    private static string $env = 'dev';
+	private static string $env = 'dev';
 
-    /**
-     * Match against the current environment
-     *
-     *
-     * @param  string $is = [ 'dev', 'prod' ][$any]
-     * @return bool
-     */
-    public static function env( string $is ): bool {
-        return Debug::$env === strtolower( $is );
-    }
+	/**
+	 * Match against the current environment
+	 *
+	 *
+	 * @param  string  $is  = [ 'dev', 'prod' ][$any]
+	 * @return bool
+	 */
+	public static function env( string $is ) : bool {
+		return Debug::$env === strtolower( $is );
+	}
 
-    public static function setEnv( mixed $APP_ENV ): void {
-        Debug::$env = strtolower( $APP_ENV );
-    }
+	public static function setEnv( mixed $APP_ENV ) : void {
+		Debug::$env = strtolower( $APP_ENV );
+	}
 
-	 public static function consoleLog( string $message ): void {
+	public static function consoleLog( string $message ) : void {
 		echo '<script>console.log("' . $message . '");</script>';
-	 }
+	}
 
-    public static function log( string $message, mixed $dump = null, ?string $severity = null ): void {
-        Debug::$sessionLogs[] = [
-            'message' => $message,
-            'dump'    => $dump,
-        ];
-    }
+	public static function log( string $message, mixed $dump = null, ?LogLevel $severity = null ) : void {
 
-    public static function getLogs(): array {
-        return Debug::$sessionLogs;
-    }
+		$dump ??= debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, 3 );
 
-    public static function dumpLogs(): void {
-        if ( ! Debug::$sessionLogs ) {
-            return;
-        }
+		Debug::$sessionLogs[] = new Log\Entry(
+			$message,
+			$dump,
+			$severity
+		);
 
-        dump( Debug::$sessionLogs );
-    }
+//		Debug::$sessionLogs[] = [
+//			'message'  => $message,
+//			'dump'     => $dump,
+//			'severity' => $severity,
+//		];
+	}
 
-    public static function handleError( string | callable $do, string $message = '' ) {
-        if ( is_callable( $do ) ) {
-            return $do( $message );
-        } else {
-            trigger_error( $do, E_USER_ERROR );
-        }
+	public static function getLogs() : array {
+		return Debug::$sessionLogs;
+	}
 
-    }
+	public static function dumpLogs() : void {
+		if ( !Debug::$sessionLogs ) {
+			return;
+		}
 
-    public static function dump( mixed...$vars ): void {
+		dump( Debug::$sessionLogs );
+	}
 
-        echo <<<HTML
+	public static function handleError( string | callable $do, string $message = '' ) {
+		if ( is_callable( $do ) ) {
+			return $do( $message );
+		}
+		else {
+			trigger_error( $do, E_USER_ERROR );
+		}
+
+	}
+
+	public static function dump( mixed...$vars ) : void {
+
+		echo <<<HTML
 		<head>
 			<title>Debug</title>
 			<style>
@@ -143,12 +158,12 @@ final class Debug {
 			</style>
 		</head>
 		HTML;
-        echo '<body>';
-        dump( ...$vars );
-        echo '</body></html>';
+		echo '<body>';
+		dump( ...$vars );
+		echo '</body></html>';
 
-        die( 1 );
-    }
+		die( 1 );
+	}
 }
 
 //
