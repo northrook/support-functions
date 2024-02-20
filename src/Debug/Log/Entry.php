@@ -3,18 +3,17 @@
 
 namespace Northrook\Support\Debug\Log;
 
-use Psr\Log\LogLevel;
 
 class Entry
 {
-	public readonly string $timestamp;
+//	public readonly Timestamp $timestamp;
 
 	public function __construct(
-		public readonly string   $message,
-		public readonly mixed    $dump,
-		public readonly LogLevel $severity,
+		public readonly string    $message,
+		public readonly mixed     $dump,
+		public readonly Level     $level = Level::Debug,
+		public readonly Timestamp $timestamp = new Timestamp(),
 	) {
-		// Provide a Timestamp Type with current time()
-		$this->timestamp = date( 'Y-m-d H:i:s' );
+//		$this->timestamp = new Timestamp();
 	}
 }

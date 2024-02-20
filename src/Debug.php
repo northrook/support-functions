@@ -42,21 +42,21 @@ final class Debug
 		echo '<script>console.log("' . $message . '");</script>';
 	}
 
-	public static function log( string $message, mixed $dump = null, ?LogLevel $severity = null ) : void {
+	public static function log(
+		string         $message,
+		mixed          $dump = null,
+		?Log\Level     $severity = null,
+		?Log\Timestamp $timestamp = null,
+	) : void {
 
 		$dump ??= debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, 3 );
 
 		Debug::$sessionLogs[] = new Log\Entry(
 			$message,
 			$dump,
-			$severity
+			$severity,
+			$timestamp
 		);
-
-//		Debug::$sessionLogs[] = [
-//			'message'  => $message,
-//			'dump'     => $dump,
-//			'severity' => $severity,
-//		];
 	}
 
 	public static function getLogs() : array {
