@@ -9,26 +9,24 @@
 
 namespace Northrook\Support\Debug\Log;
 
-use Psr\Log\LogLevel;
-
 enum Level : int
 {
 	/**
 	 * Detailed debug information
 	 */
-	case Debug = 100;
+	case DEBUG = 100;
 
 	/**
 	 * Interesting events
 	 *
 	 * Examples: User logs in, SQL logs.
 	 */
-	case Info = 200;
+	case INFO = 200;
 
 	/**
 	 * Uncommon events
 	 */
-	case Notice = 250;
+	case NOTICE = 250;
 
 	/**
 	 * Exceptional occurrences that are not errors
@@ -36,19 +34,19 @@ enum Level : int
 	 * Examples: Use of deprecated APIs, poor use of an API,
 	 * undesirable things that are not necessarily wrong.
 	 */
-	case Warning = 300;
+	case WARNING = 300;
 
 	/**
 	 * Runtime errors
 	 */
-	case Error = 400;
+	case ERROR = 400;
 
 	/**
 	 * Critical conditions
 	 *
 	 * Example: Application component unavailable, unexpected exception.
 	 */
-	case Critical = 500;
+	case CRITICAL = 500;
 
 	/**
 	 * Action must be taken immediately
@@ -56,27 +54,25 @@ enum Level : int
 	 * Example: Entire website down, database unavailable, etc.
 	 * This should trigger the SMS alerts and wake you up.
 	 */
-	case Alert = 550;
+	case ALERT = 550;
 
 	/**
 	 * Urgent alert.
 	 */
-	case Emergency = 600;
-
+	case EMERGENCY = 600;
 
 	public function name() : string {
 		return self::NAMES[ $this->value ];
 	}
 
-
 	public const NAMES = [
-		100 => 'DEBUG',
-		200 => 'INFO',
-		250 => 'NOTICE',
-		300 => 'WARNING',
-		400 => 'ERROR',
-		500 => 'CRITICAL',
-		550 => 'ALERT',
-		600 => 'EMERGENCY',
+		100 => 'Debug',
+		200 => 'Info',
+		250 => 'Notice',
+		300 => 'Warning',
+		400 => 'Error',
+		500 => 'Critical',
+		550 => 'Alert',
+		600 => 'Emergency',
 	];
 }

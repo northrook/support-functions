@@ -6,14 +6,18 @@ namespace Northrook\Support\Debug\Log;
 
 class Entry
 {
-//	public readonly Timestamp $timestamp;
+
+	public readonly Timestamp $timestamp;
+	public Level              $level;
 
 	public function __construct(
-		public readonly string    $message,
-		public readonly mixed     $dump,
-		public readonly Level     $level = Level::Debug,
-		public readonly Timestamp $timestamp = new Timestamp(),
+		public readonly string $message,
+		public readonly mixed  $dump,
+		?Level                 $level = null,
+		?Timestamp             $timestamp = null,
 	) {
-//		$this->timestamp = new Timestamp();
+
+		$this->timestamp = $timestamp ?? new Timestamp();
+		$this->level = $level ?? Level::DEBUG;
 	}
 }

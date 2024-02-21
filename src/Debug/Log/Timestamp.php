@@ -28,7 +28,7 @@ class Timestamp
 		DateTimeZone        $timezone = null,
 	) {
 		$this->timestamp = $this::getUnixTimestamp( $timestamp );
-
+		$this->timezone = $timezone ?? new DateTimeZone( self::DEFAULT_TIMEZONE );
 	}
 
 	public function __toString() : string {
@@ -46,15 +46,14 @@ class Timestamp
 		return $this->getDateTime()->format( $format );
 	}
 
-
-	public function getDateTime() : DateTimeImmutable {
+	public function getDateTime( ?DateTimeZone $timezone = null ) : DateTimeImmutable {
 
 		if ( isset( $this->DateTime ) ) {
 			return $this->DateTime;
 		}
 
 		$this->DateTime = ( new DateTimeImmutable() )
-			->setTimezone( new DateTimeZone( self::DEFAULT_TIMEZONE ) )
+			->setTimezone( $timezone ?? $this->timezone )
 			->setTimestamp( $this->timestamp )
 		;
 
