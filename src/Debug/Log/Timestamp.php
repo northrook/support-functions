@@ -71,7 +71,7 @@ class Timestamp
 	 * @see      time(), DateTime::setTimestamp
 	 */
 	public static function getUnixTimestamp( string | int | null $time ) : int {
-		return Str::isNumeric( $time ) ?: strtotime( $time ) ?: time();
+		return Str::isNumeric( $time ) ?: strtotime( $time ?? '' ) ?: time();
 	}
 
 }

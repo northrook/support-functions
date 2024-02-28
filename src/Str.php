@@ -7,7 +7,8 @@ use Northrook\Support\Functions\PathFunctions;
 use Northrook\Support\Functions\StringFunctions;
 use voku\helper\ASCII;
 
-final class Str {
+final class Str
+{
 
 	use StringFunctions;
 	use PathFunctions;
@@ -15,11 +16,11 @@ final class Str {
 	private static string $_ASCII_LANGUAGE = 'en';
 	private static string $_SLUG_SEPARATOR = '-';
 
-	public static function setSlugSeparator( string $separator ): void {
+	public static function setSlugSeparator( string $separator ) : void {
 		Str::$_SLUG_SEPARATOR = $separator;
 	}
 
-	public static function setAsciiLanguage( string $language ): void {
+	public static function setAsciiLanguage( string $language ) : void {
 		Str::$_ASCII_LANGUAGE = $language;
 	}
 
@@ -27,11 +28,11 @@ final class Str {
 	 * Convert $value to ASCII
 	 *
 	 *
-	 * @param  string   $value
+	 * @param  string  $value
 	 * @param  ?string  $language
 	 * @return string
 	 */
-	public static function ascii( string $value, ?string $language = null ): string {
+	public static function ascii( string $value, ?string $language = null ) : string {
 		return ASCII::to_ascii( $value, $language ?? Str::$_ASCII_LANGUAGE );
 	}
 
@@ -39,19 +40,19 @@ final class Str {
 	 * Extract acronym from a $string
 	 *
 	 *
-	 * @param  ?string $string     The string to process
-	 * @param  bool    $capitalize Defaults to true
+	 * @param  ?string  $string  The string to process
+	 * @param  bool  $capitalize  Defaults to true
 	 * @param  string  $separator  Defaults to single whitespace
 	 * @return ?string Acronym, or null if $string is null
 	 */
-	public static function acronym( ?string $string, bool $capitalize = true, string $separator = ' ' ): ?string {
-		if ( ! $string ) {
+	public static function acronym( ?string $string, bool $capitalize = true, string $separator = ' ' ) : ?string {
+		if ( !$string ) {
 			return null;
 		}
 
 		$acronyms = array_map(
-			static fn( string $name ) => mb_substr( $name, 0, 1 ),
-			explode( $separator, $string )
+			static fn ( string $name ) => mb_substr( $name, 0, 1 ),
+			explode( $separator, $string ),
 		);
 		$acronyms = implode( '', $acronyms );
 
@@ -67,16 +68,17 @@ final class Str {
 	 *  Does not perform __any__ sanitization
 	 *
 	 *
-	 * @param  ?string $string
-	 * @param  bool    $preserveComments
-	 * @param  bool    $spacesOnly         Preserve newlines
+	 * @param  ?string  $string
+	 * @param  bool  $preserveComments
+	 * @param  bool  $spacesOnly  Preserve newlines
 	 * @return string  minified string
 	 */
-	public static function squish( ?string $string, bool $preserveComments = false, bool $spacesOnly = false ): string {
-		if ( ! $string ) {
+	public static function squish( ?string $string, bool $preserveComments = false, bool $spacesOnly = false,
+	) : string {
+		if ( !$string ) {
 			return '';
 		}
-		if ( ! $preserveComments ) {
+		if ( !$preserveComments ) {
 			$string = preg_replace(
 				[
 					'/<!--(.*?)-->/ms',
@@ -85,7 +87,8 @@ final class Str {
 					'/^\h*?\/\/.*/m',
 				],
 				'',
-				$string );
+				$string,
+			);
 		}
 		if ( $spacesOnly ) {
 			$string = preg_replace(
@@ -94,24 +97,25 @@ final class Str {
 					'/ +/',
 				],
 				' ',
-				$string
+				$string,
 			);
-		} else {
+		}
+		else {
 			$string = preg_replace(
 				'~(\s|\x{3164})+~u',
 				' ',
 				preg_replace(
 					'~^[\s\x{FEFF}]+|[\s\x{FEFF}]+$~u',
 					'',
-					$string
-				)
+					$string,
+				),
 			);
 		}
 
 		return str_replace(
-			[' >', ' />', '> <', '> ', ' <'],
-			['>', '/>', '><', '>', '<'],
-			$string
+			[ ' >', ' />', '> <', '> ', ' <' ],
+			[ '>', '/>', '><', '>', '<' ],
+			$string,
 		);
 	}
 
@@ -120,15 +124,15 @@ final class Str {
 	 * * Returns `false` if the string contains non-numeric characters
 	 * * Returns `$string` cast to int if the string contains only numbers
 	 *
-	 * @param null|string $string
+	 * @param  null|string  $string
 	 * @return int|bool
 	 */
-	public static function isNumeric( ?string $string ): int | bool {
+	public static function isNumeric( ?string $string ) : int | bool {
 
-		return ( preg_match( '/^\d+$/', $string ) ) ? (int) $string : false;
+		return ( preg_match( '/^\d+$/', $string ?? '' ) ) ? (int) $string : false;
 	}
 
-	public static function url( ?string $string, bool $absolute = false, bool $trailing = false ): ?string {
+	public static function url( ?string $string, bool $absolute = false, bool $trailing = false ) : ?string {
 
 		$url = filter_var( $string, FILTER_SANITIZE_URL );
 
@@ -138,23 +142,24 @@ final class Str {
 			$url = rtrim( $url, '/' );
 		}
 
-		if ( ! $absolute ) {
+		if ( !$absolute ) {
 			$url = '/' . $url;
-		} else {
-			$url = $_SERVER['SERVER_NAME'] . '/' . $url;
+		}
+		else {
+			$url = $_SERVER[ 'SERVER_NAME' ] . '/' . $url;
 		}
 
 		return $url;
 	}
 
 	public static function key(
-			?string $string,
-			?string $separator = 'camelCase',
-			?string $preserve = null,
-			?string $language = 'en'
-	): ?string {
+		?string $string,
+		?string $separator = 'camelCase',
+		?string $preserve = null,
+		?string $language = 'en',
+	) : ?string {
 
-		if ( ! $string ) {
+		if ( !$string ) {
 			return null;
 		}
 
@@ -164,7 +169,7 @@ final class Str {
 		$string = $language ? Str::ascii( $string, $language ) : $string;
 
 		if ( $separator !== null ) {
-			$string = str_replace( [' ', '-', '_', $separator], ' ', trim( $string ) );
+			$string = str_replace( [ ' ', '-', '_', $separator ], ' ', trim( $string ) );
 		}
 
 		if ( $separator === 'camelCase' ) {
@@ -178,7 +183,7 @@ final class Str {
 
 	// Different from key() in that it trims unnecessary words, such as "the"; specific for slug use
 	// pass array of words to parse, e.g. [ 'the', 'of' ], pass key/value to replace, e.g. [ 'the', 'of', [ '@' => 'at' ], .. ]
-	public static function slug( ?string $string, ?string $separator = null ): ?string {
+	public static function slug( ?string $string, ?string $separator = null ) : ?string {
 		return Str::key( $string, $separator ?? Str::$_SLUG_SEPARATOR );
 	}
 
@@ -188,27 +193,30 @@ final class Str {
 	 *  Case Insensitive by default
 	 *
 	 *
-	 * @param  ?string         $string
-	 * @param  string|iterable $substring
-	 * @param  bool            $caseSensitive
-	 * @param  string          $callback        // ['str_contains', 'str_starts_with', 'str_ends_with'][%any
+	 * @param  ?string  $string
+	 * @param  string|iterable  $substring
+	 * @param  bool  $caseSensitive
+	 * @param  string  $callback  // ['str_contains', 'str_starts_with', 'str_ends_with'][%any
 	 * @return bool            | string
 	 */
-	public static function contains( ?string $string, string | iterable $substring, iterable $all = [], bool $caseSensitive = false, string $callback = 'str_contains' ): bool | string {
+	public static function contains(
+		?string $string, string | iterable $substring, iterable $all = [], bool $caseSensitive = false,
+		string  $callback = 'str_contains',
+	) : bool | string {
 
-		if ( ! $string ) {
+		if ( !$string ) {
 			return false;
 		}
 
-		if ( ! in_array( $callback, ['str_contains', 'str_starts_with', 'str_ends_with'] ) ) {
+		if ( !in_array( $callback, [ 'str_contains', 'str_starts_with', 'str_ends_with' ] ) ) {
 			$callback = 'str_contains';
 		}
 
-		if ( ! $caseSensitive ) {
+		if ( !$caseSensitive ) {
 			$string = mb_strtolower( $string );
 		}
 
-		if ( ! is_iterable( $substring ) ) {
+		if ( !is_iterable( $substring ) ) {
 			$substring = (array) $substring;
 		}
 
@@ -218,7 +226,7 @@ final class Str {
 		}
 
 		foreach ( $substring as $substring ) {
-			if ( ! $caseSensitive ) {
+			if ( !$caseSensitive ) {
 				$substring = mb_strtolower( $substring );
 			}
 
@@ -237,17 +245,17 @@ final class Str {
 	 *
 	 *
 	 * @param  ?string  $string
-	 * @param  iterable|array $all
-	 * @param  bool     $caseSensitive
+	 * @param  iterable|array  $all
+	 * @param  bool  $caseSensitive
 	 * @return bool
 	 */
-	public static function containsAll( ?string $string, iterable | string $all, bool $caseSensitive = false ): bool {
+	public static function containsAll( ?string $string, iterable | string $all, bool $caseSensitive = false ) : bool {
 		foreach ( (array) $all as $substring ) {
-			if ( ! Str::contains(
+			if ( !Str::contains(
 				$string,
 				$substring,
 				[],
-				$caseSensitive
+				$caseSensitive,
 			) ) {
 				return false;
 			}
@@ -257,13 +265,14 @@ final class Str {
 	}
 
 	public static function replace(
-			?string $search,
-		string $replace,
-			?string $subject,
-			?int $limit = null,
-		bool $caseSensitive = true ): ?string {
+		?string $search,
+		string  $replace,
+		?string $subject,
+		?int    $limit = null,
+		bool    $caseSensitive = true,
+	) : ?string {
 
-		if ( ! $search || ! $subject || 0 === $limit ) {
+		if ( !$search || !$subject || 0 === $limit ) {
 			return $subject;
 		}
 
@@ -282,27 +291,27 @@ final class Str {
 			}
 
 			$subject = substr_replace( $subject, $replace, $match, strlen( $search ) );
-			$match   = stripos( $subject, $search, $match + strlen( $replace ) );
+			$match = stripos( $subject, $search, $match + strlen( $replace ) );
 		}
 
 		return $subject;
 
 	}
 
-/** Replace each key from `$map` with its value, when found in `$content`.
- *
- * @param  array			$map search:replace
- * @param  string|array $content
- * @param  bool    		$caseSensitive
- * @return ?string The processed `$content`, or null if `$content` is empty
- */
+	/** Replace each key from `$map` with its value, when found in `$content`.
+	 *
+	 * @param  array  $map  search:replace
+	 * @param  string|array  $content
+	 * @param  bool  $caseSensitive
+	 * @return ?string The processed `$content`, or null if `$content` is empty
+	 */
 	public static function replaceEach(
 		array $map,
 		string | array $content,
-		bool $caseSensitive = true
-	): string | array | null {
+		bool $caseSensitive = true,
+	) : string | array | null {
 
-		if ( ! $content ) {
+		if ( !$content ) {
 			return $content;
 		}
 
@@ -314,11 +323,11 @@ final class Str {
 	}
 
 	/**
-	 * @param  iterable            $iterable
+	 * @param  iterable  $iterable
 	 * @param  callable<value:key> $callback   Must accept $key and $value, and return ?string
 	 * @return null|string
 	 */
-	public static function forEach( iterable $iterable, callable $callback, string | bool $implode = false ): mixed {
+	public static function forEach( iterable $iterable, callable $callback, string | bool $implode = false ) : mixed {
 
 		$return = [];
 
@@ -341,16 +350,17 @@ final class Str {
 	 *  * Supports tag attributes.
 	 *
 	 *
-	 * @param  ?string     $value
-	 * @param  string      $before
-	 * @param  string|null $after
+	 * @param  ?string  $value
+	 * @param  string  $before
+	 * @param  string|null  $after
 	 * @return string
 	 */
-	public static function wrap( ?string $value, string $before, ?string $after = null ): string {
-		if ( ! $after && str_starts_with( $before, '<' ) ) {
-			$tag   = strstr( $before, ' ', true ) ?: $before;
+	public static function wrap( ?string $value, string $before, ?string $after = null ) : string {
+		if ( !$after && str_starts_with( $before, '<' ) ) {
+			$tag = strstr( $before, ' ', true ) ?: $before;
 			$after = str_replace( '<', '</', rtrim( $tag, '>' ) . '>' );
-		} else {
+		}
+		else {
 			$after ??= $before;
 		}
 
@@ -361,14 +371,15 @@ final class Str {
 	 * Split a string by the given separator, with flexible return options.
 	 *
 	 *
-	 * @param  ?string $string
-	 * @param  string  $return    = ['array', 'first', 'last'][any]
-	 * @param  string  $separator = ':'
+	 * @param  ?string  $string
+	 * @param  string  $return  = ['array', 'first', 'last'][any]
+	 * @param  string  $separator  = ':'
 	 * @return array   | string | null
 	 */
-	public static function split( ?string $string, string $return = 'array', string $separator = ':' ): array | string | null {
+	public static function split( ?string $string, string $return = 'array', string $separator = ':',
+	) : array | string | null {
 		$array = array_filter( explode( $separator, $string ) );
-		if ( ! $array ) {
+		if ( !$array ) {
 			return null;
 		}
 
@@ -387,36 +398,37 @@ final class Str {
 	 * Parse a Class[@]method style callback into class and method.
 	 *
 	 *
-	 * @param  string      $callback
-	 * @param  string|null $default
+	 * @param  string  $callback
+	 * @param  string|null  $default
 	 * @return array<Num,  string|null>
 	 */
-	public static function ParseCallback( string $callback, ?string $default = null ): array {
-		return Str::contains( $callback, '@' ) ? explode( '@', $callback, 2 ) : [$callback, $default];
+	public static function ParseCallback( string $callback, ?string $default = null ) : array {
+		return Str::contains( $callback, '@' ) ? explode( '@', $callback, 2 ) : [ $callback, $default ];
 	}
 
 	/**
 	 * Convert a $string to camelCase.
 	 *
 	 *
-	 * @param  ?string   $string
+	 * @param  ?string  $string
 	 * @return ?string
 	 */
 
-	public static function toCamel( ?string $string ): ?string {
+	public static function toCamel( ?string $string ) : ?string {
 		$delimiter = Str::guessDelimiter( $string ) ?? ' ';
-		$string    = mb_strtolower( $string );
-		$camel     = [];
-		$each      = explode( $delimiter, $string );
+		$string = mb_strtolower( $string );
+		$camel = [];
+		$each = explode( $delimiter, $string );
 
-		if ( ! $each ) {
+		if ( !$each ) {
 			return $string;
 		}
 
 		foreach ( $each as $index => $segment ) {
 			if ( $index === 0 ) {
 				$camel[] = $segment;
-			} else {
+			}
+			else {
 				$camel[] = ucfirst( $segment );
 			}
 
@@ -425,24 +437,24 @@ final class Str {
 		return implode( '', $camel );
 	}
 
-	public static function guessDelimiter( ?string $string ): string {
-		return Str::contains( $string, [' ', '-', '_', '/', '\\', ':', ';'] );
+	public static function guessDelimiter( ?string $string ) : string {
+		return Str::contains( $string, [ ' ', '-', '_', '/', '\\', ':', ';' ] );
 	}
 
-	public static function containsValidHTML( ?string $string, ?string $mustContain = null ): string | bool {
+	public static function containsValidHTML( ?string $string, ?string $mustContain = null ) : string | bool {
 		// debug( $html );
-		if ( ! $string || ( str_starts_with( $string, '<' ) && ! str_ends_with( $string, '>' ) ) ) {
+		if ( !$string || ( str_starts_with( $string, '<' ) && !str_ends_with( $string, '>' ) ) ) {
 			return false;
 		}
 
-		if ( $mustContain && ! str_contains( $string, $mustContain ) ) {
+		if ( $mustContain && !str_contains( $string, $mustContain ) ) {
 			return false;
 		}
 
 		preg_match_all( '#<(?!meta|img|br|hr|input\b)\b([a-z]+)(?: .*)?(?<![/| ])>#iU', $string, $result );
-		$openedTags = $result[1];
+		$openedTags = $result[ 1 ];
 		preg_match_all( '#</([a-z]+)>#iU', $string, $result );
-		$closedTags = $result[1];
+		$closedTags = $result[ 1 ];
 		$len_opened = count( $openedTags );
 		if ( count( $closedTags ) == $len_opened ) {
 			return $string;
@@ -455,23 +467,23 @@ final class Str {
 	 *
 	 * * `$trim` calculates a random sequence from the full hash
 	 *
-	 * @param string|null $input String to convert
-	 * @param int         $trim  Length of the returned hash
-	 * @param bool        $lower Return only lowercase
+	 * @param  string|null  $input  String to convert
+	 * @param  int  $trim  Length of the returned hash
+	 * @param  bool  $lower  Return only lowercase
 	 * @return string
 	 */
-	public static function hash( ?string $input = null, int $trim = 8, bool $lower = false ): string {
-		$input ??= srand( hrtime()[1] ) . rand( 1, 128 );
+	public static function hash( ?string $input = null, int $trim = 8, bool $lower = false ) : string {
+		$input ??= srand( hrtime()[ 1 ] ) . rand( 1, 128 );
 
-		$int  = crc32( $input );
+		$int = crc32( $input );
 		$hash = base64_encode( hash( 'sha256', $input, true ) );
-		$out  = $hash;
+		$out = $hash;
 
 		if ( $trim ) {
 			srand( $int );
-			$max    = strlen( $out ) - $trim;
+			$max = strlen( $out ) - $trim;
 			$offset = rand( 0, $max );
-			$out    = substr( $out, $offset, $trim );
+			$out = substr( $out, $offset, $trim );
 		}
 
 		if ( $lower === true ) {
@@ -481,7 +493,7 @@ final class Str {
 		return $out;
 	}
 
-	public static function href( string $string ): string {
+	public static function href( string $string ) : string {
 		$string = strtolower( trim( $string ) );
 
 		if ( filter_var( $string, FILTER_VALIDATE_EMAIL ) ) {
@@ -491,10 +503,11 @@ final class Str {
 		return $string;
 	}
 
-	public static function asJson( mixed $value ): string | false {
+	public static function asJson( mixed $value ) : string | false {
 		try {
 			return json_encode( $value, JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT );
-		} catch ( JsonException ) {
+		}
+		catch ( JsonException ) {
 			return false;
 		}
 	}
