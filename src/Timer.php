@@ -66,7 +66,7 @@ final class Timer
 
 		$event = Timer::$events[ $event ];
 
-		if ( array_key_exists( $event, [ 'running' ] ) ) {
+		if ( Arr::keyExists( $event, [ 'running' ] ) ) {
 			if ( $stop ) {
 				$event = Timer::stop( $event );
 			}
