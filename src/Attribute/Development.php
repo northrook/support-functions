@@ -4,7 +4,7 @@ namespace Northrook\Support\Attribute;
 
 use Attribute;
 
-#[Attribute( Attribute::TARGET_CLASS | Attribute::TARGET_METHOD )]
+#[Attribute( Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD | Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY )]
 class Development
 {
 	public function __construct(
