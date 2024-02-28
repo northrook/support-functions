@@ -51,10 +51,10 @@ final class Timer
 	}
 
 	public static function get(
-		string $event,
-		int    $format = Timer::FORMAT_MS,
-		bool   $stop = true,
-	) : ?float {
+		string     $event,
+		int | bool $format = Timer::FORMAT_MS,
+		bool       $stop = true,
+	) : null | string | float | int {
 
 		if ( !isset( Timer::$events[ $event ] ) ) {
 			Debug::log(
@@ -64,11 +64,11 @@ final class Timer
 			return null;
 		}
 
-		$event = Timer::$events[ $event ];
+		$timer = Timer::$events[ $event ];
 
-		if ( Arr::keyExists( $event, [ 'running' ] ) ) {
+		if ( Arr::keyExists( $timer, [ 'running' ] ) ) {
 			if ( $stop ) {
-				$event = Timer::stop( $event );
+				$timer = Timer::stop( $event );
 			}
 			else {
 				Debug::log(
@@ -79,7 +79,11 @@ final class Timer
 			}
 		}
 
-		return ltrim( number_format( $event / $format, 3 ), '0' );
+		if ( $format === false ) {
+			return $timer;
+		}
+
+		return ltrim( number_format( $timer / $format, 3 ), '0' );
 
 	}
 
