@@ -62,14 +62,14 @@ enum Level : int
 	case EMERGENCY = 600;
 
 	/**
-	 * @param  callable|null  $case  // Pass a callable to alter the name before returning
+	 * @param  string|null  $case  // ['strtoupper', 'ucfirst', 'ucwords'][%any]
 	 * @return string
 	 */
-	public function name( ?callable $case = null ) : string {
+	public function name( ?string $case = null ) : string {
 
 		$name = self::NAMES[ $this->value ];
 
-		if ( $case ) {
+		if ( $case && is_callable( $case ) ) {
 			return $case( $name );
 		}
 
