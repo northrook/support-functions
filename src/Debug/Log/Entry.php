@@ -7,8 +7,8 @@ namespace Northrook\Support\Debug\Log;
 class Entry
 {
 
-	public readonly Timestamp $timestamp;
-	public Level              $level;
+	public readonly Timestamp $Timestamp;
+	public Level              $Level;
 
 	public function __construct(
 		public readonly string $message,
@@ -17,7 +17,7 @@ class Entry
 		?Timestamp             $timestamp = null,
 	) {
 
-		$this->timestamp = $timestamp ?? new Timestamp();
-		$this->level = $level ?? Level::DEBUG;
+		$this->Timestamp = $timestamp ?? new Timestamp();
+		$this->Level = $level ?? Level::DEBUG;
 	}
 }

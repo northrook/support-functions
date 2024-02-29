@@ -20,7 +20,7 @@ class Timestamp
 	private const DEFAULT_TIMEZONE = 'Europe/London';
 
 	private readonly DateTimeImmutable $DateTime;
-	private readonly DateTimeZone      $timezone;
+	private readonly DateTimeZone      $TimeZone;
 	public readonly int                $timestamp;
 
 	public function __construct(
@@ -28,7 +28,7 @@ class Timestamp
 		DateTimeZone        $timezone = null,
 	) {
 		$this->timestamp = $this::getUnixTimestamp( $timestamp );
-		$this->timezone = $timezone ?? new DateTimeZone( self::DEFAULT_TIMEZONE );
+		$this->TimeZone = $timezone ?? new DateTimeZone( self::DEFAULT_TIMEZONE );
 	}
 
 	public function __toString() : string {
@@ -53,7 +53,7 @@ class Timestamp
 		}
 
 		$this->DateTime = ( new DateTimeImmutable() )
-			->setTimezone( $timezone ?? $this->timezone )
+			->setTimezone( $timezone ?? $this->TimeZone )
 			->setTimestamp( $this->timestamp )
 		;
 
