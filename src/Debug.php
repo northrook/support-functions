@@ -2,6 +2,7 @@
 
 namespace Northrook\Support;
 
+use http\Exception\RuntimeException;
 use Northrook\Support\Debug\Log;
 use Psr\Log\LogLevel;
 
@@ -48,6 +49,10 @@ final class Debug
 		?Log\Level     $severity = null,
 		?Log\Timestamp $timestamp = null,
 	) : void {
+
+		throw new RuntimeException(
+			"Logging via " . __METHOD__ . " is no longer supported. Please use Northrook\Logger."
+		);
 
 		$dump ??= debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, 3 );
 
