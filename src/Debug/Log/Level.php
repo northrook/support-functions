@@ -61,8 +61,19 @@ enum Level : int
 	 */
 	case EMERGENCY = 600;
 
-	public function name() : string {
-		return self::NAMES[ $this->value ];
+	/**
+	 * @param  callable|null  $case  // Pass a callable to alter the name before returning
+	 * @return string
+	 */
+	public function name( ?callable $case = null ) : string {
+
+		$name = self::NAMES[ $this->value ];
+
+		if ( $case ) {
+			return $case( $name );
+		}
+
+		return $name;
 	}
 
 	public const NAMES = [
