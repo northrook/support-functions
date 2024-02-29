@@ -3,6 +3,7 @@
 namespace Northrook\Support;
 
 use http\Exception\RuntimeException;
+use JetBrains\PhpStorm\Deprecated;
 use Northrook\Support\Debug\Log;
 use Psr\Log\LogLevel;
 
@@ -43,6 +44,10 @@ final class Debug
 		echo '<script>console.log("' . $message . '");</script>';
 	}
 
+	#[deprecated(
+		reason : 'Logging via ' . __METHOD__ . ' is no longer supported. Please use Northrook\Logger.',
+		since  : '1.0.0'
+	)]
 	public static function log(
 		string         $message,
 		mixed          $dump = null,
