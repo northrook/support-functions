@@ -2,10 +2,9 @@
 
 namespace Northrook\Support;
 
-use http\Exception\RuntimeException;
 use JetBrains\PhpStorm\Deprecated;
 use Northrook\Support\Debug\Log;
-use Psr\Log\LogLevel;
+use RuntimeException;
 
 if ( !function_exists( 'dump' ) ) {
 	function dump( mixed...$vars ) : void {
