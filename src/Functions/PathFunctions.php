@@ -70,19 +70,35 @@ trait PathFunctions
 		);
 	}
 
+	/**
+	 * @param  string  $string
+	 * @return string Path, always ending with a `DIRECTORY_SEPARATOR`
+	 */
 	public static function normalizePath( string $string ) : string {
+
+		$string = strtr( $string, "\\", "/" );
+
+		if ( str_contains( $string, '/' ) === false ) {
+			return $string . DIRECTORY_SEPARATOR;
+		}
+
 		$path = [];
-		foreach ( explode( '/', strtr( $string, '\\', '/' ) ) as $part ) {
+
+		foreach ( explode( '/', $string ) as $part ) {
 			if ( $part === '..' && $path && end( $path ) !== '..' ) {
 				array_pop( $path );
 			}
 			else {
 				if ( $part !== '.' ) {
-					$path[] = $part;
+					$path[] = trim( $part );
 				}
 			}
 		}
 
-		return implode( DIRECTORY_SEPARATOR, $path );
+		return implode(
+			       separator : DIRECTORY_SEPARATOR,
+			       array     : $path,
+		       ) . DIRECTORY_SEPARATOR;
 	}
+
 }
