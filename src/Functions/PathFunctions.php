@@ -60,6 +60,10 @@ trait PathFunctions
 
 		$path = self::normalizePath( $path );
 
+		if ( $fullPath ) {
+			$fullPath = self::normalizePath( $fullPath );
+		}
+
 		return str_replace(
 			'\\\\', '\\', $fullPath ? Str::start(
 			string : $path, with : Str::end(
