@@ -88,7 +88,7 @@ trait PathFunctions
 
 		$path = [];
 
-		foreach ( explode( '/', $string ) as $part ) {
+		foreach ( array_filter( explode( '/', $string ) ) as $part ) {
 			if ( $part === '..' && $path && end( $path ) !== '..' ) {
 				array_pop( $path );
 			}
@@ -99,10 +99,16 @@ trait PathFunctions
 			}
 		}
 
-		return implode(
+		$path = implode(
 			separator : DIRECTORY_SEPARATOR,
 			array     : $path,
 		);
+
+		if ( false === isset( pathinfo( $path )[ 'extension' ] ) ) {
+			$path .= DIRECTORY_SEPARATOR;
+		}
+
+		return $path;
 	}
 
 }
