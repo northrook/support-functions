@@ -57,8 +57,8 @@ trait PathFunctions
 	}
 
 	public static function filepath( string $path, ?string $fullPath = null ) : string {
-		$path = str_replace( [ '/', '\\' ], DIRECTORY_SEPARATOR, $path );
-		$path = mb_strtolower( $path );
+
+		$path = self::normalizePath( $path );
 
 		return str_replace(
 			'\\\\', '\\', $fullPath ? Str::start(
@@ -76,7 +76,7 @@ trait PathFunctions
 	 */
 	public static function normalizePath( string $string ) : string {
 
-		$string = strtr( $string, "\\", "/" );
+		$string = mb_strtolower( strtr( $string, "\\", "/" ) );
 
 		if ( str_contains( $string, '/' ) === false ) {
 			return $string;
