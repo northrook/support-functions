@@ -72,14 +72,14 @@ trait PathFunctions
 
 	/**
 	 * @param  string  $string
-	 * @return string Path, always ending with a `DIRECTORY_SEPARATOR`
+	 * @return string
 	 */
 	public static function normalizePath( string $string ) : string {
 
 		$string = strtr( $string, "\\", "/" );
 
 		if ( str_contains( $string, '/' ) === false ) {
-			return $string . DIRECTORY_SEPARATOR;
+			return $string;
 		}
 
 		$path = [];
@@ -96,9 +96,9 @@ trait PathFunctions
 		}
 
 		return implode(
-			       separator : DIRECTORY_SEPARATOR,
-			       array     : $path,
-		       ) . DIRECTORY_SEPARATOR;
+			separator : DIRECTORY_SEPARATOR,
+			array     : $path,
+		);
 	}
 
 }
