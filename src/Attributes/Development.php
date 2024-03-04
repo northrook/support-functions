@@ -1,6 +1,6 @@
 <?php
 
-namespace Northrook\Support\Attribute;
+namespace Northrook\Support\Attributes;
 
 use Attribute;
 use JetBrains\PhpStorm\ExpectedValues;

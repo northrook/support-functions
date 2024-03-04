@@ -4,11 +4,14 @@ namespace Northrook\Support\HTML;
 
 use DOMDocument;
 use DOMNode;
+use JetBrains\PhpStorm\Deprecated;
 use Northrook\Support\Sort;
 use Northrook\Support\Str;
 use Northrook\Support\UserAgent;
 
-class Element extends Render {
+#[Deprecated]
+class Element extends Render
+{
 
 	public ?string $innerHTML = null;
 
@@ -17,7 +20,7 @@ class Element extends Render {
 	 *
 	 * @var array
 	 */
-	private static array $generatedElementIdList = [];
+	private static array  $generatedElementIdList = [];
 	private readonly bool $close;
 
 	/**
@@ -27,41 +30,42 @@ class Element extends Render {
 	 *
 	 * @return array
 	 */
-	public static function getGeneratedIdList(): array {
+	public static function getGeneratedIdList() : array {
 		return Element::$generatedElementIdList;
 	}
 
 	/**
 	 * Create a new HTML Element
 	 *
-	 * @param string            $tag
-	 * @param string|array|null $content       Note: HTML is escaped
-	 * @param array             $attributes
-	 * @param bool              $compress      Compress the HTML with Str::squish
-	 * @param bool              $pretty        Pretty print the HTML, overrides $compress
-	 * @param bool              $parseTemplate Run the $content through Render::template
+	 * @param  string  $tag
+	 * @param  string|array|null  $content  Note: HTML is escaped
+	 * @param  array  $attributes
+	 * @param  bool  $compress  Compress the HTML with Str::squish
+	 * @param  bool  $pretty  Pretty print the HTML, overrides $compress
+	 * @param  bool  $parseTemplate  Run the $content through Render::template
 	 */
 	public final function __construct(
-		public string $tag,
-		public array $attributes = [],
-		string | array | null $content = null,
-		private readonly bool $compress = false,
-		private readonly bool $pretty = false,
+		public string            $tag,
+		public array             $attributes = [],
+		string | array | null    $content = null,
+		private readonly bool    $compress = false,
+		private readonly bool    $pretty = false,
 		private readonly ?string $template = null,
-			?bool $close = null,
+		?bool                    $close = null,
 	) {
 
-		if ( $this->tag === 'button' && ! isset( $this->attributes['type'] ) ) {
-			$this->attributes['type'] = 'button';
+		if ( $this->tag === 'button' && !isset( $this->attributes[ 'type' ] ) ) {
+			$this->attributes[ 'type' ] = 'button';
 		}
 
-		if ( $this->tag === 'button' && isset( $attributes['label'] ) && ! isset( $attributes['aria-label'] ) ) {
-			$this->attributes['aria-label'] = $attributes['label'];
-			unset( $this->attributes['label'] );
+		if ( $this->tag === 'button' && isset( $attributes[ 'label' ] ) && !isset( $attributes[ 'aria-label' ] ) ) {
+			$this->attributes[ 'aria-label' ] = $attributes[ 'label' ];
+			unset( $this->attributes[ 'label' ] );
 		}
 
-		$this->close = $close ?? ! in_array( $tag, [
-			'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr',
+		$this->close = $close ?? !in_array( $tag, [
+			'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source',
+			'track', 'wbr',
 		] );
 
 		if ( $content ) {
@@ -72,14 +76,14 @@ class Element extends Render {
 	/**
 	 * Get the HTML, parsing $innerHTML and $attributes
 	 *
+	 * @return string
 	 * @todo [low] Implement static cache function, potentially as a method of Northrook\Core\Render as wrapper
 	 *       This may be irrelevant, if we parse Latte templates at compile time
 	 *
-	 * @return string
 	 */
-	public function __toString(): string {
-		$element = array_filter( ["$this->tag", Element::attributes( $this->attributes )] );
-		$html    = '<' . implode( ' ', $element ) . '>';
+	public function __toString() : string {
+		$element = array_filter( [ "$this->tag", Element::attributes( $this->attributes ) ] );
+		$html = '<' . implode( ' ', $element ) . '>';
 
 		if ( $this->innerHTML ) {
 			$html .= $this->innerHTML;
@@ -98,29 +102,30 @@ class Element extends Render {
 
 	/**
 	 *
-	 * @param  array      $jit
-	 * @param  array|null $default
+	 * @param  array  $jit
+	 * @param  array|null  $default
 	 * @return string
 	 */
-	public static function attributes( array $jit, ?array $default = [] ): string {
+	public static function attributes( array $jit, ?array $default = [] ) : string {
 
 		$attributes = [];
 
 		foreach ( $default + $jit as $attribute => $value ) {
 
-			$attribute = Str::key( string: $attribute, separator: '-', preserve: ':' );
-			
+			$attribute = Str::key( string : $attribute, separator : '-', preserve : ':' );
+
 			$value = match ( $attribute ) {
 				'id', 'for' => Element::id( $value ),
 				'class'     => Element::classes( $value ),
 				'style'     => Element::styles( $value ),
 				default     => $value
 			};
-			
-			if ( in_array( $attribute, ['disabled', 'readonly', 'required', 'checked', 'hidden'] ) ) {
+
+			if ( in_array( $attribute, [ 'disabled', 'readonly', 'required', 'checked', 'hidden' ] ) ) {
 				if ( $value === true || $value === '' || $value === $attribute ) {
-					$attributes[$attribute] = $attribute;
-				} else {
+					$attributes[ $attribute ] = $attribute;
+				}
+				else {
 					continue;
 				}
 			}
@@ -135,9 +140,10 @@ class Element extends Render {
 
 			if ( $value !== null ) {
 				if ( $attribute === $value ) {
-					$attributes[$attribute] = $attribute;
-				} else {
-					$attributes[$attribute] = $attribute . ( $value !== null ? '="' . $value . '"' : '' );
+					$attributes[ $attribute ] = $attribute;
+				}
+				else {
+					$attributes[ $attribute ] = $attribute . ( $value !== null ? '="' . $value . '"' : '' );
 				}
 			}
 		}
@@ -157,11 +163,11 @@ class Element extends Render {
 	 *  The ID will be generated according to `Str::slug()` rules
 	 *  The ID will be appended to Element::$generatedElementIdList
 	 *
-	 * @param  string|null $id
+	 * @param  string|null  $id
 	 * @return ?string
 	 */
-	public static function id( ?string $id ): ?string {
-		if ( Str::containsAll( $id, ['{', '}'] ) ) {
+	public static function id( ?string $id ) : ?string {
+		if ( Str::containsAll( $id, [ '{', '}' ] ) ) {
 			return $id;
 		}
 		$id = Str::slug( $id );
@@ -173,11 +179,11 @@ class Element extends Render {
 
 	/**
 	 *
-	 * @param  string|array|null $value Pass either a string or an array
+	 * @param  string|array|null  $value  Pass either a string or an array
 	 * @return string|null
 	 */
-	public static function classes( string | array | null $value ): ?string {
-		if ( ! $value ) {
+	public static function classes( string | array | null $value ) : ?string {
+		if ( !$value ) {
 			return null;
 		}
 
@@ -194,11 +200,11 @@ class Element extends Render {
 	 * Parse element styles from $value and return a string
 	 *
 	 *
-	 * @param  string|array|null $value
+	 * @param  string|array|null  $value
 	 * @return string|null
 	 */
-	public static function styles( string | array | null $value ): ?string {
-		if ( ! $value ) {
+	public static function styles( string | array | null $value ) : ?string {
+		if ( !$value ) {
 			return null;
 		}
 
@@ -208,38 +214,38 @@ class Element extends Render {
 
 		$styles = [];
 		foreach ( array_filter( $value ) as $style ) {
-			$style             = explode( ':', $style, 2 );
-			$styles[$style[0]] = implode( ':', $style );
+			$style = explode( ':', $style, 2 );
+			$styles[ $style[ 0 ] ] = implode( ':', $style );
 		}
 
 		return implode( '; ', $styles );
 	}
 
 	/// use Render::element(); instead, allow passing attributes
-	public static function keybind( ?string $string, ?string $tag = 'kbd' ): ?string {
-		if ( ! $string ) {
+	public static function keybind( ?string $string, ?string $tag = 'kbd' ) : ?string {
+		if ( !$string ) {
 			return null;
 		}
 
 		if ( UserAgent::OS( 'apple' ) ) {
-			$string = str_replace( ['ctrl', 'alt'], ['⌘', '⌥'], $string );
+			$string = str_replace( [ 'ctrl', 'alt' ], [ '⌘', '⌥' ], $string );
 		}
 
 		return "<$tag>$string</$tag>";
 	}
 
 	/// use Render::element(); instead, allow passing attributes
-	public static function tooltip( ?string $string, ?string $placement = 'top' ): ?string {
-		if ( ! $string ) {
+	public static function tooltip( ?string $string, ?string $placement = 'top' ) : ?string {
+		if ( !$string ) {
 			return null;
 		}
 
 		return "<tooltip>$string</tooltip>";
 	}
 
-	public static function extractAttributes( string $html, ?string $tag = null ): array {
+	public static function extractAttributes( string $html, ?string $tag = null ) : array {
 
-		if ( ! $html ) {
+		if ( !$html ) {
 			return [];
 		}
 
@@ -257,13 +263,13 @@ class Element extends Render {
 		$node = $dom->getElementsByTagName( $tag )->item( 0 );
 
 		foreach ( $node->attributes as $attribute ) {
-			$attributes[$attribute->nodeName] = $attribute->nodeValue;
+			$attributes[ $attribute->nodeName ] = $attribute->nodeValue;
 		}
 
 		return $attributes;
 	}
 
-	public static function extractElements( string $html, string $tag ): array {
+	public static function extractElements( string $html, string $tag ) : array {
 		$dom = new DOMDocument();
 		$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
 
@@ -272,11 +278,11 @@ class Element extends Render {
 		$nodes = $dom->getElementsByTagName( $tag );
 
 		foreach ( $nodes as $node ) {
-			$element            = $dom->saveHTML( $node );
-			$elements[$element] = [];
+			$element = $dom->saveHTML( $node );
+			$elements[ $element ] = [];
 			foreach ( $node->attributes as $attribute ) {
-				$value                                    = $attribute->nodeValue === '' ? true : $attribute->nodeValue;
-				$elements[$element][$attribute->nodeName] = $value;
+				$value = $attribute->nodeValue === '' ? true : $attribute->nodeValue;
+				$elements[ $element ][ $attribute->nodeName ] = $value;
 			}
 		}
 		// dd( $elements );
@@ -284,14 +290,16 @@ class Element extends Render {
 		return $elements;
 	}
 
-	public static function loadHTML( string $html ): DOMDocument {
+	public static function loadHTML( string $html ) : DOMDocument {
 		$dom = new DOMDocument();
 		$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
 
 		return $dom;
 	}
 
-	public static function nodeContent( ?DOMNode $node, DOMDocument $dom, bool $entityDecode = true, bool $revertEmptySelfClosing = true ): string {
+	public static function nodeContent(
+		?DOMNode $node, DOMDocument $dom, bool $entityDecode = true, bool $revertEmptySelfClosing = true,
+	) : string {
 
 		$childNodes = $node->childNodes;
 

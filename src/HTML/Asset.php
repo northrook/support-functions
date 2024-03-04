@@ -2,84 +2,90 @@
 
 namespace Northrook\Support\HTML;
 
+use JetBrains\PhpStorm\Deprecated;
 use Northrook\Support\Config;
 use Northrook\Support\ConfigParameters;
 use Northrook\Support\Str;
 
-final class Asset {
+#[Deprecated]
+final class Asset
+{
 
-    use ConfigParameters;
-    private const VERSION_PREFIX = '?v=';
+	use ConfigParameters;
 
-    public readonly ?string $path;
-    public readonly string $url;
-    public readonly string $type;
-    public readonly string $version;
-    public readonly bool $exists;
+	private const VERSION_PREFIX = '?v=';
 
-    public function __construct( string $path, ?string $type = 'auto', private bool $cacheBusting = false, public ?bool $defer = null ) {
-        $this->path    = $this->assetPath( $path );
-        $this->type    = $this->assetType( $type );
-        $this->version = $this->assetVersion();
-        $this->url     = $this->assetUrl( true );
-    }
+	public readonly ?string $path;
+	public readonly string  $url;
+	public readonly string  $type;
+	public readonly string  $version;
+	public readonly bool    $exists;
 
-    public function link( ?string $type = null ): string {
-        $type ??= [
-            'css' => 'stylesheet',
-            'js'  => 'script',
-        ][$this->type];
+	public function __construct( string       $path, ?string $type = 'auto', private bool $cacheBusting = false,
+	                             public ?bool $defer = null,
+	) {
+		$this->path = $this->assetPath( $path );
+		$this->type = $this->assetType( $type );
+		$this->version = $this->assetVersion();
+		$this->url = $this->assetUrl( true );
+	}
 
-        return match ( $this->type ) {
-            'css' => "<link rel=\"stylesheet\" href=\"$this->url\">",
-            'js' => '<script src="' . $this->url . '"' . $this->deferAsset() . '></script>',
-        };
-    }
+	public function link( ?string $type = null ) : string {
+		$type ??= [
+			          'css' => 'stylesheet',
+			          'js'  => 'script',
+		          ][ $this->type ];
 
-    private function deferAsset( string $output = 'defer' ): string {
-        return match ( $this->type ) {
-            'js' => ( $this->defer !== false ) ? " $output" : '',
-            'css' => ( $this->defer !== null ) ? " $output" : '',
-        };
-    }
+		return match ( $this->type ) {
+			'css' => "<link rel=\"stylesheet\" href=\"$this->url\">",
+			'js'  => '<script src="' . $this->url . '"' . $this->deferAsset() . '></script>',
+		};
+	}
 
-    private function assetPath( string $path ): ?string {
-        $providedPath = Str::filepath( $path, $this::config()->publicDir );
-        if ( file_exists( $providedPath ) ) {
+	private function deferAsset( string $output = 'defer' ) : string {
+		return match ( $this->type ) {
+			'js'  => ( $this->defer !== false ) ? " $output" : '',
+			'css' => ( $this->defer !== null ) ? " $output" : '',
+		};
+	}
 
-            $this->exists = true;
+	private function assetPath( string $path ) : ?string {
+		$providedPath = Str::filepath( $path, $this::config()->publicDir );
+		if ( file_exists( $providedPath ) ) {
 
-            return $providedPath;
-        }
+			$this->exists = true;
 
-        // @todo Log to debug
+			return $providedPath;
+		}
 
-        $this->exists = false;
+		// @todo Log to debug
 
-        return null;
-    }
+		$this->exists = false;
 
-    private function assetUrl( bool $withVersion = false, bool $relative = false ): string {
-        $url = str_replace( [$this::config()->publicDir, '\\'], ['', '/'], $this->path );
+		return null;
+	}
 
-        if ( $withVersion ) {
-            $url = $url . self::VERSION_PREFIX . $this->version;
-        }
+	private function assetUrl( bool $withVersion = false, bool $relative = false ) : string {
+		$url = str_replace( [ $this::config()->publicDir, '\\' ], [ '', '/' ], $this->path );
 
-        return Str::start( $url, '/' );
-    }
+		if ( $withVersion ) {
+			$url = $url . self::VERSION_PREFIX . $this->version;
+		}
 
-    private function assetType( ?string $type = 'auto' ): string {
-        return $type === 'auto' ? pathinfo( $this->path, PATHINFO_EXTENSION ) : $type;
-    }
+		return Str::start( $url, '/' );
+	}
 
-    private function assetVersion(): string {
+	private function assetType( ?string $type = 'auto' ) : string {
+		return $type === 'auto' ? pathinfo( $this->path, PATHINFO_EXTENSION ) : $type;
+	}
 
-        if ( $this::config('var.cache.invalidateAll') || $this->cacheBusting ) {
-            return time();
-        }
+	private function assetVersion() : string {
 
-        return filemtime( $this->path );
-    }
+		if ( $this::config( 'var.cache.invalidateAll' ) || $this->cacheBusting ) {
+			return time();
+		}
+
+		return filemtime( $this->path );
+	}
 
 }
