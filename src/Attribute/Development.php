@@ -8,7 +8,7 @@ use Attribute;
 class Development
 {
 	public function __construct(
-		string $note,
-		string $untilVersion = '1.0.0',
+		string  $note,
+		?string $untilVersion = '1.0.0',
 	) {}
 }

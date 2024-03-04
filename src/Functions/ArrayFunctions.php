@@ -5,6 +5,12 @@ namespace Northrook\Support\Functions;
 trait ArrayFunctions
 {
 
+	public static function autoSpread( array $array ) : array {
+		if ( count( $array ) === 1 && is_array( $array[ 0 ] ) ) {
+			return $array[ 0 ];
+		}
+		return $array;
+	}
 
 	// TODO [low] Add option for match any, match all, and match none.
 	public static function keyExists( mixed $array, array $keys ) : bool {
@@ -38,15 +44,19 @@ trait ArrayFunctions
 			if ( $condition === 'contains' && strpos( $item, $value ) !== false ) {
 				return $item;
 			}
-			else if ( $condition === 'startsWith' && str_starts_with( $item, $value ) ) {
-				return $item;
-			}
-			else if ( $condition === 'endsWith' && str_ends_with( $item, $value ) ) {
-				return $item;
-			}
 			else {
-				if ( $item === $value ) {
+				if ( $condition === 'startsWith' && str_starts_with( $item, $value ) ) {
 					return $item;
+				}
+				else {
+					if ( $condition === 'endsWith' && str_ends_with( $item, $value ) ) {
+						return $item;
+					}
+					else {
+						if ( $item === $value ) {
+							return $item;
+						}
+					}
 				}
 			}
 		}
