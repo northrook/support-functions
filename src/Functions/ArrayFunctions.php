@@ -5,6 +5,31 @@ namespace Northrook\Support\Functions;
 trait ArrayFunctions
 {
 
+	/**
+	 * @param  array  $list
+	 * @param  array|string  $assign
+	 * @param  string  $separator
+	 * @param  bool  $filter
+	 * @return array
+	 */
+	public static function assignVariables(
+		array          $list,
+		array | string $assign,
+		string         $separator = ':',
+		bool           $filter = true,
+	) : array {
+
+		if ( is_string( $assign ) ) {
+			$assign = explode( $separator, $assign, count( $list ) );
+		}
+
+		if ( $filter ) {
+			$assign = array_filter( $assign );
+		}
+
+		return array_merge_recursive( $list, $assign );
+	}
+
 	public static function autoSpread( array $array ) : array {
 		if ( count( $array ) === 1 && is_array( $array[ 0 ] ) ) {
 			return $array[ 0 ];

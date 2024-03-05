@@ -47,6 +47,9 @@ class Get extends Make
 		bool    $raw = false,
 		bool    $xmlns = false,
 	) : ?string {
+
+		die( debug_backtrace() );
+
 		if ( !$get ) {
 			return null;
 		}
