@@ -7,17 +7,21 @@ trait ArrayFunctions
 
 	/**
 	 * @param  array  $list
-	 * @param  array|string  $assign
+	 * @param  array|string|null  $assign
 	 * @param  string  $separator
 	 * @param  bool  $filter
 	 * @return array
 	 */
 	public static function assignVariables(
-		array          $list,
-		array | string $assign,
-		string         $separator = ':',
-		bool           $filter = true,
+		array                 $list,
+		array | string | null $assign,
+		string                $separator = ':',
+		bool                  $filter = true,
 	) : array {
+
+		if ( is_null( $assign ) ) {
+			return $list;
+		}
 
 		if ( is_string( $assign ) ) {
 			$assign = explode( $separator, $assign, count( $list ) );
