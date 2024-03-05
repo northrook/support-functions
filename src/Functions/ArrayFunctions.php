@@ -31,7 +31,7 @@ trait ArrayFunctions
 			$assign = array_filter( $assign );
 		}
 
-		return array_merge_recursive( $list, $assign );
+		return array_replace( $list, $assign );
 	}
 
 	public static function autoSpread( array $array ) : array {
