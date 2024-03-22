@@ -3,6 +3,7 @@
 namespace Northrook\Support;
 
 use JetBrains\PhpStorm\Deprecated;
+use JetBrains\PhpStorm\Pure;
 use JsonException;
 use Northrook\Support\Functions\PathFunctions;
 use Northrook\Support\Functions\StringFunctions;
@@ -156,11 +157,19 @@ final class Str
         return $url;
     }
 
+    #[Pure]
+    public static function sanitize( ?string $string, bool $stripTags = false ) : string {
+        if ( $stripTags ) {
+            $string = strip_tags( $string );
+        }
+        return htmlspecialchars( (string) $string, ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8' );
+    }
+
     public static function key(
-        ?string $string,
-        ?string $separator = 'camelCase',
-        ?string $preserve = null,
-        ?string $language = 'en',
+        ?string       $string,
+        ?string       $separator = 'camelCase',
+        ?string       $preserve = null,
+        bool | string $ascii = false,
     ) : ?string {
 
         if ( !$string ) {
@@ -170,7 +179,13 @@ final class Str
         $string = mb_strtolower( $string );
         $string = strip_tags( $string );
 
-        $string = $language ? Str::ascii( $string, $language ) : $string;
+        if ( $ascii ) {
+            $string = Str::ascii( $string, ( $ascii === true ? null : $ascii ) );
+        }
+        else {
+            $string = preg_replace( '/[^A-Za-z0-9_-]/', '', $string );
+        }
+
 
         if ( $separator !== null ) {
             $string = str_replace( [ ' ', '-', '_', $separator ], ' ', trim( $string ) );
