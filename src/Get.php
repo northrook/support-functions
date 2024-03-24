@@ -8,9 +8,11 @@ use Northrook\Support\HTML\Element;
 class Get extends Make
 {
 
-    public static function className( object $class ) : string {
-        return strrpos( get_class( $class ), '\\' ) + 1;
+    public static function className( ?object $class = null ) : string {
+        $class = is_object( $class ) ? get_class( $class ) : $class;
+        return substr( $class, strrpos( $class, '\\' ) + 1 );
     }
+
 
     public static function element(
         string $tag,
