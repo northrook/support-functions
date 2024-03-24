@@ -237,7 +237,7 @@ final class Str
             }
         }
 
-        if ( $containsOnlyOne && $count !== 1 ) {
+        if ( $containsOnlyOne && count( $contains ) !== 1 ) {
             return false;
         }
 
