@@ -9,7 +9,7 @@ class Get extends Make
 {
 
     public static function className( ?object $class = null ) : string {
-        $class = is_object( $class ) ? get_class( $class ) : $class;
+        $class = is_object( $class ) ? $class::class : debug_backtrace()[ 1 ] [ 'class' ];
         return substr( $class, strrpos( $class, '\\' ) + 1 );
     }
 
