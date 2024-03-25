@@ -33,7 +33,7 @@ trait StringFunctions
 {
 
 
-    public static function between( string $string, string $needle, ?int $max = null, ?int $after = 0 ) : mixed {
+    public static function between( string $string, string $needle, ?int $max = null, ?int $after = 0 ) : string {
 
         $position = 0;
         $count    = [ 0 ];
