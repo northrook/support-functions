@@ -20,6 +20,7 @@
     "psr/log": "^1|^2|^3",
     "foroco/php-browser-detection": "^2.7",
     "voku/portable-ascii": "^2.0",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "symfony/var-dumper": "^7.0"
   }
 }

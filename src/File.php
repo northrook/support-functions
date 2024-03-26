@@ -11,6 +11,39 @@ abstract class File
 
     use ConfigParameters;
 
+    /**
+     * Get the file size of a given file.
+     *
+     *
+     * @param string|int  $bytes  Provide a path to a file or a file size in bytes
+     *
+     * @return string
+     */
+    public static function size( string | int $bytes ) : string {
+
+        if ( is_string( $bytes ) && file_exists( $bytes ) ) {
+            $bytes = filesize( $bytes );
+        }
+
+        $unitDecimalsByFactor = [
+            [ 'B', 0 ],
+            [ 'kB', 0 ],
+            [ 'MB', 2 ],
+            [ 'GB', 2 ],
+            [ 'TB', 3 ],
+            [ 'PB', 3 ],
+        ];
+
+        $factor = $bytes ? floor( log( (int) $bytes, 1024 ) ) : 0;
+        $factor = min( $factor, count( $unitDecimalsByFactor ) - 1 );
+
+        $value = round( $bytes / pow( 1024, $factor ), $unitDecimalsByFactor[ $factor ][ 1 ] );
+        $units = $unitDecimalsByFactor[ $factor ][ 0 ];
+
+        return $value . $units;
+    }
+
+
     public static function exists( string $path ) : bool {
 
 
@@ -20,21 +53,6 @@ abstract class File
         );
 
         return file_exists( $path );
-    }
-
-    /**
-     * Get the file size of a given file.
-     *
-     *
-     * @param string  $path
-     *
-     * @return int
-     */
-    public static function size( string $path ) : int {
-
-        $path = Str::filepath( $path, static::config()->rootDir );
-
-        return filesize( $path );
     }
 
     public static function getContents( string $path, string $onError = null, bool $asJson = false ) : ?string {
