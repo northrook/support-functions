@@ -14,13 +14,16 @@
       "email": "mn@northrook.com"
     }
   ],
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "require": {
     "php": ">=8.1",
     "psr/log": "^1|^2|^3",
     "foroco/php-browser-detection": "^2.7",
     "voku/portable-ascii": "^2.0",
     "ext-mbstring": "*",
-    "symfony/var-dumper": "^7.0"
+    "symfony/var-dumper": "^7.0",
+    "symfony/filesystem": "^7.0",
+    "northrook/logger": "dev-main",
+    "northrook/types": "dev-main"
   }
 }
