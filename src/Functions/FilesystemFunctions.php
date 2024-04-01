@@ -46,10 +46,13 @@ trait FilesystemFunctions
      */
     public static function size( string | int $bytes ) : string {
 
-        if ( is_string( $bytes ) && file_exists( $bytes ) ) {
+        if ( is_string( $bytes ) ) {
+            if ( !file_exists( $bytes ) ) {
+                Log::Error( '{path} does not exist.', [ 'path' => $bytes, ] );
+                return 'Unknown';
+            }
             $bytes = filesize( $bytes );
         }
-
         $unitDecimalsByFactor = [
             [ 'B', 0 ],
             [ 'kB', 0 ],

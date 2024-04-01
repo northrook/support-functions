@@ -183,10 +183,9 @@ final class Str
             $string = Str::ascii( $string, ( $ascii === true ? null : $ascii ) );
         }
         else {
-            $string = preg_replace( '/[^A-Za-z0-9_-]/', '', $string );
+            $string = preg_replace( '/[^A-Za-z0-9_-]/', '-', $string );
         }
-
-
+        
         if ( $separator !== null ) {
             $string = str_replace( [ ' ', '-', '_', $separator ], ' ', trim( $string ) );
         }
