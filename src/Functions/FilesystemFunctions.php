@@ -81,7 +81,7 @@ trait FilesystemFunctions
 
     public static function getMimeType( Path | string $path ) : ?string {
         $types = static::$cache[ 'mime.types' ] ??= include( self::parameterDirname(
-            '../../resources/mimetypes.php',
+            '../../../resources/mimetypes.php',
         ) );
 
         if ( array_key_exists( $path->extension, $types ) ) {
@@ -352,7 +352,7 @@ trait FilesystemFunctions
             try {
                 $iterator = new RecursiveIteratorIterator(
                     new RecursiveDirectoryIterator( $scan ),
-                    RecursiveIteratorIterator::CHILD_FIRST
+                    RecursiveIteratorIterator::CHILD_FIRST,
                 );
             }
             catch ( UnexpectedValueException ) {

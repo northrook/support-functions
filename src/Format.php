@@ -2,76 +2,80 @@
 
 namespace Northrook\Support;
 
-class Format {
+// TODO: https://www.php.net/manual/en/class.numberformatter.php
 
-	/**
-	 * * Spacing, XX XX XX XX, XXXX XXX XXX etc
-	 * * Areacode detector, 00XX, +XX etc
-	 *
-	 * @param string $number
-	 * @return string
-	 */
-	public static function telephone( string $number ): string {
-		return preg_replace( '/[^0-9]/', '', $number );
-	}
+class Format
+{
 
-	public static function quotes( string $string, array $options = [] ): string {
-		// ‘ ’ &lsquo; &rsquo;
-		// ‚ &bdquo; <- NOT A COMMA
-		// “ ” 	&ldquo; &rdquo;
-		// ′ ″ 	&prime; &Prime;
-		// ' " `
+    /**
+     * * Spacing, XX XX XX XX, XXXX XXX XXX etc
+     * * Areacode detector, 00XX, +XX etc
+     *
+     * @param string  $number
+     *
+     * @return string
+     */
+    public static function telephone( string $number ) : string {
+        return preg_replace( '/[^0-9]/', '', $number );
+    }
 
-		/// RULES
-		// - Must not be within a HTML tag
-		// - Must not be within a HTML attribute
+    public static function quotes( string $string, array $options = [] ) : string {
+        // ‘ ’ &lsquo; &rsquo;
+        // ‚ &bdquo; <- NOT A COMMA
+        // “ ” 	&ldquo; &rdquo;
+        // ′ ″ 	&prime; &Prime;
+        // ' " `
 
-		$options = array_merge(
-			[
-				'quotes'     => '"',
-				'openQuote'  => '«',
-				'closeQuote' => '»',
-			],
-			$options
-		);
+        /// RULES
+        // - Must not be within a HTML tag
+        // - Must not be within a HTML attribute
 
-		return preg_replace( '/"/', '&quot;', $string );
-	}
+        $options = array_merge(
+            [
+                'quotes'     => '"',
+                'openQuote'  => '«',
+                'closeQuote' => '»',
+            ],
+            $options,
+        );
 
-	public static function nl2span( string $string, string $whitespace = " " ): string {
-		$string = str_replace( ['<p>', '</p>'], ['<span>', '</span>'], $string );
-		$array  = Arr::explode( PHP_EOL, $string );
+        return preg_replace( '/"/', '&quot;', $string );
+    }
 
-		return Arr::implode( $array, wrap: 'span' );
-	}
+    public static function nl2span( string $string, string $whitespace = " " ) : string {
+        $string = str_replace( [ '<p>', '</p>' ], [ '<span>', '</span>' ], $string );
+        $array  = Arr::explode( PHP_EOL, $string );
 
-	public static function nl2p( ?string $string, string $whitespace = " " ): ?string {
+        return Arr::implode( $array, wrap : 'span' );
+    }
 
-		if ( ! $string ) {
-			return null;
-		}
+    public static function nl2p( ?string $string, string $whitespace = " " ) : ?string {
 
-		$explode = Arr::explode( "\n", $string );
+        if ( !$string ) {
+            return null;
+        }
 
-		return Arr::implode( $explode, wrap: 'p' );
-	}
+        $explode = Arr::explode( "\n", $string );
 
-	public static function nl2Auto( ?string $string, string $whitespace = " " ): ?string {
+        return Arr::implode( $explode, wrap : 'p' );
+    }
 
-		if ( ! $string ) {
-			return null;
-		}
+    public static function nl2Auto( ?string $string, string $whitespace = " " ) : ?string {
 
-		$array = Arr::explode( "\n", $string );
+        if ( !$string ) {
+            return null;
+        }
 
-		if ( empty( $array ) ) {
-			return null;
-		}
+        $array = Arr::explode( "\n", $string );
 
-		if ( count( $array ) === 1 ) {
-			return "<span>$string</span>";
-		}
+        if ( empty( $array ) ) {
+            return null;
+        }
 
-		return Arr::implode( $array, wrap: 'p' );
-	}
+        if ( count( $array ) === 1 ) {
+            return "<span>$string</span>";
+        }
+
+        return Arr::implode( $array, wrap : 'p' );
+    }
 }
