@@ -16,6 +16,73 @@ use UnexpectedValueException;
 
 trait FilesystemFunctions
 {
+    /**
+     * Mimetypes for simple .extension lookup.
+     *
+     * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+     */
+    private const MIME_TYPES = [
+
+        // Text and XML
+        'txt'    => 'text/plain',
+        'htm'    => 'text/html',
+        'html'   => 'text/html',
+        'php'    => 'text/html',
+        'css'    => 'text/css',
+        'js'     => 'application/javascript',
+
+        // Documents
+        'rtf'    => 'application/rtf',
+        'doc'    => 'application/msword',
+        'pdf'    => 'application/pdf',
+        'eps'    => 'application/postscript',
+
+        // Data sources
+        'csv'    => 'text/csv',
+        'json'   => 'application/json',
+        'jsonld' => 'application/ld+json',
+        'xls'    => 'application/vnd.ms-excel',
+        'xml'    => 'application/xml',
+
+        // Images and vector graphics
+        'apng'   => 'image/png',
+        'png'    => 'image/png',
+        'jpe'    => 'image/jpeg',
+        'jpeg'   => 'image/jpeg',
+        'jpg'    => 'image/jpeg',
+        'gif'    => 'image/gif',
+        'bmp'    => 'image/bmp',
+        'ico'    => 'image/vnd.microsoft.icon',
+        'tiff'   => 'image/tiff',
+        'tif'    => 'image/tiff',
+        'svg'    => 'image/svg+xml',
+        'svgz'   => 'image/svg+xml',
+        'webp'   => 'image/webp',
+        'webm'   => 'video/webm',
+
+        // archives
+        '7z'     => 'application/x-7z-compressed',
+        'zip'    => 'application/zip',
+        'rar'    => 'application/x-rar-compressed',
+        'exe'    => 'application/x-msdownload',
+        'msi'    => 'application/x-msdownload',
+        'cab'    => 'application/vnd.ms-cab-compressed',
+        'tar'    => 'application/x-tar',
+
+        // audio/video
+        'mp3'    => 'audio/mpeg',
+        'qt'     => 'video/quicktime',
+        'mov'    => 'video/quicktime',
+
+        // Fonts
+        'ttf'    => 'font/ttf',
+        'otf'    => 'font/otf',
+        'woff'   => 'font/woff',
+        'woff2'  => 'font/woff2',
+        'eot'    => 'application/vnd.ms-fontobject',
+
+    ];
+
     private static array $cache = [];
 
     /**
@@ -65,7 +132,7 @@ trait FilesystemFunctions
         $factor = $bytes ? floor( log( (int) $bytes, 1024 ) ) : 0;
         $factor = min( $factor, count( $unitDecimalsByFactor ) - 1 );
 
-        $value = round( $bytes / pow( 1024, $factor ), $unitDecimalsByFactor[ $factor ][ 1 ] );
+        $value = round( $bytes / ( 1024 ** $factor ), $unitDecimalsByFactor[ $factor ][ 1 ] );
         $units = $unitDecimalsByFactor[ $factor ][ 0 ];
 
         return $value . $units;
@@ -80,15 +147,10 @@ trait FilesystemFunctions
 
 
     public static function getMimeType( Path | string $path ) : ?string {
-        $types = static::$cache[ 'mime.types' ] ??= include( self::parameterDirname(
-            '../../../resources/mimetypes.php',
-        ) );
 
-        if ( array_key_exists( $path->extension, $types ) ) {
-            return $types[ $path->extension ];
-        }
+        $type = $path instanceof Path ? $path->extension : pathinfo( $path, PATHINFO_EXTENSION );
 
-        return null;
+        return static::MIME_TYPES[ $type ] ?? null;
     }
 
     public static function getContents( Path | string $path, bool $cache = true ) : ?string {
@@ -197,21 +259,11 @@ trait FilesystemFunctions
         return false;
     }
 
+    // todo : Implement a force-override option into static::save()
     #[Deprecated( 'Use ' . __CLASS__ . '::save() instead. Better support for larger files, and streamed resources.' )]
     public static function putContents( ?string $content, string $filename, int $flags = 0, bool $override = true,
     ) : false | int {
-
-        if ( is_null( $content ) ) {
-            return false;
-        }
-
-        $filename = self::makeDirectory( $filename );
-
-        if ( !$filename || ( !$override && file_exists( $filename ) ) ) {
-            return false;
-        }
-
-        return file_put_contents( $filename, $content, $flags ) ?: false;
+        return static::save( $filename, $content );
     }
 
 
@@ -267,7 +319,7 @@ trait FilesystemFunctions
 
     public static function getPath( string $path, bool $create = false, ?string $onError = null ) : ?string {
         if ( $create ) {
-            return self::makeDirectory( path : $path );
+            return self::mkdir( $path );
         }
 
         $path = Str::filepath( path : $path );
@@ -291,9 +343,9 @@ trait FilesystemFunctions
             return Path::normalize( $path );
         }
 
-        $level = substr_count( $path, '../', 0, strripos( $path, '../' ) + 3 );
+        $level = substr_count( $path, '../', 0, strrpos( $path, '../' ) + 3 );
         $root  = dirname( debug_backtrace()[ 0 ][ 'file' ], $level ?: 1 );
-        $path  = $root . '/' . substr( $path, strripos( $path, '../' ) + 3 );
+        $path  = $root . '/' . substr( $path, strrpos( $path, '../' ) + 3 );
 
         $path = Path::normalize( $path );
 
