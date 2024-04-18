@@ -4,8 +4,41 @@ namespace Northrook\Support;
 
 // TODO: https://www.php.net/manual/en/class.numberformatter.php
 
+use Parsedown;
+
 class Format
 {
+
+
+    public static function url( string $string ) : string {
+
+        $schema = null;
+
+        if ( str_starts_with( $string, 'http://' ) || str_starts_with( $string, 'https://' ) ) {
+            $schema = parse_url( $string, PHP_URL_SCHEME );
+            $string = substr( $string, strpos( $string, '://' ) + 3 );
+        }
+
+        $parts = explode( '/', $string );
+
+        foreach ( $parts as $i => $part ) {
+            $part[ $i ] = '<wbr><span>/</span>' . $part;
+        }
+
+        $string = $schema . implode( '/', $parts );
+
+
+        // take out http(s)://
+        // split each by /
+        // wrap / and schema in <spa>
+        // implode with <wbr> before /
+
+        return '<span class="url">' . $string . '</span>';
+    }
+
+    public static function markdown( string $string ) : string {
+        return ( new Parsedown() )->text( $string );
+    }
 
     /**
      * * Spacing, XX XX XX XX, XXXX XXX XXX etc
