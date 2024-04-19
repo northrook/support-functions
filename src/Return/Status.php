@@ -9,29 +9,43 @@ use Northrook\Logger\Log\Level;
 use Throwable;
 
 /**
- * @property bool   $success
- * @property string $message
+ * @property bool      $set
+ * @property-read      $status
+ * @property-read bool $success
+ * @property-read bool $failure
+ * @property string    $message
+ * @property Level     $level
  */
 class Status
 {
 
     private bool       $status;
-    private ?string    $message = null;
+    private Level      $level;
+    private ?string    $message    = null;
     private ?Throwable $exception;
-    private array      $tasks   = [];
+    private array      $tasks      = [];
+    private array      $properties = [];
 
     public readonly string $id;
-    public readonly Level  $type;
 
     public function __construct(
         ?string $id = null,
         Level   $type = Level::INFO,
     ) {
-        $this->id   = $id ?? Debug::backtrace()->getCaller();
-        $this->type = $type;
+        $this->id    = $id ?? Debug::backtrace()->getCaller();
+        $this->level = $type;
     }
 
     public function __get( string $name ) : mixed {
+
+        if ( $name === 'success' ) {
+            return $this->status;
+        }
+
+        if ( $name === 'failure' ) {
+            return !$this->status;
+        }
+
         if ( property_exists( $this, $name ) ) {
             return $this->$name ?? null;
         }
@@ -82,12 +96,12 @@ class Status
         }
 
         Log::entry(
-            $this->type,
+            $this->level,
             'The Status {id} has reported an error.',
             [
                 'id'      => $this->id,
                 'message' => $this->message,
-                'type'    => $this->type,
+                'type'    => $this->level,
 
             ],
         );
