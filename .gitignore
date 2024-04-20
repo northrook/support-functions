@@ -12,6 +12,6 @@ composer.lock
 # Build data
 /build/
 /src/HTML/
-*.php/
+/*.php
 *.twig
 *.latte

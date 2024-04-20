@@ -2,8 +2,10 @@
 
 namespace Northrook\Support\Return;
 
+use Exception;
+use JetBrains\PhpStorm\Deprecated;
 use JsonException;
-use Northrook\Logger\Debug;
+use Northrook\Core\Debug\Backtrace;
 use Northrook\Logger\Log;
 use Northrook\Logger\Log\Level;
 use Throwable;
@@ -16,6 +18,7 @@ use Throwable;
  * @property string    $message
  * @property Level     $level
  */
+#[Deprecated( 'Use Core instead', \Northrook\Core\Service\Status::class )]
 class Status
 {
 
@@ -32,7 +35,7 @@ class Status
         ?string $id = null,
         Level   $type = Level::INFO,
     ) {
-        $this->id    = $id ?? Debug::backtrace()->getCaller();
+        $this->id    = $id ?? Backtrace::get()->caller;
         $this->level = $type;
     }
 
@@ -120,7 +123,7 @@ class Status
     }
 
 
-    public function setException( \Exception $exception ) : Status {
+    public function setException( Exception $exception ) : Status {
         $this->exception = $exception;
         return $this;
     }

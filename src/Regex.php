@@ -39,11 +39,11 @@ final class Regex
 
     /**
      *
-     * @param string       $pattern
-     * @param string|null  $string
-     * @param string|null  $flag             s | Regex match flags
-     * @param string|bool  $trim             TODO Idea is to pass characters to stop from each matched string
-     * @param string       $matchedProperty  Property to return the matched string
+     * @param string        $pattern
+     * @param string        $subject
+     * @param string|bool   $trim             TODO Idea is to pass characters to stop from each matched string
+     * @param string        $matchedProperty  Property to return the matched string
+     * @param Return\Regex  $return
      *
      * @return object
      * @uses preg_match_all() $match, $string, PREG_SET_ORDER

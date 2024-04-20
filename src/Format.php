@@ -60,8 +60,8 @@ class Format
         // ' " `
 
         /// RULES
-        // - Must not be within a HTML tag
-        // - Must not be within a HTML attribute
+        // - Must not be within an HTML tag
+        // - Must not be within an HTML attribute
 
         $options = array_merge(
             [

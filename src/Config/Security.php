@@ -4,13 +4,13 @@ namespace Northrook\Support\Config;
 
 use Northrook\Support\Config\Security\Scheme;
 
-class Security
+readonly class Security
 {
-	public readonly string $scheme;
+    public string $scheme;
 
-	public function __construct(
-		Scheme $scheme = Scheme::HTTPS,
-	) {
-		$this->scheme = $scheme->value;
-	}
+    public function __construct(
+        Scheme $scheme = Scheme::HTTPS,
+    ) {
+        $this->scheme = $scheme->value;
+    }
 }

@@ -185,7 +185,7 @@ final class Str
         else {
             $string = preg_replace( '/[^A-Za-z0-9_-]/', '-', $string );
         }
-        
+
         if ( $separator !== null ) {
             $string = str_replace( [ ' ', '-', '_', $separator ], ' ', trim( $string ) );
         }
@@ -249,60 +249,6 @@ final class Str
         }
 
         return $count;
-    }
-
-    /**
-     * Determine if a $string contains any provided $substrings.
-     *
-     *  Case Insensitive by default
-     *
-     *
-     * @param  ?string         $string
-     * @param string|iterable  $substring
-     * @param iterable         $all
-     * @param bool             $caseSensitive
-     * @param string           $callback  // ['str_contains', 'str_starts_with', 'str_ends_with'][%any
-     *
-     * @return bool            | string
-     */
-    #[Deprecated]
-    public static function contains_callback(
-        ?string $string, string | iterable $substring, iterable $all = [], bool $caseSensitive = false,
-        string  $callback = 'str_contains',
-    ) : bool | string {
-
-        if ( !$string ) {
-            return false;
-        }
-
-        if ( !in_array( $callback, [ 'str_contains', 'str_starts_with', 'str_ends_with' ] ) ) {
-            $callback = 'str_contains';
-        }
-
-        if ( !$caseSensitive ) {
-            $string = mb_strtolower( $string );
-        }
-
-        if ( !is_iterable( $substring ) ) {
-            $substring = (array) $substring;
-        }
-
-        if ( false === empty( $all ) && false === Str::containsAll( $string, $all, $caseSensitive ) ) {
-
-            return false;
-        }
-
-        foreach ( $substring as $string ) {
-            if ( !$caseSensitive ) {
-                $string = mb_strtolower( $string );
-            }
-
-            if ( $string !== '' && $callback( $string, $string ) ) {
-                return $string;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -403,7 +349,7 @@ final class Str
         }
 
         if ( $implode ) {
-            return implode( $implode === true ? '' : $implode, $return ) ?? null;
+            return implode( $implode === true ? '' : $implode, $return );
         }
 
         return $return;
@@ -527,7 +473,7 @@ final class Str
         preg_match_all( '#</([a-z]+)>#iU', $string, $result );
         $closedTags = $result[ 1 ];
         $len_opened = count( $openedTags );
-        if ( count( $closedTags ) == $len_opened ) {
+        if ( count( $closedTags ) === $len_opened ) {
             return $string;
         }
 
@@ -545,16 +491,16 @@ final class Str
      * @return string
      */
     public static function hash( ?string $input = null, int $trim = 8, bool $lower = false ) : string {
-        $input ??= srand( hrtime()[ 1 ] ) . rand( 1, 128 );
+        $input ??= mt_srand( hrtime()[ 1 ] ) . Get::randomInt( 1, 128 );
 
         $int  = crc32( $input );
         $hash = base64_encode( hash( 'sha256', $input, true ) );
         $out  = $hash;
 
         if ( $trim ) {
-            srand( $int );
+            mt_srand( $int );
             $max    = strlen( $out ) - $trim;
-            $offset = rand( 0, $max );
+            $offset = Get::randomInt( 0, $max );
             $out    = substr( $out, $offset, $trim );
         }
 
