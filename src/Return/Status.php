@@ -53,6 +53,10 @@ class Status
     }
 
     public function __set( string $name, $value ) : void {
+        if ( $name === 'set' ) {
+            $this->status = $value;
+            return;
+        }
         if ( property_exists( $this, $name ) ) {
             $this->$name = $value;
         }
