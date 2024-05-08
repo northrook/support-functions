@@ -18,14 +18,18 @@
   "require": {
     "php": ">=8.2",
     "psr/log": "^1|^2|^3",
-    "foroco/php-browser-detection": "^2.7",
-    "voku/portable-ascii": "^2.0",
-    "ext-mbstring": "*",
-    "symfony/var-dumper": "^7.0",
-    "symfony/filesystem": "^7.0",
+    "northrook/core": "dev-main",
     "northrook/logger": "dev-main",
     "northrook/types": "dev-main",
+    "symfony/filesystem": "^7.0",
     "erusev/parsedown": "dev-master",
-    "northrook/core": "dev-main"
+    "voku/portable-ascii": "^2.0",
+    "foroco/php-browser-detection": "^2.7",
+    "ext-mbstring": "*",
+    "ext-libxml": "*",
+    "ext-dom": "*"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^7.0"
   }
 }

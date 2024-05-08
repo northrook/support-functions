@@ -10,8 +10,11 @@
 composer.lock
 
 # Build data
-/build/
-/src/HTML/
+/build
+/src/HTML/Asset.php
+/src/HTML/Render.php
+/src/HTML/PrettyHTML.php
+/src/HTML/Element.php
 /*.php
 *.twig
 *.latte
