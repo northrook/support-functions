@@ -2,10 +2,11 @@
 
 namespace Northrook\Support\HTML;
 
+use Northrook\Core\Interface\Printable;
 use Northrook\Support\Regex;
 use Northrook\Support\Str;
 
-class PrettyHtmlMarkup
+class PrettyHtmlMarkup implements Printable
 {
     private const OPERATOR = '[%OPERATOR%]';
     private const FUSE     = '[%FUSE%]';
@@ -46,7 +47,15 @@ class PrettyHtmlMarkup
         $this->constructDocument();
     }
 
-    /** @return string */
+    final public function print() : string {
+        return $this->html;
+    }
+
+    /**
+     * Parses the HTML string and returns a string representation of the parsed HTML.
+     *
+     * @return string
+     */
     public function __toString() : string {
         return (string) $this->html;
     }
