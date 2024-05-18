@@ -211,7 +211,12 @@ final class Arr
 
     }
 
-    public static function unique( array $array ) : array {
+    public static function unique( array $array, bool $caseSensitive = false ) : array {
+
+        if ( false === $caseSensitive ) {
+            $array = array_map( "strtolower", $array );
+        }
+
         return array_flip( array_flip( $array ) );
     }
 

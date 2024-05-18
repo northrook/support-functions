@@ -16,11 +16,12 @@ final class Regex
      */
     public static function extractHtmlTags( string $string, string $tag, bool $returnFirst = false,
     ) : array | object | null {
+        
         preg_match_all(
-            "/<$tag\s*[^>]*>(.*?)<\/$tag>/",
-            $string,
-            $tags,
-            PREG_SET_ORDER,
+            pattern : "#<$tag\s*[^>]*>(.*?)</$tag>#",
+            subject : $string,
+            matches : $tags,
+            flags   : PREG_SET_ORDER,
         );
 
         foreach ( $tags as $key => $value ) {

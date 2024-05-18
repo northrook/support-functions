@@ -4,9 +4,9 @@ namespace Northrook\Support\Functions;
 
 use JetBrains\PhpStorm\Deprecated;
 use JetBrains\PhpStorm\ExpectedValues;
+use Northrook\Core\Type\PathType;
 use Northrook\Logger\Log;
 use Northrook\Support\Str;
-use Northrook\Types\Path;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -146,24 +146,32 @@ trait FilesystemFunctions
     }
 
 
-    public static function getMimeType( Path | string $path ) : ?string {
+    public static function getMimeType( PathType | string $path ) : ?string {
 
-        $type = $path instanceof Path ? $path->extension : pathinfo( $path, PATHINFO_EXTENSION );
+        $type = $path instanceof PathType ? $path->extension : pathinfo( $path, PATHINFO_EXTENSION );
 
         return static::MIME_TYPES[ $type ] ?? null;
     }
 
-    public static function getContents( Path | string $path, bool $cache = true ) : ?string {
+    /**
+     * Get the contents of a file.
+     *
+     * @param PathType | string  $path   Path to the file
+     * @param bool               $cache  Cache the file contents for this request
+     *
+     * @return null|string  File contents, or null if the file does not exist
+     */
+    public static function getContents( PathType | string $path, bool $cache = true ) : ?string {
 
         if ( is_string( $path ) ) {
-            $path = new Path( $path );
+            $path = new PathType( $path );
         }
 
         if ( $cache && isset( static::$cache[ $path->value ] ) ) {
             return static::$cache[ $path->value ];
         }
 
-        if ( !$path->isValid ) {
+        if ( !$path->exists ) {
             Log::Error(
                 'The file {key} was parsed, but {error}. No file was found.',
                 [
@@ -175,15 +183,7 @@ trait FilesystemFunctions
             return null;
         }
 
-        $content = file_get_contents( $path );
-
-        if ( $path->extension === 'svg' ) {
-            $content = str_replace(
-                [ ' xmlns="http://www.w3.org/2000/svg"', ' xmlns:xlink="http://www.w3.org/1999/xlink"' ],
-                '',
-                $content,
-            );
-        }
+        $content = ( new Filesystem() )->readFile( filename : $path );
 
         if ( $cache ) {
             static::$cache[ $path->value ] = $content;
@@ -340,14 +340,14 @@ trait FilesystemFunctions
     ) : ?string {
 
         if ( false === str_starts_with( $path, '../' ) ) {
-            return Path::normalize( $path );
+            return PathType::normalize( $path );
         }
 
         $level = substr_count( $path, '../', 0, strrpos( $path, '../' ) + 3 );
         $root  = dirname( debug_backtrace()[ 0 ][ 'file' ], $level ?: 1 );
         $path  = $root . '/' . substr( $path, strrpos( $path, '../' ) + 3 );
 
-        $path = Path::normalize( $path );
+        $path = PathType::normalize( $path );
 
         if ( file_exists( $path ) ) {
             return $path;

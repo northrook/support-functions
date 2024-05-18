@@ -57,7 +57,7 @@ class PrettyHtmlMarkup implements Printable
      * @return string
      */
     public function __toString() : string {
-        return (string) $this->html;
+        return $this->html;
     }
 
     public static function pretty( string $html ) : string {
