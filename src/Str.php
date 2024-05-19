@@ -64,6 +64,14 @@ final class Str
             : $acronyms;
     }
 
+    public static function esc( string $string, string $delimiter = '␛' ) : string {
+        if ( $string[ 0 ] === $delimiter && $string[ -1 ] === $delimiter ) {
+            return base64_decode( substr( $string, 1, -1 ) );
+        }
+
+        return $delimiter . base64_encode( $string ) . $delimiter;
+    }
+
     /**
      * Remove all "extra" blank space from the given string.
      *
@@ -138,6 +146,7 @@ final class Str
         return ( preg_match( '/^\d+$/', $string ?? '' ) ) ? (int) $string : false;
     }
 
+    #[Deprecated( 'Use Path' )]
     public static function url( ?string $string, bool $absolute = false, bool $trailing = false ) : ?string {
 
         $url = filter_var( $string, FILTER_SANITIZE_URL );
