@@ -77,6 +77,7 @@ final class Str
      *
      * @return string  minified string
      */
+    #[Deprecated( "String optimization moved to Trim class.", "Trim::whitespace(%parametersList%)" )]
     public static function squish( ?string $string, bool $preserveComments = false, bool $spacesOnly = false,
     ) : string {
         if ( !$string ) {
