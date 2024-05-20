@@ -9,6 +9,35 @@ use Northrook\Support\Config\Stopwords;
 class Get extends Make
 {
 
+    /**
+     * Get a boolean option from an array of options.
+     *
+     * - Pass an array of options, where each boolean is null by default.
+     * - `true` options set all others to false.
+     * - `false` options set all others to true.
+     * - Use the $default parameter to set value for all if none are set.
+     *
+     * @param array  $options
+     * @param bool   $default
+     *
+     * @return array
+     */
+    public static function booleanOptions( array $options, bool $default = true ) : array {
+
+        // Isolate the options
+        $options = array_filter( $options, static fn ( $value ) => ( is_bool( $value ) || is_null( $value ) ) );
+
+        // Check if any option is true
+        if ( in_array( $default, $options, true ) ) {
+            $options = array_map( static fn ( $param ) => $param === $default, $options );
+        }
+        else {
+            $options = array_map( static fn ( $param ) => $param !== $default, $options );
+        }
+
+        return $options;
+    }
+
     public static function className( ?object $class = null ) : string {
         $class = is_object( $class ) ? $class::class : debug_backtrace()[ 1 ] [ 'class' ];
         return substr( $class, strrpos( $class, '\\' ) + 1 );

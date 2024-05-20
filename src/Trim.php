@@ -9,39 +9,68 @@ namespace Northrook\Support;
  */
 class Trim
 {
-
     /**
      * Regex patterns for removing comments from a string.
+     *
+     * - Matches from the start of the line
+     * - Includes the following line break
      */
     public const COMMENTS = [
-        'php'    => '/\/\*\*.*?\*\//su',  // PHP block comments
-        'single' => '/\/\/.*?$/m',        // Single line comments
-        'html'   => '/<!--.*?-->/su',     // HTML comments
-        'latte'  => '/{\*.*?\*}/su',      // Latte comments
-        'twig'   => '/{#.*?#}/su',        // Twig comments
-        'blade'  => '/{{--.*?--}}/su',    // Blade comments
+        'php'    => '#^\h*?/\*\*.*?\*/\R#ms',  // PHP block comments
+        'single' => '#^\h*?//.+?\R#m',         // Single line comments
+        'html'   => '#^\h*?<!--.*?-->\R#ms',   // HTML comments
+        'latte'  => '#^\h*?{\*.*?\*}\R#ms',    // Latte comments
+        'twig'   => '/^\h*?{#.*?#}\R/ms',      // Twig comments
+        'blade'  => '#^\h*?{{--.*?--}}\R#ms',  // Blade comments
     ];
 
-    public const COMPRESS = [
-        'newlines' => '',
 
-    ];
-
+    /**
+     * Remove comments from a string.
+     *
+     * Supports:
+     * - PHP docblock comments
+     * - Single line comments `// ...`
+     * - HTML comments `<!-- ... -->`
+     * - Latte comments `{* ... *}`
+     * - Twig comments `{# ... #}`
+     * - Blade comments `{{-- ... --}}`
+     *
+     * How to use:
+     * - All comments will be trimmed by default.
+     * - Pass `true` to trim specific languages.
+     * - Pass `false` to preserve those, but trim others.
+     *
+     * @param ?string  $string  The string to trim comments from
+     * @param ?bool    $php     true
+     * @param ?bool    $single  true
+     * @param ?bool    $html    true
+     * @param ?bool    $latte   true
+     * @param ?bool    $twig    true
+     * @param ?bool    $blade   true
+     *
+     * @return string
+     */
     public static function comments(
-        string $string,
-        bool   $php = true,
-        bool   $single = true,
-        bool   $html = true,
-        bool   $latte = true,
-        bool   $twig = true,
-        bool   $blade = true,
+        ?string $string,
+        ?bool   $php = null,
+        ?bool   $single = null,
+        ?bool   $html = null,
+        ?bool   $latte = null,
+        ?bool   $twig = null,
+        ?bool   $blade = null,
     ) : string {
 
-        $filter = array_filter( get_defined_vars(), static fn ( $value ) => is_bool( $value ) );
+        // Bail early if the string is empty or null
+        if ( !$string ) {
+            return '';
+        }
+
+        $options = Get::booleanOptions( func_get_args() );
 
         $patterns = array_filter(
             array    : Trim::COMMENTS,
-            callback : static fn ( $key ) => $filter[ $key ] ?? false,
+            callback : static fn ( $key ) => $options[ $key ] ?? false,
             mode     : ARRAY_FILTER_USE_KEY,
         );
 
