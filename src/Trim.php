@@ -66,8 +66,10 @@ class Trim
             return '';
         }
 
-        $options = Get::booleanOptions( func_get_args() );
-
+        // Resolve all options
+        $options = Get::booleanOptions( get_defined_vars() );
+ 
+        // Get the desired patterns
         $patterns = array_filter(
             array    : Trim::COMMENTS,
             callback : static fn ( $key ) => $options[ $key ] ?? false,
