@@ -64,14 +64,6 @@ final class Str
             : $acronyms;
     }
 
-    public static function esc( string $string, string $delimiter = '␛' ) : string {
-        if ( $string[ 0 ] === $delimiter && $string[ -1 ] === $delimiter ) {
-            return base64_decode( substr( $string, 1, -1 ) );
-        }
-
-        return $delimiter . base64_encode( $string ) . $delimiter;
-    }
-
     /**
      * Remove all "extra" blank space from the given string.
      *
