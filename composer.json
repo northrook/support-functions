@@ -24,7 +24,6 @@
     "symfony/filesystem": "^7.0",
     "erusev/parsedown": "dev-master",
     "voku/portable-ascii": "^2.0",
-    "foroco/php-browser-detection": "^2.7",
     "ext-mbstring": "*",
     "ext-libxml": "*",
     "ext-dom": "*"
