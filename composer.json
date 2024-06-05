@@ -18,17 +18,20 @@
   "require": {
     "php": ">=8.2",
     "psr/log": "^1|^2|^3",
+    "symfony/filesystem": "^v7.1.0",
+    "symfony/cache": "^v7.1.0",
     "northrook/core": "dev-main",
     "northrook/logger": "dev-main",
     "northrook/types": "dev-main",
-    "symfony/filesystem": "^7.0",
     "erusev/parsedown": "dev-master",
     "voku/portable-ascii": "^2.0",
     "ext-mbstring": "*",
     "ext-libxml": "*",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "symfony/finder": "7.2.x-dev"
   },
   "require-dev": {
-    "symfony/var-dumper": "^7.0"
+    "symfony/var-dumper": "^7.0",
+    "fakerphp/faker": "2.0.x-dev"
   }
 }

@@ -5,14 +5,21 @@ namespace Northrook\Support;
 use JetBrains\PhpStorm\Deprecated;
 use JetBrains\PhpStorm\Pure;
 use JsonException;
-use Northrook\Support\Functions\PathFunctions;
-use Northrook\Support\Functions\StringFunctions;
+use Northrook\Support\Str\PathFunctions;
+use Northrook\Support\Str\PossibleFunctionsTrait;
+use Northrook\Support\Str\StringFunctions;
+use Northrook\Support\Str\StringTrimFunctions;
+use Northrook\Support\Str\SubstringFunctions;
 use voku\helper\ASCII;
+
+// ASCII helper :  Optional
 
 final class Str
 {
-    use StringFunctions;
-    use PathFunctions;
+
+    use SubstringFunctions, StringFunctions, PathFunctions, StringTrimFunctions;
+
+    use PossibleFunctionsTrait;
 
     private static string $_ASCII_LANGUAGE = 'en';
     private static string $_SLUG_SEPARATOR = '-';
@@ -24,6 +31,7 @@ final class Str
     public static function setAsciiLanguage( string $language ) : void {
         Str::$_ASCII_LANGUAGE = $language;
     }
+
 
     /**
      * Convert $value to ASCII

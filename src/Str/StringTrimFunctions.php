@@ -1,22 +1,26 @@
 <?php
 
-namespace Northrook\Support;
+namespace Northrook\Support\Str;
+
+use Northrook\Support\Arr;
 
 /**
  * Functions for optimizing and cleaning up strings.
  *
  * @author  Martin Nielsen <mn@northrook.com>
  */
-class Trim
+trait StringTrimFunctions
 {
+
     /**
      * Regex patterns for removing comments from a string.
      *
      * - Matches from the start of the line
      * - Includes the following line break
      */
-    public const COMMENTS = [
+    public const REGEX_COMMENT_PATTERN = [
         'php'    => '#^\h*?/\*\*.*?\*/\R#ms',  // PHP block comments
+        'css'    => '#^\h*?/\*.*?\*/\R#ms',    // CSS block comments
         'single' => '#^\h*?//.+?\R#m',         // Single line comments
         'html'   => '#^\h*?<!--.*?-->\R#ms',   // HTML comments
         'latte'  => '#^\h*?{\*.*?\*}\R#ms',    // Latte comments
@@ -24,12 +28,12 @@ class Trim
         'blade'  => '#^\h*?{{--.*?--}}\R#ms',  // Blade comments
     ];
 
-
     /**
      * Remove comments from a string.
      *
      * Supports:
      * - PHP docblock comments
+     * - CSS block comments
      * - Single line comments `// ...`
      * - HTML comments `<!-- ... -->`
      * - Latte comments `{* ... *}`
@@ -43,6 +47,7 @@ class Trim
      *
      * @param ?string  $string  The string to trim comments from
      * @param ?bool    $php     true
+     * @param ?bool    $css     true
      * @param ?bool    $single  true
      * @param ?bool    $html    true
      * @param ?bool    $latte   true
@@ -51,9 +56,10 @@ class Trim
      *
      * @return string
      */
-    public static function comments(
+    public static function trimComments(
         ?string $string,
         ?bool   $php = null,
+        ?bool   $css = null,
         ?bool   $single = null,
         ?bool   $html = null,
         ?bool   $latte = null,
@@ -67,11 +73,11 @@ class Trim
         }
 
         // Resolve all options
-        $options = Get::booleanOptions( get_defined_vars() );
- 
+        $options = Arr::booleanValues( get_defined_vars() );
+
         // Get the desired patterns
         $patterns = array_filter(
-            array    : Trim::COMMENTS,
+            array    : static::REGEX_COMMENT_PATTERN,
             callback : static fn ( $key ) => $options[ $key ] ?? false,
             mode     : ARRAY_FILTER_USE_KEY,
         );
@@ -93,10 +99,11 @@ class Trim
      * @param ?string  $string          The string to trim
      * @param bool     $removeTabs      Also remove tabs
      * @param bool     $removeNewlines  Also remove newlines
+     * @param bool     $tidyHTML
      *
      * @return string
      */
-    public static function whitespace(
+    public static function trimWhitespace(
         ?string $string,
         bool    $removeTabs = false,
         bool    $removeNewlines = false,
@@ -146,54 +153,4 @@ class Trim
 
         return $string;
     }
-
-    /**
-     * Optimize an SVG string
-     *
-     * - Removes all whitespace, including tabs and newlines
-     * - Removes consecutive spaces
-     * - Removes the XML namespace by default
-     *
-     * @param ?string  $string                The string SVG string
-     * @param bool     $preserveXmlNamespace  Preserve the XML namespace
-     *
-     * @return string
-     */
-    public static function svg(
-        ?string $string,
-        bool    $preserveXmlNamespace = false,
-
-    ) : string {
-
-        // Bail early if the string is empty or null
-        if ( !$string ) {
-            return '';
-        }
-
-        // Remove the XML namespace if requested
-        if ( !$preserveXmlNamespace ) {
-            return preg_replace(
-                pattern     : '#(<svg[^>]*?)\s+xmlns="[^"]*"#',
-                replacement : '$1',
-                subject     : $string,
-            );
-        }
-
-        // Following TODOs should find a home in the SVG class, as they add to the SVG string
-        // The Trim class should only be used stripping unwanted substrings
-        // They have just been put here because it is convenient for me right now
-
-        // TODO - Automatically add height and width attributes based on viewBox
-
-        // TODO - Automatically add viewBox attribute based on width and height
-
-        // TODO - Automatically add preserveAspectRatio attribute based on width and height
-
-        // TODO - Warn if baked-in colors are used, preferring 'currentColor' instead
-
-        // TODO - Option to use CSS variables
-
-        return Trim::whitespace( $string, true, true );
-    }
-
 }

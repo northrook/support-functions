@@ -7,8 +7,10 @@ namespace Northrook\Support;
 final class Sort
 {
 
-
-    public static function elementAttributes( array $attributes, ?array $order = null, ?array $sortByList = null,
+    public static function elementAttributes(
+        array  $attributes,
+        ?array $order = null,
+        ?array $sortByList = null,
     ) : array {
 
         $sortByList ??= [
@@ -26,7 +28,7 @@ final class Sort
                 $sort[ $value ] = $attributes[ $value ];
             }
         }
-        
+
         return array_merge( $sort, $attributes );
     }
 

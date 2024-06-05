@@ -1,60 +1,47 @@
 <?php
 
-namespace Northrook\Support\Functions;
+namespace Northrook\Support\Str;
 
-if ( !function_exists( 'mb_strtolower' ) ) {
-    /**
-     * Fallback for mb_strtolower
-     */
-    function mb_strtolower( string $string ) : string {
-        return strtolower( $string );
-    }
-}
-
-if ( !function_exists( 'mb_substr' ) ) {
-    /**
-     * Fallback for mb_substr
-     */
-    function mb_substr( string $string, int $start = 0, ?int $length = null ) : string {
-        return substr( $string, $start, $length );
-    }
-}
-
-if ( !function_exists( 'mb_stripos' ) ) {
-    /**
-     * Fallback for mb_stripos
-     */
-    function mb_stripos( string $haystack, string $needle, int $offset = 0 ) : string {
-        return stripos( $haystack, $needle, $offset );
-    }
-}
+use JetBrains\PhpStorm\ExpectedValues;
 
 trait StringFunctions
 {
+    public const FIRST = 0;
+    public const LAST  = -1;
 
 
-    public static function between( string $string, string $needle, ?int $max = null, ?int $after = 0 ) : string {
+    /**
+     * @param string[]     $string
+     * @param string       $separator
+     * @param null|string  $case
+     *
+     * @return string
+     */
+    public static function key(
+        string | array $string,
+        string         $separator = '-',
+        #[ExpectedValues( values : [
+            null,
+            'strtoupper',
+            'strtolower',
+            // 'camel',
+            // 'snake'
+        ] )]
+        ?string        $case = 'strtolower',
+    ) : string {
 
-        $position = 0;
-        $count    = [ 0 ];
+        $string = is_array( $string ) ? implode( $separator, $string ) : $string;
 
-        $max ??= substr_count( $string, $needle );
+        $string = preg_replace( "/[^A-Za-z0-9$separator]/", $separator, $string );
+        $string = implode( $separator, array_filter( explode( $separator, $string ) ) );
 
-        for ( $iteration = 0; $iteration < $max; $iteration++ ) {
-
-            $position = stripos( $string, $needle, $position + 1 );
-
-            if ( $position === false ) {
-                break;
-            }
-
-            $count[] = $position;
-
-        }
-
-        $offset = $after ? $count[ $after ] + strlen( $needle ) : 0;
-
-        return substr( $string, $offset, $position - $offset );
+        return match ( $case ) {
+            'strtoupper' => strtoupper( $string ),
+            'strtolower' => strtolower( $string ),
+            // 'camel'      => Str::camel( $string ),
+            // 'snake'      => Str::snake( $string ),
+            default      => $string,
+        };
     }
 
     /** Determine if a $string starts with any $substrings.
@@ -172,74 +159,4 @@ trait StringFunctions
         return $string . $with;
     }
 
-    /** Returns a substring after the first or last occurrence of a $needle in a $string.
-     *
-     * @param string  $string
-     * @param string  $needle
-     * @param bool    $last
-     * @param bool    $strict
-     *
-     * @return null|string
-     */
-    public static function after(
-        string $string,
-        string $needle,
-        bool   $last = false,
-        bool   $strict = false,
-    ) : ?string {
-
-        if ( $last ) {
-            $needle = strrpos( $string, $needle );
-        }
-        else {
-            $needle = strpos( $string, $needle );
-        }
-
-        if ( $strict && $needle === false ) {
-            return null;
-        }
-
-        if ( $needle !== false ) {
-            return substr( $string, $needle + 1 );
-        }
-
-        return $string;
-    }
-
-    /** Returns a substring before the first or last occurrence of a $needle in a $string.
-     *
-     * @param string        $string
-     * @param string|array  $match
-     * @param bool          $last
-     *
-     * @return null|string
-     */
-    public static function before(
-        string         $string,
-        string | array $match,
-        bool           $last = false,
-    ) : ?string {
-
-        $needles = [];
-        foreach ( (array) $match as $value ) {
-            if ( $last ) {
-                $needle = strrpos( $string, $value );
-            }
-            else {
-                $needle = strpos( $string, $value );
-            }
-
-            if ( $needle !== false ) {
-                $needles[] = $needle;
-            }
-        }
-
-        if ( empty( $needles ) ) {
-            return $string;
-        }
-
-        $needle = $last ? max( $needles ) : min( $needles );
-
-        return substr( $string, 0, $needle );
-    }
 }

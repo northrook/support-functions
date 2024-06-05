@@ -2,8 +2,70 @@
 
 namespace Northrook\Support;
 
+use JetBrains\PhpStorm\ExpectedValues;
+
 class Num
 {
+    private const UNITS = [
+        'B',  //Bytes
+        'kB',  //Kilobytes
+        'MB',  //Megabytes
+        'GB',  //Gigabytes
+        'TB',  //Terabytes
+        'PB',  //Petabytes
+        'EB',  //Exabytes
+        'ZB',  //Zettabytes
+        'YB',  //Yottabytes
+    ];
+
+    /**
+     * Return a variable as byte size in a human-readable format, or as a sized float.
+     *
+     * @param mixed   $bytes               The variable to be formatted
+     * @param string  $to                  The unit to format to, defaults to 'KB'
+     * @param int     $decimals            The number of decimal places to display, defaults to 2
+     * @param bool    $forceDecimalValues  If true, will force $decimals number values to be displayed, regardless of leading zeros
+     * @param bool    $returnFloat         If true, will return a float instead of a string
+     *
+     * @return float|string The formatted value, 1.00, 1KB, 1.00MB, etc.
+     */
+    public static function formatBytes(
+        mixed  $bytes,
+        #[ExpectedValues( Num::UNITS )]
+        string $to = 'KB',
+        int    $decimals = 2,
+        bool   $forceDecimalValues = true,
+        bool   $returnFloat = false,
+    ) : float | string {
+
+        if ( !Is::number( $bytes ) ) {
+            $bytes = strlen( print_r( $bytes, true ) );
+        }
+
+        $bytes = (float) $bytes;
+
+        $i    = 0;
+        $unit = array_flip( Num::UNITS )[ $to ];
+
+        while ( $i < 0 || $i !== $unit ) {
+            $bytes /= 1024;
+            $i++;
+        }
+
+        // If we have leading zeros
+        if ( $bytes < 1 ) {
+            $floating = substr( $bytes, 2 );
+            $decimals += strlen( $floating ) - strlen( ltrim( $floating, '0' ) );
+        }
+
+        $number = Num::decimals( $bytes, $decimals );
+
+        return $returnFloat ? $number : ltrim( $number, '0' ) . Num::UNITS[ $unit ];
+    }
+
+    public static function decimals( int | float $number, int $decimals = 2 ) : float {
+        return number_format( $number, $decimals, '.', '' );
+    }
 
     /** Extract numbers from a string, or an array of strings
      *
@@ -17,7 +79,7 @@ class Num
     public static function extract( int | float | string | array | null $from, bool $returnArray = false,
     ) : float | int | array {
 
-        if ( is_int( $from ) || is_float( $from ) ) {
+        if ( !Is::number( $from ) ) {
             return $from;
         }
 

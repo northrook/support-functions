@@ -2,26 +2,96 @@
 
 namespace Northrook\Support;
 
+use Northrook\Core\App;
+use Northrook\Core\Env;
+use Northrook\Logger\Log;
+use Northrook\Support\Str\StringTrimFunctions;
+
+/**
+ * @template HTML of non-empty-string
+ * @template CSS of non-empty-string
+ * @template JS of non-empty-string
+ *
+ * Class Minify
+ *
+ * @package Northrook\Support
+ */
 final class Minify
 {
 
-    /** Remove whitespace, newlines, and comments from $string
+    use StringTrimFunctions;
+
+    /**
+     * Remove whitespace, newlines, and HTML comments from `$string`
      *
-     * @param string  $string
-     * @param bool    $preserveComments
+     * @param string<HTML>  $string
+     * @param bool          $preserveComments
      *
-     * @return string
+     * @return string<HTML>
      */
     public static function html( string $string, bool $preserveComments = true ) : string {
-        return Trim::whitespace( $string, $preserveComments, $preserveComments );
+
+        if ( !$preserveComments ) {
+            $string = Minify::trimComments( $string, html : true );
+        }
+
+        return Minify::trimWhitespace( $string );
     }
 
-    public static function styles( ?string $path, bool $stripComments = true, bool $compress = true ) : string {
+    /**
+     * Quick and dirty minification of CSS.
+     *
+     * @param string<CSS>  $string
+     *
+     * @return string<CSS>
+     */
+    public static function styles( string $string ) : string {
 
-        // Set a timer for performance testing
-        // $build_timer    = - hrtime( true );
-        // $style_size_raw = format::bytesize( strlen( $styles ) );
-        // $source         = debug_backtrace( ! DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 2 )[ 1 ][ 'function' ];
+        // TODO : [?] We could potentially run this through the Stylesheet Generator
+
+        $css = Minify::trimWhitespace(
+            string         : Minify::trimComments( $string, single : true ),
+            removeTabs     : true,
+            removeNewlines : true,
+        );
+
+
+        // TODO : [low] Further optimisations:
+
+        // TODO : Unnecessary unit
+        // $styles = str_replace( [ ' 0px', ' 0em', ' 0rem' ], ' 0', $styles );
+
+        //? Unnecessary leading zero
+        $css = preg_replace( '/(\b0\.\b)|(var|url|calc)\([^)]*\){}/', '.', $css );
+
+        $css = preg_replace( '#\s+([:;,.>~])\s+?#', '$1', $css );
+
+        if ( Env::isDevelopment() ) {
+
+            $fromKB = Num::formatBytes( $string, 'kB', returnFloat : true );
+            $toKB   = Num::formatBytes( $css, 'kB', returnFloat : true );
+            $diffKB = $fromKB - $toKB;
+
+            Log::Notice(
+                message : 'CSS string minified. {from} to {to}, saving {diff}',
+                context : [
+                              'from'     => "{$fromKB}KB",
+                              'to'       => "{$toKB}KB",
+                              'diff'     => "{$diffKB}KB",
+                              'original' => $string,
+                              'minified' => $css,
+                          ],
+            );
+        }
+
+        return $css;
+    }
+
+    public static function deprecatedStylesMinifier(
+        ?string $path,
+        bool    $stripComments = true,
+        bool    $compress = true,
+    ) : string {
 
         // Remove @charset
         $styles = preg_replace( '/@charset.+?;/', '', $path );
@@ -49,9 +119,6 @@ final class Minify
         // Line breaks and tabs
         $styles = str_replace( [ "\r\n", "\r", "\n", "\t" ], '', $styles );
 
-        // Single space after colons
-        $styles = str_replace( [ ': ', ' :' ], ':', $styles );
-
         // Single space next to commas
         $styles = str_replace( [ ', ', ' ,' ], ',', $styles );
 
@@ -71,20 +138,76 @@ final class Minify
         // Unnecessary leading zero
         $styles = preg_replace( '/(\b0\.\b)|(var|url|calc)\([^)]*\){}/', '.', $styles );
 
-        $styles = stripslashes( $styles );
-
-
-        // $style_size_end = format::bytesize( strlen( $styles ) );
-        // $build_timer    += hrtime( true );
-        // $build_time     = number_format( round( $build_timer / 1e+6, 3 ), 3 ) . 'ms';
-        // $build_log      = 'Minified in ' . $build_time . ' from ' . $style_size_raw . ' to ' . $style_size_end;
-
-        // debug( $build_log, 2, $source );
-
         return trim( $styles );
     }
 
-    public static function scripts( ?string $string, bool $stripComments = true, bool $compress = true ) : string {
-        return $string;
+    /**
+     * Quick and dirty minification of JavaScript.
+     *
+     * TODO : [low] Further optimize
+     *
+     * @param string  $js
+     *
+     * @return string
+     */
+    public static function scripts( string $js ) : string {
+        return Minify::trimWhitespace(
+            string         : Minify::trimComments( $js, single : true ),
+            removeTabs     : true,
+            removeNewlines : true,
+        );
     }
+
+
+    /**
+     * Optimize an SVG string
+     *
+     * - Removes all whitespace, including tabs and newlines
+     * - Removes consecutive spaces
+     * - Removes the XML namespace by default
+     *
+     * @param ?string  $string                The string SVG string
+     * @param bool     $preserveXmlNamespace  Preserve the XML namespace
+     * @param bool     $prettyPrint
+     *
+     * @return string
+     */
+    public static function svg(
+        ?string $string,
+        bool    $preserveXmlNamespace = false,
+        bool    $prettyPrint = false,
+    ) : string {
+
+        // Bail early if the string is empty or null
+        if ( !$string ) {
+            return '';
+        }
+
+        // Remove the XML namespace if requested
+        if ( !$preserveXmlNamespace ) {
+            return preg_replace(
+                pattern     : '#(<svg[^>]*?)\s+xmlns="[^"]*"#',
+                replacement : '$1',
+                subject     : $string,
+            );
+        }
+
+        // Following TODOs should find a home in the SVG class, as they add to the SVG string
+        // The Trim class should only be used stripping unwanted substrings
+        // They have just been put here because it is convenient for me right now
+
+        // TODO - Automatically add height and width attributes based on viewBox
+
+        // TODO - Automatically add viewBox attribute based on width and height
+
+        // TODO - Automatically add preserveAspectRatio attribute based on width and height
+
+        // TODO - Warn if baked-in colors are used, preferring 'currentColor' instead
+
+        // TODO - Option to use CSS variables
+
+        return Str::trimWhitespace( $string, true, true );
+    }
+
+
 }

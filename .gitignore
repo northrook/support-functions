@@ -16,5 +16,6 @@ composer.lock
 /src/HTML/PrettyHTML.php
 /src/HTML/Element.php
 /*.php
-*.twig
-*.latte
+/*.css
+/*.twig
+/*.latte
