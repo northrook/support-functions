@@ -10,9 +10,6 @@ use Northrook\Support\Str\PossibleFunctionsTrait;
 use Northrook\Support\Str\StringFunctions;
 use Northrook\Support\Str\StringTrimFunctions;
 use Northrook\Support\Str\SubstringFunctions;
-use voku\helper\ASCII;
-
-// ASCII helper :  Optional
 
 final class Str
 {
@@ -20,31 +17,6 @@ final class Str
     use SubstringFunctions, StringFunctions, PathFunctions, StringTrimFunctions;
 
     use PossibleFunctionsTrait;
-
-    private static string $_ASCII_LANGUAGE = 'en';
-    private static string $_SLUG_SEPARATOR = '-';
-
-    public static function setSlugSeparator( string $separator ) : void {
-        Str::$_SLUG_SEPARATOR = $separator;
-    }
-
-    public static function setAsciiLanguage( string $language ) : void {
-        Str::$_ASCII_LANGUAGE = $language;
-    }
-
-
-    /**
-     * Convert $value to ASCII
-     *
-     *
-     * @param string    $value
-     * @param  ?string  $language
-     *
-     * @return string
-     */
-    public static function ascii( string $value, ?string $language = null ) : string {
-        return ASCII::to_ascii( $value, $language ?? Str::$_ASCII_LANGUAGE );
-    }
 
     /**
      * Extract acronym from a $string
@@ -173,40 +145,6 @@ final class Str
             $string = strip_tags( $string );
         }
         return htmlspecialchars( (string) $string, ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8' );
-    }
-
-    public static function key(
-        ?string       $string,
-        ?string       $separator = 'camelCase',
-        ?string       $preserve = null,
-        bool | string $ascii = false,
-    ) : ?string {
-
-        if ( !$string ) {
-            return null;
-        }
-
-        $string = mb_strtolower( $string );
-        $string = strip_tags( $string );
-
-        if ( $ascii ) {
-            $string = Str::ascii( $string, ( $ascii === true ? null : $ascii ) );
-        }
-        else {
-            $string = preg_replace( '/[^A-Za-z0-9_-]/', '-', $string );
-        }
-
-        if ( $separator !== null ) {
-            $string = str_replace( [ ' ', '-', '_', $separator ], ' ', trim( $string ) );
-        }
-
-        if ( $separator === 'camelCase' ) {
-            return Str::toCamel( $string );
-        }
-
-        $key = preg_replace( "/[^\w$preserve]+/", $separator, $string );
-
-        return trim( $key, $separator );
     }
 
     // Different from key() in that it trims unnecessary words, such as "the"; specific for slug use

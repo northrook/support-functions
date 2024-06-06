@@ -8,8 +8,7 @@ trait StringFunctions
 {
     public const FIRST = 0;
     public const LAST  = -1;
-
-
+    
     /**
      * @param string[]     $string
      * @param string       $separator
@@ -20,6 +19,7 @@ trait StringFunctions
     public static function key(
         string | array $string,
         string         $separator = '-',
+        ?string        $preserve = null,
         #[ExpectedValues( values : [
             null,
             'strtoupper',
@@ -28,11 +28,25 @@ trait StringFunctions
             // 'snake'
         ] )]
         ?string        $case = 'strtolower',
+        #[ExpectedValues( valuesFromClass : '\voku\helper\ASCII' )]
+        ?string        $asciiLanguage = null,
     ) : string {
 
         $string = is_array( $string ) ? implode( $separator, $string ) : $string;
 
-        $string = preg_replace( "/[^A-Za-z0-9$separator]/", $separator, $string );
+        if ( $asciiLanguage ) {
+            if ( !class_exists( '\voku\helper\ASCII' ) ) {
+                throw new \LogicException(
+                    'The voku\helper\ASCII class is not available. Please install the voku/portable-ascii package.',
+                );
+            }
+            $string = \voku\helper\ASCII::to_ascii( $string, $asciiLanguage );
+        }
+        else {
+            $string = preg_replace( "/[^A-Za-z0-9_\-{$preserve}]/", "-", $string );
+        }
+
+        $string = preg_replace( "/[^A-Za-z0-9$separator$preserve]/", $separator, $string );
         $string = implode( $separator, array_filter( explode( $separator, $string ) ) );
 
         return match ( $case ) {

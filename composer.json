@@ -24,7 +24,6 @@
     "northrook/logger": "dev-main",
     "northrook/types": "dev-main",
     "erusev/parsedown": "dev-master",
-    "voku/portable-ascii": "^2.0",
     "ext-mbstring": "*",
     "ext-libxml": "*",
     "ext-dom": "*",
