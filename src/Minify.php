@@ -2,7 +2,6 @@
 
 namespace Northrook\Support;
 
-use Northrook\Core\App;
 use Northrook\Core\Env;
 use Northrook\Logger\Log;
 use Northrook\Support\Str\StringTrimFunctions;
@@ -18,7 +17,6 @@ use Northrook\Support\Str\StringTrimFunctions;
  */
 final class Minify
 {
-
     use StringTrimFunctions;
 
     /**
@@ -50,7 +48,11 @@ final class Minify
         // TODO : [?] We could potentially run this through the Stylesheet Generator
 
         $css = Minify::trimWhitespace(
-            string         : Minify::trimComments( $string, single : true ),
+            string         : Minify::trimComments(
+                               string : $string,
+                               single : true,
+                               block  : true,
+                           ),
             removeTabs     : true,
             removeNewlines : true,
         );
@@ -92,6 +94,12 @@ final class Minify
         bool    $stripComments = true,
         bool    $compress = true,
     ) : string {
+
+        trigger_deprecation(
+            Minify::class,
+            '0.1.0',
+            'Northrook\Support\Minify::styles',
+        );
 
         // Remove @charset
         $styles = preg_replace( '/@charset.+?;/', '', $path );
@@ -152,7 +160,11 @@ final class Minify
      */
     public static function scripts( string $js ) : string {
         return Minify::trimWhitespace(
-            string         : Minify::trimComments( $js, single : true ),
+            string         : Minify::trimComments(
+                               string : $js,
+                               single : true,
+                               block  : true,
+                           ),
             removeTabs     : true,
             removeNewlines : true,
         );

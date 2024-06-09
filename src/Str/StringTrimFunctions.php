@@ -20,8 +20,8 @@ trait StringTrimFunctions
      */
     public const REGEX_COMMENT_PATTERN = [
         'php'    => '#^\h*?/\*\*.*?\*/\R#ms',  // PHP block comments
-        'block'  => '#^\h*?/\*.*?\*/\R#ms',    // Block comments
         'single' => '#^\h*?//.+?\R#m',         // Single line comments
+        'block'  => '#^\h*?/\*.*?\*/\R#ms',    // Block comments
         'html'   => '#^\h*?<!--.*?-->\R#ms',   // HTML comments
         'latte'  => '#^\h*?{\*.*?\*}\R#ms',    // Latte comments
         'twig'   => '/^\h*?{#.*?#}\R/ms',      // Twig comments
@@ -33,8 +33,8 @@ trait StringTrimFunctions
      *
      * Supports:
      * - PHP docblock comments
-     * - Block comments
      * - Single line comments `// ...`
+     * - Block comments
      * - HTML comments `<!-- ... -->`
      * - Latte comments `{* ... *}`
      * - Twig comments `{# ... #}`
@@ -47,8 +47,8 @@ trait StringTrimFunctions
      *
      * @param ?string  $string  The string to trim comments from
      * @param ?bool    $php     true
-     * @param ?bool    $block   true
      * @param ?bool    $single  true
+     * @param ?bool    $block   true
      * @param ?bool    $html    true
      * @param ?bool    $latte   true
      * @param ?bool    $twig    true
@@ -59,8 +59,8 @@ trait StringTrimFunctions
     public static function trimComments(
         ?string $string,
         ?bool   $php = null,
-        ?bool   $block = null,
         ?bool   $single = null,
+        ?bool   $block = null,
         ?bool   $html = null,
         ?bool   $latte = null,
         ?bool   $twig = null,
