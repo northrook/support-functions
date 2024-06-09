@@ -17,7 +17,7 @@ trait MimeTypeTrait
         'html'   => 'text/html',
         'php'    => 'text/html',
         'css'    => 'text/css',
-        'js'     => 'application/javascript',
+        'js'     => 'text/javascript',
 
         // Documents
         'rtf'    => 'application/rtf',
