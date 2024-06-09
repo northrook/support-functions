@@ -151,6 +151,6 @@ trait StringTrimFunctions
             );
         }
 
-        return $string;
+        return trim( $string );
     }
 }
