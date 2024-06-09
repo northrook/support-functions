@@ -15,8 +15,11 @@ final class Sort
 
         $sortByList ??= [
             'id',
-            'type',
+            'href',
+            'src',
+            'rel',
             'name',
+            'type',
             'value',
             'class',
             'style',
