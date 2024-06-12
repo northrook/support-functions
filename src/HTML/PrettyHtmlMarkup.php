@@ -47,8 +47,13 @@ class PrettyHtmlMarkup implements Printable
         $this->constructDocument();
     }
 
-    final public function print() : string {
+
+    public function toString() : ?string {
         return $this->html;
+    }
+
+    final public function print() : void {
+        echo $this->html;
     }
 
     /**

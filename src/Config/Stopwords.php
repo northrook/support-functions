@@ -2,12 +2,11 @@
 
 namespace Northrook\Support\Config;
 
-use Northrook\Support\Facades\StaticClassTrait;
+use Northrook\Core\Trait\StaticClass;
 
 final class Stopwords
 {
-
-    use StaticClassTrait;
+    use StaticClass;
 
     private static array $list = [
         'en' => [

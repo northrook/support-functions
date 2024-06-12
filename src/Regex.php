@@ -16,7 +16,7 @@ final class Regex
      */
     public static function extractHtmlTags( string $string, string $tag, bool $returnFirst = false,
     ) : array | object | null {
-        
+
         preg_match_all(
             pattern : "#<$tag\s*[^>]*>(.*?)</$tag>#",
             subject : $string,
@@ -40,11 +40,10 @@ final class Regex
 
     /**
      *
-     * @param string        $pattern
-     * @param string        $subject
-     * @param string|bool   $trim             TODO Idea is to pass characters to stop from each matched string
-     * @param string        $matchedProperty  Property to return the matched string
-     * @param Return\Regex  $return
+     * @param string       $pattern
+     * @param string       $subject
+     * @param string|bool  $trim             TODO Idea is to pass characters to stop from each matched string
+     * @param string       $matchedProperty  Property to return the matched string
      *
      * @return object
      * @uses preg_match_all() $match, $string, PREG_SET_ORDER
@@ -54,7 +53,6 @@ final class Regex
         string        $subject,
         string | bool $trim = false,
         string        $matchedProperty = 'matched',
-        Return\Regex  $return = Return\Regex::ARRAY,
     ) : object {
 
         $array = [];

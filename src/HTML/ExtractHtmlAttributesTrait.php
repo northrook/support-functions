@@ -9,7 +9,7 @@ trait ExtractHtmlAttributesTrait
 {
 
     public static function extractAttributes( string $html ) : array {
-
+        
         if ( !$html ) {
             return [];
         }

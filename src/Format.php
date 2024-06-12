@@ -5,29 +5,25 @@ namespace Northrook\Support;
 // TODO: https://www.php.net/manual/en/class.numberformatter.php
 
 use JetBrains\PhpStorm\ExpectedValues;
-use Parsedown;
 
 class Format
 {
-    // private static function stringLength( string $string, int $min, int $max, string $action = 'warn' ) : string {
-    //
-    // }
-
+    
     public static function title(
         string $string,
         #[ExpectedValues( values : [ 'document', 'paragraph', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ] )]
         string $type,
     ) : string {
 
-        $string = trim($string);
+        $string = trim( $string );
 
         return match ( $type ) {
-            'document' => Filter::string( $string),
-            'paragraph' => ucfirst($string), // Max length in accordance with max recommended paragraph length
-            'h1' => ucfirst($string), // Length according to primary heading length
-            'h2' => ucfirst($string), // Length according to heading length
-            'h3', 'h4', 'h5', 'h6' => strtoupper( $string),
-            default => Filter::string( $string)
+            'document'             => Filter::string( $string ),
+            'paragraph'            => ucfirst( $string ), // Limit to recommended paragraph length
+            'h1'                   => ucfirst( $string ), // Length according to primary heading length
+            'h2'                   => ucfirst( $string ), // Length according to heading length
+            'h3', 'h4', 'h5', 'h6' => strtoupper( $string ),
+            default                => Filter::string( $string )
         };
     }
 
@@ -55,10 +51,6 @@ class Format
         // implode with <wbr> before /
 
         return '<span class="url">' . $string . '</span>';
-    }
-
-    public static function markdown( string $string ) : string {
-        return ( new Parsedown() )->text( $string );
     }
 
     /**

@@ -17,20 +17,18 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=8.2",
-    "psr/log": "^1|^2|^3",
-    "symfony/filesystem": "^v7.1.0",
-    "symfony/cache": "^v7.1.0",
-    "northrook/core": "dev-main",
-    "northrook/logger": "dev-main",
-    "northrook/types": "dev-main",
-    "erusev/parsedown": "dev-master",
     "ext-mbstring": "*",
     "ext-libxml": "*",
     "ext-dom": "*",
-    "symfony/finder": "7.2.x-dev"
+    "northrook/core": "dev-main",
+    "northrook/logger": "dev-main",
+    "northrook/types": "dev-main",
+    "symfony/filesystem": "^v7.1",
+    "symfony/finder": "@stable"
   },
   "require-dev": {
-    "symfony/var-dumper": "^7.0",
-    "fakerphp/faker": "2.0.x-dev"
+    "symfony/deprecation-contracts": "@stable",
+    "symfony/var-dumper": "@stable",
+    "symfony/error-handler": "@stable"
   }
 }

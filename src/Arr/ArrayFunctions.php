@@ -2,6 +2,7 @@
 
 namespace Northrook\Support\Arr;
 
+use JsonException;
 use Northrook\Support\Arr;
 use Northrook\Support\Str;
 
