@@ -1,10 +1,9 @@
 <?php
 
-namespace Northrook\Support\HTML;
+namespace Northrook\src\Internal;
 
 use Northrook\Core\Interface\Printable;
-use Northrook\Support\Regex;
-use Northrook\Support\Str;
+use Northrook\src\Str;
 
 class PrettyHtmlMarkup implements Printable
 {

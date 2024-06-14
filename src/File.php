@@ -5,12 +5,11 @@ namespace Northrook\Support;
 use JetBrains\PhpStorm\Deprecated;
 use LogicException;
 use Northrook\Logger\Log;
-use Northrook\Support\File\MimeTypeTrait;
-use Northrook\Support\Str\PathFunctions;
+use Northrook\src\Internal\MimeTypeTrait;
+use Northrook\src\String\PathFunctions;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 
 /**
  * @template PathString as string
@@ -255,7 +254,7 @@ final class File
         bool           $includeDirectories = false,
         bool           $addUnexpectedValue = false,
         bool           $returnFinder = true,
-    ) : array | Finder {
+    ) : array {
         throw new LogicException( 'Breaking change: Use Symfony\Finder instead.' );
     }
 }

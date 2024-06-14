@@ -8,7 +8,7 @@ use JetBrains\PhpStorm\ExpectedValues;
 
 class Format
 {
-    
+
     public static function title(
         string $string,
         #[ExpectedValues( values : [ 'document', 'paragraph', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ] )]

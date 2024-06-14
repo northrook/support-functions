@@ -4,7 +4,7 @@ namespace Northrook\Support;
 
 use Exception;
 use Northrook\Logger\Log;
-use Northrook\Support\Config\Stopwords;
+use Northrook\src\Internal\Stopwords;
 
 class Get extends Make
 {
@@ -39,7 +39,7 @@ class Get extends Make
         if ( in_array( false, $options, true ) ) {
             return array_map( static fn ( $option ) => $option !== false, $options );
         }
- 
+
         // If none are true or false, set all to the default
         return array_map( static fn ( $option ) => $default, $options );
     }

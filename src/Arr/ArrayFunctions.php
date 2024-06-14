@@ -1,10 +1,10 @@
 <?php
 
-namespace Northrook\Support\Arr;
+namespace Northrook\src\Arr;
 
 use JsonException;
-use Northrook\Support\Arr;
-use Northrook\Support\Str;
+use Northrook\src\Arr;
+use Northrook\src\Str;
 
 trait ArrayFunctions
 {

@@ -1,12 +1,16 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Northrook\Support;
 
-// TODO Sort by partial name, e.g. 'data-' and 'aria-' etc
 
+/**
+ * @author  Martin Nielsen <mn@northrook.com>
+ */
 final class Sort
 {
-
+    // TODO Sort by partial name, e.g. 'data-' and 'aria-' etc
     public static function elementAttributes(
         array  $attributes,
         ?array $order = null,

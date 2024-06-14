@@ -1,17 +1,16 @@
 <?php
 
-namespace Northrook\Support\Str;
+namespace Northrook\src\String;
 
-use Northrook\Support\Arr;
+use Northrook\src\Arr;
 
 /**
  * Functions for optimizing and cleaning up strings.
  *
  * @author  Martin Nielsen <mn@northrook.com>
  */
-trait StringTrimFunctions
+trait TrimFunctions
 {
-
     /**
      * Regex patterns for removing comments from a string.
      *
@@ -27,6 +26,17 @@ trait StringTrimFunctions
         'twig'   => '/^\h*?{#.*?#}\R/ms',      // Twig comments
         'blade'  => '#^\h*?{{--.*?--}}\R#ms',  // Blade comments
     ];
+
+    /**
+     * Remove all comments and unnecessary whitespace from a string.
+     *
+     * @param string  $string
+     *
+     * @return string
+     */
+    public static function squish( string $string ) : string {
+        return static::trimWhitespace( static::trimComments( $string ), true, true );
+    }
 
     /**
      * Remove comments from a string.

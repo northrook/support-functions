@@ -1,15 +1,20 @@
 <?php
 
-namespace Northrook\Support\HTML;
+namespace Northrook\src\Internal;
 
 use DOMDocument;
-use Northrook\Support\Str;
+use Northrook\src\Str;
 
+/**
+ * @internal
+ *
+ * @author  Martin Nielsen <mn@northrook.com>
+ */
 trait ExtractHtmlAttributesTrait
 {
 
     public static function extractAttributes( string $html ) : array {
-        
+
         if ( !$html ) {
             return [];
         }

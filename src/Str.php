@@ -2,21 +2,120 @@
 
 namespace Northrook\Support;
 
-use JetBrains\PhpStorm\Deprecated;
+use JetBrains\PhpStorm\ExpectedValues;
 use JetBrains\PhpStorm\Pure;
 use JsonException;
-use Northrook\Support\Str\PathFunctions;
-use Northrook\Support\Str\PossibleFunctionsTrait;
-use Northrook\Support\Str\StringFunctions;
-use Northrook\Support\Str\StringTrimFunctions;
-use Northrook\Support\Str\SubstringFunctions;
+use Northrook\src\String\{BooleanFunctions, PathFunctions, SubstringFunctions, TrimFunctions, ValueConversionFunctions};
 
+/**
+ * @author  Martin Nielsen <mn@northrook.com>
+ */
 final class Str
 {
+    use  SubstringFunctions, TrimFunctions, PathFunctions, ValueConversionFunctions, BooleanFunctions;
 
-    use SubstringFunctions, StringFunctions, PathFunctions, StringTrimFunctions;
+    public const FIRST = 0;
+    public const LAST  = -1;
 
-    use PossibleFunctionsTrait;
+    /**
+     * @param string[]     $string
+     * @param string       $separator
+     * @param null|string  $case
+     *
+     * @return string
+     */
+    public static function key(
+        string | array $string,
+        string         $separator = '-',
+        ?string        $preserve = null,
+        #[ExpectedValues( values : [
+            null,
+            'strtoupper',
+            'strtolower',
+            // 'camel',
+            // 'snake'
+        ] )]
+        ?string        $case = 'strtolower',
+        #[ExpectedValues( valuesFromClass : '\voku\helper\ASCII' )]
+        ?string        $asciiLanguage = null,
+    ) : string {
+
+        $key = static function (
+            string  $string,
+            string  $separator,
+            ?string $preserve,
+            string  $case,
+            ?string $asciiLanguage,
+        ) {
+            $string = is_array( $string ) ? implode( $separator, $string ) : $string;
+
+            if ( $asciiLanguage ) {
+                if ( !class_exists( '\voku\helper\ASCII' ) ) {
+                    throw new \LogicException(
+                        'The voku\helper\ASCII class is not available. Please install the voku/portable-ascii package.',
+                    );
+                }
+                $string = \voku\helper\ASCII::to_ascii( $string, $asciiLanguage );
+            }
+            else {
+                $string = preg_replace( "/[^A-Za-z0-9_\-{$preserve}]/", "-", $string );
+            }
+
+            $string = preg_replace( "/[^A-Za-z0-9$separator$preserve]/", $separator, $string );
+            $string = implode( $separator, array_filter( explode( $separator, $string ) ) );
+
+            return match ( $case ) {
+                'strtoupper' => strtoupper( $string ),
+                'strtolower' => strtolower( $string ),
+                // 'camel'      => Str::camel( $string ),
+                // 'snake'      => Str::snake( $string ),
+                default      => $string,
+            };
+
+        };
+
+        return Cached( $key, [ $string, $separator, $preserve, $case, $asciiLanguage ] );
+
+        // return static::memoize( $key, $string, $separator, $preserve, $case, $asciiLanguage );
+    }
+
+    /**
+     * @param null|string  $string
+     * @param bool         $stripTags
+     *
+     * @return string
+     */
+    #[Pure]
+    public static function sanitize( ?string $string, bool $stripTags = false ) : string {
+        return htmlspecialchars(
+            string   : $stripTags ? strip_tags( $string ) : $string,
+            flags    : ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE,
+            encoding : 'UTF-8',
+        );
+    }
+
+    /**
+     * Generate a deterministic hash key from a value.
+     *
+     * - `$value` will be stringified using `json_encode()` by default.
+     * - `serialize()` will be used if `$forceSerialize` option is true, or `json_encode()` fails.
+     * - The value is then hashed using `xxh3`.
+     * - The hash is not reversible.
+     *
+     * @param mixed  $value
+     * @param bool   $forceSerialize
+     *
+     * @return string
+     */
+    public static function hashKey(
+        mixed $value,
+        bool  $forceSerialize = false,
+    ) : string {
+
+        $data = $forceSerialize ? serialize( $value ) : json_encode( $value );
+
+        return hash( algo : 'xxh3', data : $data ?: serialize( $value ) );
+    }
 
     /**
      * Extract acronym from a $string
@@ -33,192 +132,22 @@ final class Str
             return null;
         }
 
-        $acronyms = array_map(
-            static fn ( string $name ) => mb_substr( $name, 0, 1 ),
-            explode( $separator, $string ),
-        );
-        $acronyms = implode( '', $acronyms );
+        $acronym = static function ( $string, $capitalize, $separator ) {
 
-        return $capitalize
-            ? strtoupper( $acronyms )
-            : $acronyms;
-    }
 
-    /**
-     * Remove all "extra" blank space from the given string.
-     *
-     *  Removes Twig, CSS, inline JavaScript, and HTML comments by default
-     *  Does not perform __any__ sanitization
-     *
-     *
-     * @param  ?string  $string
-     * @param bool      $preserveComments
-     * @param bool      $spacesOnly  Preserve newlines
-     *
-     * @return string  minified string
-     */
-    #[Deprecated( "String optimization moved to Trim class.", "Trim::whitespace(%parametersList%)" )]
-    public static function squish( ?string $string, bool $preserveComments = false, bool $spacesOnly = false,
-    ) : string {
-        if ( !$string ) {
-            return '';
-        }
-        if ( !$preserveComments ) {
-            $string = preg_replace(
-                [
-                    '/<!--(.*?)-->/ms',
-                    '/{#(.*?)#}/ms',
-                    '/\/\*(.*?)\*\//ms',
-                    '/^\h*?\/\/.*/m',
-                ],
-                '',
-                $string,
+            $acronyms = array_map(
+                static fn ( string $name ) => mb_substr( $name, 0, 1 ),
+                explode( $separator, $string ),
             );
-        }
-        if ( $spacesOnly ) {
-            $string = preg_replace(
-                [
-                    '/^\s*?$\n/m',
-                    '/ +/',
-                ],
-                ' ',
-                $string,
-            );
-        }
-        else {
-            $string = preg_replace(
-                '~(\s|\x{3164})+~u',
-                ' ',
-                preg_replace(
-                    '~^[\s\x{FEFF}]+|[\s\x{FEFF}]+$~u',
-                    '',
-                    $string,
-                ),
-            );
-        }
+            $acronyms = implode( '', $acronyms );
 
-        return str_replace(
-            [ ' >', ' />', '> <', '> ', ' <' ],
-            [ '>', '/>', '><', '>', '<' ],
-            $string,
-        );
-    }
+            return $capitalize
+                ? strtoupper( $acronyms )
+                : $acronyms;
+        };
 
-    /** Check if a string contains only numbers
-     *
-     * * Returns `false` if the string contains non-numeric characters
-     * * Returns `$string` cast to int if the string contains only numbers
-     *
-     * @param null|string  $string
-     *
-     * @return int|bool
-     */
-    public static function isNumeric( ?string $string ) : int | bool {
-
-        return ( preg_match( '/^\d+$/', $string ?? '' ) ) ? (int) $string : false;
-    }
-
-    #[Deprecated( 'Use Path' )]
-    public static function url( ?string $string, bool $absolute = false, bool $trailing = false ) : ?string {
-
-        $url = filter_var( $string, FILTER_SANITIZE_URL );
-
-        $url = trim( $url, '/' );
-
-        if ( $trailing ) {
-            $url = rtrim( $url, '/' );
-        }
-
-        if ( !$absolute ) {
-            $url = '/' . $url;
-        }
-        else {
-            $url = $_SERVER[ 'SERVER_NAME' ] . '/' . $url;
-        }
-
-        return $url;
-    }
-
-    #[Pure]
-    public static function sanitize( ?string $string, bool $stripTags = false ) : string {
-        if ( $stripTags ) {
-            $string = strip_tags( $string );
-        }
-        return htmlspecialchars( (string) $string, ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8' );
-    }
-
-    // Different from key() in that it trims unnecessary words, such as "the"; specific for slug use
-    // pass array of words to parse, e.g. [ 'the', 'of' ], pass key/value to replace, e.g. [ 'the', 'of', [ '@' => 'at' ], .. ]
-    public static function slug( ?string $string, ?string $separator = null ) : ?string {
-        return Str::key( $string, $separator ?? Str::$_SLUG_SEPARATOR );
-    }
-
-
-    public static function contains(
-        string         $string,
-        string | array $needle,
-        bool           $returnNeedles = false,
-        bool           $containsOnlyOne = false,
-        bool           $containsAll = false,
-        bool           $caseSensitive = false,
-    ) : bool | int | array {
-
-        $count    = 0;
-        $contains = [];
-
-        $find = static fn ( string $string ) => $caseSensitive ? $string : strtolower( $string );
-
-        $string = $find( $string );
-
-        if ( is_string( $needle ) ) {
-            $count = substr_count( $string, $find( $needle ) );
-        }
-        else {
-            foreach ( $needle as $index => $value ) {
-                $match = substr_count( $string, $find( $value ) );
-                if ( $match ) {
-                    $contains[] = $value;
-                    $count      += $match;
-                    unset( $needle[ $index ] );
-                }
-            }
-        }
-
-        if ( $containsOnlyOne && count( $contains ) !== 1 ) {
-            return false;
-        }
-
-        if ( $containsAll && empty( $needle ) ) {
-            return true;
-        }
-
-        if ( $returnNeedles ) {
-            return $contains;
-        }
-
-        return $count;
-    }
-
-    /**
-     * Determine if a $string contains all $substrings.
-     *
-     *  * Case Insensitive by default
-     *
-     *
-     * @param  ?string         $string
-     * @param iterable|string  $all
-     * @param bool             $caseSensitive
-     *
-     * @return bool
-     */
-    #[Deprecated( 'Use containsAll()' )]
-    public static function containsAll( ?string $string, iterable | string $all, bool $caseSensitive = false ) : bool {
-        return Str::contains(
-                            $string,
-                            $all,
-            containsAll   : true,
-            caseSensitive : $caseSensitive,
-        );
+        return Cached( $acronym, [ $string, $capitalize, $separator ] );
+        // return static::memoize( $acronym, $string, $separator, $capitalize );
     }
 
     public static function replace(
@@ -252,7 +181,6 @@ final class Str
         }
 
         return $subject;
-
     }
 
     /** Replace each key from `$map` with its value, when found in `$content`.
@@ -281,29 +209,6 @@ final class Str
     }
 
     /**
-     * @param iterable     $iterable
-     * @param callable     $callback
-     * @param string|bool  $implode
-     *
-     * @return null|string|array
-     */
-    public static function forEach( iterable $iterable, callable $callback, string | bool $implode = false,
-    ) : string | array | null {
-
-        $return = [];
-
-        foreach ( $iterable as $key => $value ) {
-            $return[] = $callback( $value, $key );
-        }
-
-        if ( $implode ) {
-            return implode( $implode === true ? '' : $implode, $return );
-        }
-
-        return $return;
-    }
-
-    /**
      * Wrap the string with the given strings.
      *
      *  If $before and $after are the same, $before will be used.
@@ -329,55 +234,9 @@ final class Str
         return $before . $value . $after;
     }
 
-    /**
-     * Split a string by the given separator, with flexible return options.
-     *
-     *
-     * @param  ?string  $string
-     * @param string    $return     = ['array', 'first', 'last'][any]
-     * @param string    $separator  = ':'
-     *
-     * @return array   | string | null
-     */
-    public static function split( ?string $string, string $return = 'array', string $separator = ':',
-    ) : array | string | null {
-        $array = array_filter( explode( $separator, $string ) );
-        if ( !$array ) {
-            return null;
-        }
-
-        if ( $return === 'first' ) {
-            return array_shift( $array ) ?: null;
-        }
-
-        if ( $return === 'last' ) {
-            return array_pop( $array ) ?: null;
-        }
-
-        return $array;
+    public static function guessDelimiter( ?string $string ) : string {
+        return Str::contains( $string, [ ' ', '-', '_', '/', '\\', ':', ';' ] );
     }
-
-    /**
-     * Parse a Class[@]method style callback into class and method.
-     *
-     *
-     * @param string       $callback
-     * @param string|null  $default
-     *
-     * @return array<Num,  string|null>
-     */
-    public static function ParseCallback( string $callback, ?string $default = null ) : array {
-        return Str::contains( $callback, '@' ) ? explode( '@', $callback, 2 ) : [ $callback, $default ];
-    }
-
-    /**
-     * Convert a $string to camelCase.
-     *
-     *
-     * @param  ?string  $string
-     *
-     * @return ?string
-     */
 
     public static function toCamel( ?string $string ) : ?string {
         $delimiter = Str::guessDelimiter( $string ) ?? ' ';
@@ -400,73 +259,6 @@ final class Str
         }
 
         return implode( '', $camel );
-    }
-
-    public static function guessDelimiter( ?string $string ) : string {
-        return Str::contains( $string, [ ' ', '-', '_', '/', '\\', ':', ';' ] );
-    }
-
-    public static function containsValidHTML( ?string $string, ?string $mustContain = null ) : string | bool {
-        // debug( $html );
-        if ( !$string || ( str_starts_with( $string, '<' ) && !str_ends_with( $string, '>' ) ) ) {
-            return false;
-        }
-
-        if ( $mustContain && !str_contains( $string, $mustContain ) ) {
-            return false;
-        }
-
-        preg_match_all( '#<(?!meta|img|br|hr|input\b)\b([a-z]+)(?: .*)?(?<![/| ])>#iU', $string, $result );
-        $openedTags = $result[ 1 ];
-        preg_match_all( '#</([a-z]+)>#iU', $string, $result );
-        $closedTags = $result[ 1 ];
-        $len_opened = count( $openedTags );
-        if ( count( $closedTags ) === $len_opened ) {
-            return $string;
-        }
-
-        return false;
-    }
-
-    /** Generate URL-safe ID from string
-     *
-     * * `$trim` calculates a random sequence from the full hash
-     *
-     * @param string|null  $input  String to convert
-     * @param int          $trim   Length of the returned hash
-     * @param bool         $lower  Return only lowercase
-     *
-     * @return string
-     */
-    public static function hash( ?string $input = null, int $trim = 8, bool $lower = false ) : string {
-        $input ??= mt_srand( hrtime()[ 1 ] ) . Get::randomInt( 1, 128 );
-
-        $int  = crc32( $input );
-        $hash = base64_encode( hash( 'sha256', $input, true ) );
-        $out  = $hash;
-
-        if ( $trim ) {
-            mt_srand( $int );
-            $max    = strlen( $out ) - $trim;
-            $offset = Get::randomInt( 0, $max );
-            $out    = substr( $out, $offset, $trim );
-        }
-
-        if ( $lower === true ) {
-            return strtolower( $out );
-        }
-
-        return $out;
-    }
-
-    public static function href( string $string ) : string {
-        $string = strtolower( trim( $string ) );
-
-        if ( filter_var( $string, FILTER_VALIDATE_EMAIL ) ) {
-            $string = Str::start( $string, 'mailto:' );
-        }
-
-        return $string;
     }
 
     public static function asJson( mixed $value ) : string | false {

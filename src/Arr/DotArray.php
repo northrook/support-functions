@@ -1,6 +1,6 @@
 <?php
 
-namespace Northrook\Support\Arr;
+namespace Northrook\src\Arr;
 
 /**
  * Dot

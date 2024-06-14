@@ -2,13 +2,10 @@
 
 namespace Northrook\Support;
 
-use Northrook\Support\Config\Stopwords;
+use Northrook\src\Internal\Regex;
 
 abstract class Make
 {
-
-    use ConfigParameters;
-
     private static ?string $_contentCache = null;
 
     protected static function cache( ?string $content = null ) : ?string {

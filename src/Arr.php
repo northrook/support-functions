@@ -2,8 +2,8 @@
 
 namespace Northrook\Support;
 
-use Northrook\Support\Arr\ArrayFunctions;
-use Northrook\Support\Arr\DotArray;
+use Northrook\src\Arr\ArrayFunctions;
+use Northrook\src\Arr\DotArray;
 
 /**
  * TODO [low] Integrate features from https://github.com/adbario/php-dot-notation/blob/3.x/src/Dot.php
@@ -16,7 +16,7 @@ final class Arr
     public static function dot( mixed $items, bool $getObject = false, string $delimiter = '.' ) : DotArray {
         return new DotArray( $items, $delimiter );
     }
-    
+
     /**
      * Get a boolean option from an array of options.
      *

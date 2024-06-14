@@ -1,7 +1,12 @@
 <?php
 
-namespace Northrook\Support\File;
+namespace Northrook\src\Internal;
 
+/**
+ * @internal
+ *
+ * @author  Martin Nielsen <mn@northrook.com>
+ */
 trait MimeTypeTrait
 {
     /**

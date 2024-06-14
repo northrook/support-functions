@@ -1,32 +1,23 @@
 <?php
 
-namespace Northrook\Support\Str;
+namespace Northrook\src\Internal;
 
-use JetBrains\PhpStorm\Pure;
-use Northrook\Types\Path;
+require 'iana-uri-schemes.php';
 
-trait PossibleFunctionsTrait
+/**
+ * @internal
+ * @author  Martin Nielsen <mn@northrook.com>
+ *
+ *
+ * @link    https://github.com/glenscott/url-normalizer/blob/master/src/URL/Normalizer.php Good starting point
+ */
+final class UrlNormalizer
 {
-
-
-    /**
-     * From Core\Support\Str
-     *
-     * @param string|Path  $path
-     * @param null|string  $scheme  'http' | 'https' | 'ftp' | 'ftps' | 'file' | null as any
-     *
-     * @return bool
-     */
-    public static function _isURL( string | Path $path, ?string $scheme = 'https' ) : bool {
-
-        if ( $scheme && !str_starts_with( $path, "$scheme://" ) ) {
-            return false;
-        }
-        if ( !( str_contains( $path, "//" ) && str_contains( $path, '.' ) ) ) {
-            return false;
-        }
-
-        return (bool) filter_var( $path, FILTER_VALIDATE_URL );
+    public function __construct(
+        private string  $url,
+        private ?string $requireScheme = null,
+    ) {
+        dump( IANA_URI_SCHEMES );
     }
 
     /** Check if a string is a valid URL
@@ -75,14 +66,5 @@ trait PossibleFunctionsTrait
         return true;
 
 
-    }
-
-    // Look into what we want to achieve when sanitizing a string
-    #[Pure]
-    public static function sanitize( ?string $string, bool $stripTags = false ) : string {
-        if ( $stripTags ) {
-            $string = strip_tags( $string );
-        }
-        return htmlspecialchars( (string) $string, ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8' );
     }
 }

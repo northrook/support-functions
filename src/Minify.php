@@ -4,7 +4,7 @@ namespace Northrook\Support;
 
 use Northrook\Core\Env;
 use Northrook\Logger\Log;
-use Northrook\Support\Str\StringTrimFunctions;
+use Northrook\src\String\TrimFunctions;
 
 /**
  * @template HTML of non-empty-string
@@ -17,7 +17,7 @@ use Northrook\Support\Str\StringTrimFunctions;
  */
 final class Minify
 {
-    use StringTrimFunctions;
+    use TrimFunctions;
 
     /**
      * Remove whitespace, newlines, and HTML comments from `$string`

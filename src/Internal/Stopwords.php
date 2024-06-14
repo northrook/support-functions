@@ -1,6 +1,6 @@
 <?php
 
-namespace Northrook\Support\Config;
+namespace Northrook\src\Internal;
 
 use Northrook\Core\Trait\StaticClass;
 

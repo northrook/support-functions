@@ -1,6 +1,6 @@
 <?php
 
-namespace Northrook\Support;
+namespace Northrook\src\Internal;
 
 final class Regex
 {
