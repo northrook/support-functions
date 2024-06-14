@@ -1,6 +1,6 @@
 <?php
 
-namespace Northrook\src\String;
+namespace Northrook\Support\String;
 
 trait BooleanFunctions
 {

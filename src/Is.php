@@ -1,6 +1,6 @@
 <?php
 
-namespace Northrook\src;
+namespace Northrook\Support;
 
 class Is
 {

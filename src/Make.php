@@ -2,7 +2,7 @@
 
 namespace Northrook\Support;
 
-use Northrook\src\Internal\Regex;
+use Northrook\Support\Internal\Regex;
 
 abstract class Make
 {

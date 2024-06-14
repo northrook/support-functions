@@ -2,8 +2,8 @@
 
 namespace Northrook\Support;
 
-use Northrook\src\Arr\ArrayFunctions;
-use Northrook\src\Arr\DotArray;
+use Northrook\Support\Arr\ArrayFunctions;
+use Northrook\Support\Arr\DotArray;
 
 /**
  * TODO [low] Integrate features from https://github.com/adbario/php-dot-notation/blob/3.x/src/Dot.php

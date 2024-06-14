@@ -2,8 +2,8 @@
 
 namespace Northrook\Support;
 
-use Northrook\src\Internal\ExtractHtmlAttributesTrait;
-use Northrook\src\Internal\PrettyHtmlMarkup;
+use Northrook\Support\Internal\ExtractHtmlAttributesTrait;
+use Northrook\Support\Internal\PrettyHtmlMarkup;
 
 class Html
 {

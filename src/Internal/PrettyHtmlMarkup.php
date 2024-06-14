@@ -1,9 +1,9 @@
 <?php
 
-namespace Northrook\src\Internal;
+namespace Northrook\Support\Internal;
 
 use Northrook\Core\Interface\Printable;
-use Northrook\src\Str;
+use Northrook\Support\Str;
 
 class PrettyHtmlMarkup implements Printable
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Northrook\src\Internal;
+namespace Northrook\Support\Internal;
 
 use DOMDocument;
-use Northrook\src\Str;
+use Northrook\Support\Str;
 
 /**
  * @internal

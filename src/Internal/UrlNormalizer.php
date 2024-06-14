@@ -1,6 +1,6 @@
 <?php
 
-namespace Northrook\src\Internal;
+namespace Northrook\Support\Internal;
 
 require 'iana-uri-schemes.php';
 

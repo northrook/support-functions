@@ -4,7 +4,7 @@ namespace Northrook\Support;
 
 use Exception;
 use Northrook\Logger\Log;
-use Northrook\src\Internal\Stopwords;
+use Northrook\Support\Internal\Stopwords;
 
 class Get extends Make
 {

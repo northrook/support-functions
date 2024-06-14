@@ -4,7 +4,7 @@ namespace Northrook\Support;
 
 use Northrook\Core\Env;
 use Northrook\Logger\Log;
-use Northrook\src\String\TrimFunctions;
+use Northrook\Support\String\TrimFunctions;
 
 /**
  * @template HTML of non-empty-string

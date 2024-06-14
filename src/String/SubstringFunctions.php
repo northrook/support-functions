@@ -1,9 +1,9 @@
 <?php
 
-namespace Northrook\src\String;
+namespace Northrook\Support\String;
 
 use JetBrains\PhpStorm\Deprecated;
-use Northrook\src\Str;
+use Northrook\Support\Str;
 
 /**
  * Splitting and manipulating substrings.

@@ -1,8 +1,8 @@
 <?php
 
-namespace Northrook\src\String;
+namespace Northrook\Support\String;
 
-use Northrook\src\Arr;
+use Northrook\Support\Arr;
 
 /**
  * Functions for optimizing and cleaning up strings.

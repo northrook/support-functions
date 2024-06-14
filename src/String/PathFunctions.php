@@ -1,12 +1,12 @@
 <?php
 
-namespace Northrook\src\String;
+namespace Northrook\Support\String;
 
 use JetBrains\PhpStorm\Deprecated;
 use JetBrains\PhpStorm\ExpectedValues;
 use Northrook\Logger\Log;
-use Northrook\src\File;
-use Northrook\src\Str;
+use Northrook\Support\File;
+use Northrook\Support\Str;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**

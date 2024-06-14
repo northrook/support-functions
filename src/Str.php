@@ -5,7 +5,11 @@ namespace Northrook\Support;
 use JetBrains\PhpStorm\ExpectedValues;
 use JetBrains\PhpStorm\Pure;
 use JsonException;
-use Northrook\src\String\{BooleanFunctions, PathFunctions, SubstringFunctions, TrimFunctions, ValueConversionFunctions};
+use Northrook\Support\String\{BooleanFunctions,
+    PathFunctions,
+    SubstringFunctions,
+    TrimFunctions,
+    ValueConversionFunctions};
 
 /**
  * @author  Martin Nielsen <mn@northrook.com>
