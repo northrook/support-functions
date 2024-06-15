@@ -136,7 +136,7 @@ trait SubstringFunctions
             $get = ( count( $needles ) + $get );
         }
 
-        return substr( $string, 0, $needles[ $get ] + strlen( $match ) );
+        return substr( $string, $needles[ $get ] + strlen( $match ) );
     }
 
     /**
