@@ -208,6 +208,14 @@ trait PathFunctions
         // return static::memoize( $normalizePath, $string, $allowFilePath );
     }
 
+    public static function normalizeRealPath( string $path ) : string {
+        $normalize = str_replace( [ '\\', '/' ], DIRECTORY_SEPARATOR, $path );
+        $exploded  = explode( DIRECTORY_SEPARATOR, $normalize );
+        $path      = implode( DIRECTORY_SEPARATOR, array_filter( $exploded ) );
+
+        return realpath( $path ) ?: $path;
+    }
+
     /**
      * @param ?string  $string
      * @param bool     $trailingSlash

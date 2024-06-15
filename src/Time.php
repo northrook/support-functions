@@ -1,18 +1,8 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Northrook\Support;
-
-/* ---
-
-Must be able to use a provided DateTime object
-
-Must provide public readonly:
- - timestamp : int
- - datetime  : string ( human readable )
-
---- */
-
-use Northrook\Logger\Log;
 
 class Time
 {
@@ -28,21 +18,32 @@ class Time
 
     private readonly \DateTimeImmutable $dateTimeImmutable;
 
+    public readonly int    $timestamp;
+    public readonly string $datetime;
+    public readonly string $timezone;
+
     public function __construct(
         string | \DateTimeInterface $dateTime = 'now',
         string | \DateTimeZone      $timezone = 'UTC',
         string                      $format = 'Y-m-d H:i:s',
     ) {
         $this->setDateTime( $dateTime, $timezone );
+
+        $this->timestamp = $this->dateTimeImmutable->getTimestamp();
+        $this->timezone  = $this->dateTimeImmutable->getTimezone()->getName();
+        $this->datetime  = $this->dateTimeImmutable->format( $format ) . ' ' . $this->timezone;
     }
 
+    final public function format( string $format ) : string {
+        return $this->dateTimeImmutable->format( $format );
+    }
 
     private function setDateTime(
         string | \DateTimeInterface $dateTime = 'now',
         string | \DateTimeZone      $timezone = 'UTC',
     ) : void {
         try {
-            $this->dateTimeImmutable = new \DateTimeImmutable( 'now', $this->timezone( $timezone ) );
+            $this->dateTimeImmutable = new \DateTimeImmutable( $dateTime, timezone_open( $timezone ) ?: null );
         }
         catch ( \Exception $exception ) {
             throw new \InvalidArgumentException(
@@ -51,37 +52,6 @@ class Time
                 previous : $exception,
             );
         }
-    }
-
-
-    /**
-     * Converts the provided timezone to a {@see \DateTimeZone} object.
-     *
-     * - Will fall back to UTC if an invalid timezone is provided.
-     * - Timezone objects will be returned as-is.
-     * - Generated {@see \DateTimeZone} objects will be `memoized`.
-     *
-     * @param string|\DateTimeZone  $timezone
-     *
-     * @return \DateTimeZone
-     */
-    private function timezone( string | \DateTimeZone $timezone ) : \DateTimeZone {
-
-        if ( $timezone instanceof \DateTimeZone ) {
-            return $timezone;
-        }
-
-        $DateTimeZone = static function ( $timezone ) {
-            try {
-                return new \DateTimeZone( $timezone );
-            }
-            catch ( \Exception ) {
-                Log::Error( "Unable to create DateTimeZone object for $timezone. Using UTC instead." );
-                return new \DateTimeZone( 'UTC' );
-            }
-        };
-
-        return Cached( $DateTimeZone, [ $timezone ] );
     }
 
     public static function stopwatch(
@@ -98,15 +68,16 @@ class Time
                 return $time;
             }
 
-            $time = number_format( $time / $format, strlen( $time ) );
+            $time = (float) number_format( $time / $format, strlen( (string) $time ) );
 
 
             // If we have leading zeros
             if ( $time < 1 ) {
-                $floating = substr( $time, 2 );
+                $floating = substr( (string) $time, 2 );
                 $decimals += strlen( $floating ) - strlen( ltrim( $floating, '0' ) );
-                $time     = Num::decimals( $time, $decimals );
             }
+            $time = Num::decimals( $time, $decimals );
+            // dump( $decimals );
 
             if ( !$appendFormat ) {
                 return $time;
