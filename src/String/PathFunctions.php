@@ -38,7 +38,7 @@ trait PathFunctions
         trigger_deprecation(
             'northrook/string',
             '1.0.0',
-            'The method "%s" is deprecated. Use Symfony/Finder instead.',
+            'The method "%s" is deprecated. Use Symfony/Finder instead, or refactor into native function in core/functions.php',
             __METHOD__,
         );
 
@@ -157,55 +157,34 @@ trait PathFunctions
      *
      * @param ?string  $string
      * @param bool     $allowFilePath
-     * @param bool     $trailingSlash
+     * @param bool     $trailingSlash  Append a trailing slash.
      *
      * @return ?string
      */
     public static function normalizePath(
         ?string $string,
         bool    $allowFilePath = true,
+        bool    $trailingSlash = false,
     ) : ?string {
 
         if ( !$string ) {
             return null;
         }
 
-        $normalizePath = static function ( $string, $allowFilePath ) {
+        $normalizePath = static function ( $string, $allowFilePath, $trailingSlash ) {
 
-            $string = str_replace( "\\", "/", $string );
+            $path = normalizeRealPath( $string, $trailingSlash );
 
-            if ( str_contains( $string, '/' ) ) {
-
-                $path = [];
-
-                foreach ( array_filter( explode( '/', $string ) ) as $part ) {
-                    if ( $part === '..' && $path && end( $path ) !== '..' ) {
-                        array_pop( $path );
-                    }
-                    elseif ( $part !== '.' ) {
-                        $path[] = trim( $part );
-                    }
-                }
-
-                $path = implode( DIRECTORY_SEPARATOR, $path );
-            }
-            else {
-                $path = $string;
-            }
-
-            $extension = pathinfo( $path, PATHINFO_EXTENSION );
-
-            if ( $extension && !$allowFilePath ) {
+            if ( !$allowFilePath && pathinfo( $path, PATHINFO_EXTENSION ) ) {
                 throw new \InvalidArgumentException(
                     "Invalid path: $path.\n\nFile path not allowed.\n\nDirectory path required.",
                 );
             }
 
-            return realpath( $path ) ?: $path;
+            return $path;
         };
 
         return Cached( $normalizePath, [ $string, $allowFilePath ] );
-        // return static::memoize( $normalizePath, $string, $allowFilePath );
     }
 
     public static function normalizeRealPath( string $path ) : string {

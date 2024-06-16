@@ -45,11 +45,11 @@ final class Str
     ) : string {
 
         $key = static function (
-            string  $string,
-            string  $separator,
-            ?string $preserve,
-            string  $case,
-            ?string $asciiLanguage,
+            string | array $string,
+            string         $separator,
+            ?string        $preserve,
+            string         $case,
+            ?string        $asciiLanguage,
         ) {
             $string = is_array( $string ) ? implode( $separator, $string ) : $string;
 
@@ -61,12 +61,8 @@ final class Str
                 }
                 $string = \voku\helper\ASCII::to_ascii( $string, $asciiLanguage );
             }
-            else {
-                $string = preg_replace( "/[^A-Za-z0-9_\-{$preserve}]/", "-", $string );
-            }
 
-            $string = preg_replace( "/[^A-Za-z0-9$separator$preserve]/", $separator, $string );
-            $string = implode( $separator, array_filter( explode( $separator, $string ) ) );
+            $string = normalizeKey( $string, $preserve );
 
             return match ( $case ) {
                 'strtoupper' => strtoupper( $string ),
@@ -79,8 +75,6 @@ final class Str
         };
 
         return Cached( $key, [ $string, $separator, $preserve, $case, $asciiLanguage ] );
-
-        // return static::memoize( $key, $string, $separator, $preserve, $case, $asciiLanguage );
     }
 
     /**
@@ -99,26 +93,41 @@ final class Str
     }
 
     /**
-     * Generate a deterministic hash key from a value.
+     * # Generate a deterministic hash key from a value.
      *
-     * - `$value` will be stringified using `json_encode()` by default.
-     * - `serialize()` will be used if `$forceSerialize` option is true, or `json_encode()` fails.
-     * - The value is then hashed using `xxh3`.
-     * - The hash is not reversible.
+     *  - `$value` will be stringified using `json_encode()` by default.
+     *  - The value is hashed using `xxh3`.
+     *  - The hash is not reversible.
      *
-     * @param mixed  $value
-     * @param bool   $forceSerialize
+     * The $value can be stringified in one of the following ways:
      *
-     * @return string
+     * ## `json`
+     * Often the fastest option when passing a large object.
+     * Will fall back to `serialize` if `json_encode()` fails.
+     *
+     * ## `serialize`
+     * Can sometimes be faster for arrays of strings.
+     *
+     * ## `implode`
+     * Very fast for simple arrays of strings.
+     * Requires the `$value` to be an `array` of `string|int|float|bool|Stringable`.
+     * Nested arrays are not supported.
+     *
+     * ```
+     * hashKey( [ 'example', new stdClass(), true ] );
+     * // => a0a42b9a3a72e14c
+     * ```
+     *
+     * @param mixed                         $value
+     * @param 'json'|'serialize'|'implode'  $encoder
+     *
+     * @return string 16 character hash of the value
      */
     public static function hashKey(
-        mixed $value,
-        bool  $forceSerialize = false,
+        mixed  $value,
+        string $encoder = 'json',
     ) : string {
-
-        $data = $forceSerialize ? serialize( $value ) : json_encode( $value );
-
-        return hash( algo : 'xxh3', data : $data ?: serialize( $value ) );
+        return hashKey( $value, $encoder );
     }
 
     /**
