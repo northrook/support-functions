@@ -15,4 +15,3 @@ composer.lock
 /*.css
 /*.twig
 /*.latte
-/src/Internal/Cache/

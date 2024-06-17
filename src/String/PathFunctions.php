@@ -4,10 +4,12 @@ namespace Northrook\Support\String;
 
 use JetBrains\PhpStorm\Deprecated;
 use JetBrains\PhpStorm\ExpectedValues;
+use Northrook\Cache;
 use Northrook\Logger\Log;
 use Northrook\Support\File;
 use Northrook\Support\Str;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use function Northrook\Core\Functions\normalizePath;
 
 /**
  * @internal
@@ -137,7 +139,7 @@ trait PathFunctions
             return preg_match( str_replace( 'LARAVEL_PROTOCOLS', $protocolList, $pattern ), $value ) > 0;
         };
 
-        return Cached( $isUrl, [ $value, $protocols ] );
+        return Cache::memoize( $isUrl, [ $value, $protocols ] );
         // return static::memoize( $isUrl, $value, $protocols );
     }
 
@@ -173,7 +175,7 @@ trait PathFunctions
 
         $normalizePath = static function ( $string, $allowFilePath, $trailingSlash ) {
 
-            $path = normalizeRealPath( $string, $trailingSlash );
+            $path = normalizePath( $string, $trailingSlash );
 
             if ( !$allowFilePath && pathinfo( $path, PATHINFO_EXTENSION ) ) {
                 throw new \InvalidArgumentException(
@@ -184,7 +186,7 @@ trait PathFunctions
             return $path;
         };
 
-        return Cached( $normalizePath, [ $string, $allowFilePath ] );
+        return Cache::memoize( $normalizePath, [ $string, $allowFilePath, $trailingSlash ] );
     }
 
     public static function normalizeRealPath( string $path ) : string {
@@ -231,7 +233,7 @@ trait PathFunctions
         $string = strtolower( trim( $string ) );
 
         if ( filter_var( $string, FILTER_VALIDATE_EMAIL ) ) {
-            $string = \Northrook\src\Str::start( $string, 'mailto:' );
+            $string = \Northrook\Support\Str::start( $string, 'mailto:' );
         }
 
         return $string;

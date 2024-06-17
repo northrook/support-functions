@@ -4,19 +4,21 @@ namespace Northrook\Support;
 
 use JetBrains\PhpStorm\ExpectedValues;
 use JetBrains\PhpStorm\Pure;
-use JsonException;
+use Northrook\Cache;
 use Northrook\Support\String\{BooleanFunctions,
     PathFunctions,
     SubstringFunctions,
     TrimFunctions,
     ValueConversionFunctions};
+use function Northrook\Core\Functions\hashKey;
+use function Northrook\Core\Functions\normalizeKey;
 
 /**
  * @author  Martin Nielsen <mn@northrook.com>
  */
 final class Str
 {
-    use  SubstringFunctions, TrimFunctions, PathFunctions, ValueConversionFunctions, BooleanFunctions;
+    use SubstringFunctions, TrimFunctions, PathFunctions, ValueConversionFunctions, BooleanFunctions;
 
     public const FIRST = 0;
     public const LAST  = -1;
@@ -24,7 +26,9 @@ final class Str
     /**
      * @param string[]     $string
      * @param string       $separator
+     * @param null|string  $preserve
      * @param null|string  $case
+     * @param null|string  $asciiLanguage
      *
      * @return string
      */
@@ -62,7 +66,7 @@ final class Str
                 $string = \voku\helper\ASCII::to_ascii( $string, $asciiLanguage );
             }
 
-            $string = normalizeKey( $string, $preserve );
+            $string = normalizeKey( $string, $separator );
 
             return match ( $case ) {
                 'strtoupper' => strtoupper( $string ),
@@ -74,7 +78,7 @@ final class Str
 
         };
 
-        return Cached( $key, [ $string, $separator, $preserve, $case, $asciiLanguage ] );
+        return Cache::memoize( $key, [ $string, $separator, $preserve, $case, $asciiLanguage ] );
     }
 
     /**
@@ -159,7 +163,7 @@ final class Str
                 : $acronyms;
         };
 
-        return Cached( $acronym, [ $string, $capitalize, $separator ] );
+        return Cache::memoize( $acronym, [ $string, $capitalize, $separator ] );
         // return static::memoize( $acronym, $string, $separator, $capitalize );
     }
 
@@ -275,11 +279,6 @@ final class Str
     }
 
     public static function asJson( mixed $value ) : string | false {
-        try {
-            return json_encode( $value, JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT );
-        }
-        catch ( JsonException ) {
-            return false;
-        }
+        return json_encode( $value, JSON_FORCE_OBJECT );
     }
 }

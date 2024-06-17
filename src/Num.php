@@ -3,6 +3,7 @@
 namespace Northrook\Support;
 
 use JetBrains\PhpStorm\ExpectedValues;
+use Northrook\Logger\Log;
 
 class Num
 {
@@ -167,6 +168,19 @@ class Num
         }
 
         return null;
+    }
+
+
+    public static function randomInt( int $min = 0, int $max = PHP_INT_MAX ) : int {
+        try {
+            return random_int( $min, $max );
+        }
+        catch ( \Exception $e ) {
+            Log::Error( $e->getMessage() );
+            $length = strlen( (string) $max );
+            $count  = substr( time(), -$length, $length );
+            return $count >= $min ? $count : $max;
+        }
     }
 
 }
