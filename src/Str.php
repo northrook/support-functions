@@ -10,8 +10,8 @@ use Northrook\Support\String\{BooleanFunctions,
     SubstringFunctions,
     TrimFunctions,
     ValueConversionFunctions};
-use function Northrook\Core\Functions\hashKey;
-use function Northrook\Core\Functions\normalizeKey;
+use function Northrook\Core\Function\hashKey;
+use function Northrook\Core\Function\normalizeKey;
 
 /**
  * @author  Martin Nielsen <mn@northrook.com>

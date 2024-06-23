@@ -15,20 +15,17 @@
     }
   ],
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     "php": ">=8.2",
-    "northrook/core": "dev-main",
-    "northrook/logger": "dev-main",
-    "northrook/types": "dev-main",
-    "symfony/filesystem": "^v7.1",
     "ext-dom": "*",
     "ext-libxml": "*",
+    "symfony/filesystem": "^v7.1",
+    "northrook/core": "dev-main",
+    "northrook/types": "dev-main",
     "northrook/cache": "dev-main"
   },
   "require-dev": {
-    "symfony/deprecation-contracts": "@stable",
-    "symfony/var-dumper": "@stable",
-    "symfony/error-handler": "@stable",
     "northrook/dev-env": "dev-main"
   }
 }

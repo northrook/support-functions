@@ -4,7 +4,7 @@ declare( strict_types = 1 );
 
 namespace Northrook\Support;
 
-class Time
+class Time implements \Stringable
 {
 
     public const FORMAT_S                = 1_000_000_000;
@@ -94,4 +94,7 @@ class Time
         return hrtime( true );
     }
 
+    public function __toString() {
+        return $this->datetime;
+    }
 }
