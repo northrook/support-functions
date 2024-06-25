@@ -94,7 +94,7 @@ class Time implements \Stringable
         return hrtime( true );
     }
 
-    public function __toString() {
+    public function __toString() : string {
         return $this->datetime;
     }
 }

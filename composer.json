@@ -22,7 +22,6 @@
     "ext-libxml": "*",
     "symfony/filesystem": "^v7.1",
     "northrook/core": "dev-main",
-    "northrook/types": "dev-main",
     "northrook/cache": "dev-main"
   },
   "require-dev": {
