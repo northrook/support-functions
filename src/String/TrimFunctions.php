@@ -109,7 +109,6 @@ trait TrimFunctions
      * @param ?string  $string          The string to trim
      * @param bool     $removeTabs      Also remove tabs
      * @param bool     $removeNewlines  Also remove newlines
-     * @param bool     $tidyHTML
      *
      * @return string
      */
@@ -117,7 +116,6 @@ trait TrimFunctions
         ?string $string,
         bool    $removeTabs = false,
         bool    $removeNewlines = false,
-        bool    $tidyHTML = true,
     ) : string {
 
         // Bail early if the string is empty or null
@@ -125,41 +123,23 @@ trait TrimFunctions
             return '';
         }
 
-        // Remove all whitespace, including tabs and newlines
-        if ( $removeTabs && $removeNewlines ) {
-            $string = preg_replace( '/\s+/', ' ', $string );
-        }
-        // Remove tabs only
-        elseif ( $removeTabs ) {
-            $string = str_replace( '\t', ' ', $string );
-        }
-        // Remove newlines only
-        elseif ( $removeNewlines ) {
-            $string = str_replace( "\R", ' ', $string );
-        }
+        // Trim according to arguments
+        $string = match ( true ) {
+            // Remove all whitespace, including tabs and newlines
+            $removeTabs && $removeNewlines => preg_replace( '/\s+/', ' ', $string ),
+            // Remove tabs only
+            $removeTabs                    => str_replace( '\t', ' ', $string ),
+            // Remove newlines only
+            $removeNewlines                => str_replace( '\R', ' ', $string ),
+            // Remove consecutive whitespaces
+            default                        => preg_replace( '# +#', ' ', $string ),
+        };
 
-        $string = preg_replace(
-            [
-                '/^\s*?$\n/m', // Remove empty lines
-                '/ +/',        // Remove consecutive spaces
-            ],
-            [
-                '',            // Remove empty lines
-                ' ',           // Remove consecutive spaces
-            ],
-            $string,
-        );
+        // Remove empty lines
+        $string = preg_replace( '#^\s*?$\n#m', '', $string );
 
-        if ( $tidyHTML ) {
-            $string = preg_replace(
-                [
-                    '/<\s+/', // Fix opening tags
-                    '/\s+>/', // Fix closing tags
-                ],
-                [ '<', '>' ],
-                $string,
-            );
-        }
+        // Trim unnecessary whitespace around brackets
+        $string = preg_replace( '#\s*([<>])\s*#m', '$1', $string );
 
         return trim( $string );
     }
