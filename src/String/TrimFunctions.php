@@ -104,7 +104,7 @@ trait TrimFunctions
      *
      * - Removes empty lines
      * - Removes consecutive spaces
-     * - Does not remove tabs, newlines, or carriage returns by default
+     * - Remove tabs, newlines, and carriage returns by default
      *
      * @param ?string  $string          The string to trim
      * @param bool     $removeTabs      Also remove tabs
@@ -114,8 +114,8 @@ trait TrimFunctions
      */
     public static function trimWhitespace(
         ?string $string,
-        bool    $removeTabs = false,
-        bool    $removeNewlines = false,
+        bool    $removeTabs = true,
+        bool    $removeNewlines = true,
     ) : string {
 
         // Bail early if the string is empty or null
