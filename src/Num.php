@@ -19,6 +19,14 @@ class Num
         'YB',  //Yottabytes
     ];
 
+    public static function percentDifference(
+        int | float $from,
+        int | float $to,
+    ) : float {
+        $num = ( $from - $to ) / $from * 100;
+        return (float) number_format( $num, 2 );
+    }
+
     /**
      * Return a variable as byte size in a human-readable format, or as a sized float.
      *
