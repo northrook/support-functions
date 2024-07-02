@@ -9,7 +9,7 @@ use Northrook\Logger\Log;
 use Northrook\Support\File;
 use Northrook\Support\Str;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-use function Northrook\Core\Functions\normalizePath;
+use function Northrook\Core\Function\normalizePath;
 
 /**
  * @internal
@@ -233,7 +233,7 @@ trait PathFunctions
         $string = strtolower( trim( $string ) );
 
         if ( filter_var( $string, FILTER_VALIDATE_EMAIL ) ) {
-            $string = \Northrook\Support\Str::start( $string, 'mailto:' );
+            $string = Str::start( $string, 'mailto:' );
         }
 
         return $string;

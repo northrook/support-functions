@@ -2,67 +2,84 @@
 
 namespace Northrook\Support;
 
-use JetBrains\PhpStorm\Deprecated;
 use LogicException;
+use Northrook\Core\Interface\Printable;
+use Northrook\Core\Trait\PrintableClass;
+use Northrook\Core\Trait\PropertyAccessor;
 use Northrook\Logger\Log;
 use Northrook\Support\Internal\MimeTypeTrait;
 use Northrook\Support\String\PathFunctions;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
+use function Northrook\Core\Function\normalizePath;
 
 /**
  * @template PathString as string
  * @template UnixTimestamp as int
  * @template Bytes as int
+ *
+ * @property-read  string $path
+ * @property-read  string $basename
+ * @property-read  string $filename
+ * @property-read  string $extension
+ * @property-read  bool   $exists
+ * @property-read  bool   $isDir
+ * @property-read  bool   $isFile
+ * @property-read  bool   $isUrl
+ * @property-read  bool   $isWritable
+ * @property-read  int    $lastModified
+ * @property-read  string $mimeType
  */
-final class File
+final class File implements Printable
 {
-    use MimeTypeTrait, PathFunctions;
+    use MimeTypeTrait, PathFunctions, PrintableClass, PropertyAccessor;
 
-    private static array $readCache = [];
+    private static string $rootPath;
+    private static string $publicPath;
+
+    private string $path;
+    private string $mimeType;
 
 
-    /**
-     *
-     * @param string  $path
-     * @param int     $permissions
-     *
-     * @return bool|string|array
-     */
-    #[Deprecated( 'Use ' . File::class . '::mkdir() instead.' )]
-    public static function makeDirectory(
+    public function __construct(
         string $path,
-        int    $permissions = 0755,
-    ) : bool | string | array {
-        return File::mkdir( $path, $permissions );
+    ) {
+        $this->path = normalizePath( $path );
     }
 
-    // todo : Implement a force-override option into static::save()
-    #[Deprecated( 'Use ' . File::class . '::save instead. Better support for larger files, and streamed resources.' )]
-    public static function putContents( ?string $content, string $filename, int $flags = 0, bool $override = true,
-    ) : false | int {
-        Log::Notice(
-            'Using deprecated function {old}. Use {new} instead.',
-            [
-                'old' => File::class . '::putContents',
-                'new' => File::class . '::save',
-            ],
-        );
-        return File::save( $filename, $content );
+    public function __get( string $property ) {
+        return match ( $property ) {
+            'path'         => $this->path,
+            'exists'       => File::exists( $this->path ),
+            'basename'     => pathinfo( $this->path, PATHINFO_BASENAME ),
+            'filename'     => pathinfo( $this->path, PATHINFO_FILENAME ),
+            'extension'    => pathinfo( $this->path, PATHINFO_EXTENSION ),
+            'isDir'        => is_dir( $this->path ),
+            'isFile'       => is_file( $this->path ),
+            'isUrl'        => Str::isUrl( $this->path ),
+            'isWritable'   => is_writable( $this->path ),
+            'isReadable'   => is_readable( $this->path ),
+            'lastModified' => filemtime( $this->path ),
+            'mimeType'     => $this->mimeType ??= File::getMimeType( $this->path ),
+            default        => null,
+        };
     }
 
+    public function readContent() : ?string {
+        return File::read( $this->path );
+    }
 
-    #[Deprecated( 'Use ' . File::class . '::read instead.' )]
-    public static function getContents( string $file, bool $cache = true ) : ?string {
-        Log::Notice(
-            'Using deprecated function {old}. Use {new} instead.',
-            [
-                'old' => File::class . '::getContents',
-                'new' => File::class . '::read',
-            ],
-        );
-        return File::read( $file, $cache );
+    public function saveContent( string $content ) : bool {
+        return File::save( $this->path, $content );
+    }
+
+    public function copyTo( string $path, bool $overwriteNewerFiles = false ) : bool {
+        return File::copy( $this->path, $path, $overwriteNewerFiles );
+    }
+
+    public function __toString() : string {
+        return $this->path;
     }
 
     /**
@@ -79,26 +96,22 @@ final class File
     /**
      * Reads the contents of a file.
      *
-     * - {@see IOException} will be caught and logged as an error, returning false
+     * - {@see IOException} will be caught and logged as an error, returning `null`
      *
      * @param string<PathString>  $path  The path to the file
      *
      * @return ?string Returns the contents of the file, or null if an {@see IOException} was thrown
      *
      */
-    public static function read( string $path, bool $cache = true, bool $cacheOnError = true ) : ?string {
-
+    public static function read( string $path ) : ?string {
         try {
-            $contents = ( new Filesystem() )->readFile( $path );
+            return ( new Filesystem() )->readFile( $path );
         }
-        catch ( IOException $e ) {
-            $contents = null;
-            Log::Error( message : $e->getMessage(), context : [ 'exception' => $e ] );
+        catch ( IOException $exception ) {
+            Log::exception( $exception );
         }
-
-        return $contents;
+        return null;
     }
-
 
     /**
      * Atomically dumps content into a file.
@@ -117,8 +130,8 @@ final class File
             ( new Filesystem() )->dumpFile( $path, $content );
             return true;
         }
-        catch ( IOException $e ) {
-            Log::Error( message : $e->getMessage(), context : [ 'exception' => $e ] );
+        catch ( IOException $exception ) {
+            Log::exception( $exception );
         }
 
         return false;
@@ -137,8 +150,8 @@ final class File
             ( new Filesystem() )->copy( $originFile, $targetFile, $overwriteNewerFiles );
             return true;
         }
-        catch ( FileNotFoundException | IOException $e ) {
-            Log::Error( message : $e->getMessage(), context : [ 'exception' => $e ] );
+        catch ( FileNotFoundException | IOException $exception ) {
+            Log::exception( $exception );
         }
 
         return false;
@@ -152,12 +165,11 @@ final class File
             ( new Filesystem() )->rename( $origin, $target, $overwrite );
             return true;
         }
-        catch ( IOException $e ) {
-            Log::Error( message : $e->getMessage(), context : [ 'exception' => $e ] );
+        catch ( IOException $exception ) {
+            Log::exception( $exception );
         }
         return false;
     }
-
 
     /**
      * Sets access and modification time of file.
@@ -173,8 +185,8 @@ final class File
             ( new Filesystem() )->touch( $files, $time, $atime );
             return true;
         }
-        catch ( IOException $e ) {
-            Log::Error( message : $e->getMessage(), context : [ 'exception' => $e ] );
+        catch ( IOException $exception ) {
+            Log::exception( $exception );
         }
         return false;
     }
@@ -187,8 +199,8 @@ final class File
             ( new Filesystem() )->remove( $files );
             return true;
         }
-        catch ( IOException $e ) {
-            Log::Error( message : $e->getMessage(), context : [ 'exception' => $e ] );
+        catch ( IOException $exception ) {
+            Log::exception( $exception );
         }
         return false;
     }
@@ -205,8 +217,8 @@ final class File
             ( new Filesystem() )->mkdir( $dirs, $mode );
             return $returnPath ? $dirs : true;
         }
-        catch ( IOException $e ) {
-            Log::Error( message : $e->getMessage(), context : [ 'exception' => $e ] );
+        catch ( IOException $exception ) {
+            Log::exception( $exception );
         }
         return false;
     }
@@ -256,5 +268,9 @@ final class File
         bool           $returnFinder = true,
     ) : array {
         throw new LogicException( 'Breaking change: Use Symfony\Finder instead.' );
+    }
+
+    private function validate() : bool {
+        return $this->exists = File::exists( $this->path );
     }
 }
