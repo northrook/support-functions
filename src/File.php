@@ -42,8 +42,11 @@ final class File implements Printable
     private string $mimeType;
 
 
+    /**
+     * @param string[]  $path
+     */
     public function __construct(
-        string $path,
+        string | array $path,
     ) {
         $this->path = normalizePath( $path );
     }
