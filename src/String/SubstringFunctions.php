@@ -27,9 +27,9 @@ trait SubstringFunctions
     #[Deprecated( 'Use containsAll()' )]
     public static function containsAll( ?string $string, iterable | string $all, bool $caseSensitive = false ) : bool {
         trigger_deprecation(
-            'northrook/string',
-            '1.0.0',
-            'The method "%s" is deprecated. Use containsAll() instead.',
+            'northrook/support',
+            'dev-main',
+            'The method "%s" is deprecated. Use contains() instead.',
             __METHOD__,
         );
         return Str::contains(

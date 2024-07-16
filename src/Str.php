@@ -2,16 +2,13 @@
 
 namespace Northrook\Support;
 
-use JetBrains\PhpStorm\ExpectedValues;
-use JetBrains\PhpStorm\Pure;
-use Northrook\Cache;
+use JetBrains\PhpStorm\{Deprecated, ExpectedValues, Pure};
 use Northrook\Support\String\{BooleanFunctions,
     PathFunctions,
     SubstringFunctions,
     TrimFunctions,
     ValueConversionFunctions};
-use function Northrook\Core\Function\hashKey;
-use function Northrook\Core\Function\normalizeKey;
+use function Northrook\Core\{hashKey, normalizeKey};
 
 /**
  * @author  Martin Nielsen <mn@northrook.com>
@@ -22,6 +19,8 @@ final class Str
 
     public const FIRST = 0;
     public const LAST  = -1;
+
+    private static array $cache = [];
 
     /**
      * @param string[]     $string
@@ -36,27 +35,18 @@ final class Str
         string | array $string,
         string         $separator = '-',
         ?string        $preserve = null,
-        #[ExpectedValues( values : [
-            null,
-            'strtoupper',
-            'strtolower',
-            // 'camel',
-            // 'snake'
-        ] )]
-        ?string        $case = 'strtolower',
         #[ExpectedValues( valuesFromClass : '\voku\helper\ASCII' )]
         ?string        $asciiLanguage = null,
+        #[ExpectedValues( values : [ null, 'strtoupper', 'strtolower', 'camel', 'snake' ] )]
+        ?string        $case = 'strtolower',
     ) : string {
+        return Str::$cache[ \json_encode( [ 'key', ... get_defined_vars() ], 832 ) ] ??= (
+        static function () use ( $string, $separator, $preserve, $asciiLanguage, $case ) : string {
 
-        $key = static function (
-            string | array $string,
-            string         $separator,
-            ?string        $preserve,
-            string         $case,
-            ?string        $asciiLanguage,
-        ) {
+            // Stringify
             $string = is_array( $string ) ? implode( $separator, $string ) : $string;
 
+            // If a language is provided, and the ASCII helper is available, safely convert the string
             if ( $asciiLanguage ) {
                 if ( !class_exists( '\voku\helper\ASCII' ) ) {
                     throw new \LogicException(
@@ -66,8 +56,10 @@ final class Str
                 $string = \voku\helper\ASCII::to_ascii( $string, $asciiLanguage );
             }
 
+            // Normalize the key
             $string = normalizeKey( $string, $separator );
 
+            // Return the key in requested case format
             return match ( $case ) {
                 'strtoupper' => strtoupper( $string ),
                 'strtolower' => strtolower( $string ),
@@ -75,10 +67,8 @@ final class Str
                 // 'snake'      => Str::snake( $string ),
                 default      => $string,
             };
-
-        };
-
-        return Cache::memoize( $key, [ $string, $separator, $preserve, $case, $asciiLanguage ] );
+        }
+        )();
     }
 
     /**
@@ -127,16 +117,17 @@ final class Str
      *
      * @return string 16 character hash of the value
      */
+    #[Deprecated]
     public static function hashKey(
         mixed  $value,
         string $encoder = 'json',
     ) : string {
+        trigger_deprecation( 'northrook/support', 'dev-env', "Use Northrook\Core\hashKey() instead." );
         return hashKey( $value, $encoder );
     }
 
     /**
      * Extract acronym from a $string
-     *
      *
      * @param  ?string  $string      The string to process
      * @param bool      $capitalize  Defaults to true
@@ -148,9 +139,8 @@ final class Str
         if ( !$string ) {
             return null;
         }
-
-        $acronym = static function ( $string, $capitalize, $separator ) {
-
+        return Str::$cache[ \json_encode( [ 'key', ... get_defined_vars() ], 832 ) ] ??= (
+        static function () use ( $string, $capitalize, $separator ) : string {
 
             $acronyms = array_map(
                 static fn ( string $name ) => mb_substr( $name, 0, 1 ),
@@ -161,10 +151,7 @@ final class Str
             return $capitalize
                 ? strtoupper( $acronyms )
                 : $acronyms;
-        };
-
-        return Cache::memoize( $acronym, [ $string, $capitalize, $separator ] );
-        // return static::memoize( $acronym, $string, $separator, $capitalize );
+        } )();
     }
 
     public static function replace(
@@ -213,7 +200,7 @@ final class Str
         string | array $content,
         bool           $caseSensitive = true,
     ) : string | array {
-
+        trigger_deprecation( 'northrook/support', 'dev-env', "Use Northrook\Core\replaceEach() instead." );
         if ( !$content ) {
             return $content;
         }

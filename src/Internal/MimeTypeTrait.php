@@ -77,16 +77,14 @@ trait MimeTypeTrait
 
 
     /**
-     * @TODO Integrate with Northrook\Type\Path
      *
      * @param string  $path
      *
      * @return null|string
+     * @deprecated
      */
     public static function getMimeType( string $path ) : ?string {
-
-        // $type = $path instanceof PathType ? $path->extension : pathinfo( $path, PATHINFO_EXTENSION );
-
+        trigger_deprecation( 'northrook/support', 'dev-env', "Use Northrook/Filesystem instead." );
         return static::MIME_TYPES[ pathinfo( $path, PATHINFO_EXTENSION ) ] ?? null;
     }
 

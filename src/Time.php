@@ -4,6 +4,9 @@ declare( strict_types = 1 );
 
 namespace Northrook\Support;
 
+/**
+ * @deprecated
+ */
 class Time implements \Stringable
 {
 
@@ -27,6 +30,7 @@ class Time implements \Stringable
         string | \DateTimeZone      $timezone = 'UTC',
         string                      $format = 'Y-m-d H:i:s',
     ) {
+        trigger_deprecation( 'northrook/support', 'dev-env', "Use Northrook/Core/Timestamp instead." );
         $this->setDateTime( $dateTime, $timezone );
 
         $this->timestamp = $this->dateTimeImmutable->getTimestamp();

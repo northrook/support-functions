@@ -21,8 +21,7 @@
     "ext-dom": "*",
     "ext-libxml": "*",
     "symfony/filesystem": "^v7.1",
-    "northrook/core": "dev-main",
-    "northrook/cache": "dev-main"
+    "northrook/core": "dev-main"
   },
   "require-dev": {
     "northrook/dev-env": "dev-main"
