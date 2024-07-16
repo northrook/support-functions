@@ -2,6 +2,7 @@
 
 namespace Northrook\Support\String;
 
+use JetBrains\PhpStorm\Deprecated;
 use Northrook\Support\Arr;
 
 /**
@@ -34,6 +35,7 @@ trait TrimFunctions
      *
      * @return string
      */
+    #[Deprecated]
     public static function squish( string $string ) : string {
         return static::trimWhitespace( static::trimComments( $string ), true, true );
     }
@@ -66,6 +68,7 @@ trait TrimFunctions
      *
      * @return string
      */
+    #[Deprecated]
     public static function trimComments(
         ?string $string,
         ?bool   $php = null,
@@ -112,6 +115,7 @@ trait TrimFunctions
      *
      * @return string
      */
+    #[Deprecated]
     public static function trimWhitespace(
         ?string $string,
         bool    $removeTabs = true,

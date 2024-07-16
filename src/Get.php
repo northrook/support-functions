@@ -2,6 +2,7 @@
 
 namespace Northrook\Support;
 
+use JetBrains\PhpStorm\Deprecated;
 use Northrook\Support\Internal\Stopwords;
 
 class Get extends Make
@@ -23,7 +24,14 @@ class Get extends Make
      *
      * @return array<string, bool>
      */
+    #[Deprecated]
     public static function booleanOptions( array $options, bool $default = true ) : array {
+
+        trigger_deprecation(
+            'northrook/support',
+            'dev-main',
+            'Use Northrook/Core/booleanOptions() instead',
+        );
 
         // Isolate the options
         $options = array_filter( $options, static fn ( $value ) => is_bool( $value ) || is_null( $value ) );
@@ -43,7 +51,12 @@ class Get extends Make
     }
 
     public static function stopwords( string $group = 'en' ) : array {
+        trigger_deprecation(
+            'northrook/support',
+            'dev-main',
+            'Use "northrook/content-formatter" instead',
+        );
         return Stopwords::get( $group );
     }
-    
+
 }

@@ -20,7 +20,6 @@
     "php": ">=8.2",
     "ext-dom": "*",
     "ext-libxml": "*",
-    "symfony/filesystem": "^v7.1",
     "northrook/core": "dev-main"
   },
   "require-dev": {

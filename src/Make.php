@@ -2,8 +2,11 @@
 
 namespace Northrook\Support;
 
+use JetBrains\PhpStorm\Deprecated;
 use Northrook\Support\Internal\Regex;
+use Northrook\Support\Internal\Stopwords;
 
+#[Deprecated]
 abstract class Make
 {
     private static ?string $_contentCache = null;
