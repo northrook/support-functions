@@ -7,7 +7,7 @@ use JetBrains\PhpStorm\ExpectedValues;
 use Northrook\Logger\Log;
 use Northrook\Support\Str;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-use function Northrook\Core\isUrl;
+use function Northrook\isUrl;
 
 /**
  * @internal

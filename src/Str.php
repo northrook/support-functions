@@ -8,7 +8,7 @@ use Northrook\Support\String\{BooleanFunctions,
     SubstringFunctions,
     TrimFunctions,
     ValueConversionFunctions};
-use function Northrook\Core\{hashKey, normalizeKey};
+use function Northrook\{hashKey, normalizeKey};
 
 /**
  * @author  Martin Nielsen <mn@northrook.com>
