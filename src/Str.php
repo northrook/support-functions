@@ -3,11 +3,7 @@
 namespace Northrook\Support;
 
 use JetBrains\PhpStorm\{Deprecated, ExpectedValues, Pure};
-use Northrook\Support\String\{BooleanFunctions,
-    PathFunctions,
-    SubstringFunctions,
-    TrimFunctions,
-    ValueConversionFunctions};
+use Northrook\Support\String\{BooleanFunctions, PathFunctions, SubstringFunctions, ValueConversionFunctions};
 use function Northrook\{hashKey, normalizeKey};
 
 /**
@@ -15,7 +11,7 @@ use function Northrook\{hashKey, normalizeKey};
  */
 final class Str
 {
-    use SubstringFunctions, TrimFunctions, PathFunctions, ValueConversionFunctions, BooleanFunctions;
+    use SubstringFunctions, PathFunctions, ValueConversionFunctions, BooleanFunctions;
 
     public const FIRST = 0;
     public const LAST  = -1;

@@ -1,9 +1,9 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
 
 namespace Northrook\Support;
 
 use JetBrains\PhpStorm\ExpectedValues;
-use Northrook\Logger\Log;
+use function Northrook\numberDecimals;
 
 class Num
 {
@@ -18,14 +18,6 @@ class Num
         'ZB',  //Zettabytes
         'YB',  //Yottabytes
     ];
-
-    public static function percentDifference(
-        int | float $from,
-        int | float $to,
-    ) : float {
-        $num = ( $from - $to ) / $from * 100;
-        return (float) number_format( $num, 2 );
-    }
 
     /**
      * Return a variable as byte size in a human-readable format, or as a sized float.
@@ -47,7 +39,7 @@ class Num
         bool   $returnFloat = false,
     ) : float | string {
 
-        if ( !Is::number( $bytes ) ) {
+        if ( !\is_numeric( $bytes ) ) {
             $bytes = strlen( print_r( $bytes, true ) );
         }
 
@@ -67,13 +59,9 @@ class Num
             $decimals += strlen( $floating ) - strlen( ltrim( $floating, '0' ) );
         }
 
-        $number = Num::decimals( $bytes, $decimals );
+        $number = numberDecimals( $bytes, $decimals );
 
         return $returnFloat ? $number : ltrim( $number, '0' ) . Num::UNITS[ $unit ];
-    }
-
-    public static function decimals( int | float $number, int $decimals = 2 ) : float {
-        return number_format( $number, $decimals, '.', '' );
     }
 
     /** Extract numbers from a string, or an array of strings
@@ -88,7 +76,7 @@ class Num
     public static function extract( int | float | string | array | null $from, bool $returnArray = false,
     ) : float | int | array {
 
-        if ( !Is::number( $from ) ) {
+        if ( !\is_numeric( $from ) ) {
             return $from;
         }
 
@@ -101,19 +89,6 @@ class Num
         }
 
         return (float) implode( '', $matches );
-    }
-
-    public static function inRange( int $value, int $min, int $max ) : bool {
-        return $value >= $min && $value <= $max;
-    }
-
-    public static function intWithin( int $value, float $ceil, float $floor ) : int {
-        return match ( true ) {
-            $value >= $ceil => $ceil,
-            $value < $floor => $floor,
-            default         => $value
-        };
-
     }
 
     public static function withinTolerance(
@@ -155,40 +130,4 @@ class Num
         //
         // return false;
     }
-
-    /**
-     *
-     * @link https://stackoverflow.com/questions/5464919/find-a-matching-or-closest-value-in-an-array stackoverflow
-     *
-     * @param int    $match
-     * @param array  $array
-     * @param bool   $returnKey
-     *
-     * @return mixed
-     */
-    public static function closest( int $match, array $array, bool $returnKey = false ) : mixed {
-
-        foreach ( $array as $key => $value ) {
-            if ( $match <= $value ) {
-                return $returnKey ? $key : $value;
-            }
-
-        }
-
-        return null;
-    }
-
-
-    public static function randomInt( int $min = 0, int $max = PHP_INT_MAX ) : int {
-        try {
-            return random_int( $min, $max );
-        }
-        catch ( \Exception $e ) {
-            Log::Error( $e->getMessage() );
-            $length = strlen( (string) $max );
-            $count  = substr( time(), -$length, $length );
-            return $count >= $min ? $count : $max;
-        }
-    }
-
 }

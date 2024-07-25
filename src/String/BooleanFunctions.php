@@ -4,21 +4,7 @@ namespace Northrook\Support\String;
 
 trait BooleanFunctions
 {
-
-    /**
-     * Check if a string contains only numbers
-     *
-     * - Returns `false` if the string contains non-numeric characters
-     * - Returns `$string` cast to int if the string contains only numbers
-     *
-     * @param null|string  $string
-     *
-     * @return int|bool
-     */
-    public static function isNumeric( ?string $string ) : int | bool {
-        return ( preg_match( '/^\d+$/', $string ?? '' ) ) ? (int) $string : false;
-    }
-
+    
     public static function containsValidHTML( ?string $string, ?string $mustContain = null ) : string | bool {
         // debug( $html );
         if ( !$string || ( str_starts_with( $string, '<' ) && !str_ends_with( $string, '>' ) ) ) {

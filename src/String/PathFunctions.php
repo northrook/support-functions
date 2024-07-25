@@ -25,7 +25,7 @@ trait PathFunctions
      */
     #[Deprecated( 'Use ' . Str::class . '::getPath instead.' )]
     public static function filepath( string $path, ?string $fullPath = null ) : string {
-        trigger_deprecation( 'northrook/support', 'dev-env', "UseNorthrook/Core/normalizePath()." );
+        trigger_deprecation( 'northrook/support', 'dev-env', "UseNorthrook/normalizePath()." );
         Log::Notice(
             'Using deprecated function {old}. Use {new} instead.',
             [
@@ -121,7 +121,7 @@ trait PathFunctions
      * @deprecated
      */
     public static function isUrl( mixed $value ) : bool {
-        trigger_deprecation( 'northrook/support', 'dev-env', "Use Northrook/Core/isUrl() instead." );
+        trigger_deprecation( 'northrook/support', 'dev-env', "Use Northrook/isUrl() instead." );
         return isUrl( $value );
     }
 
@@ -150,13 +150,13 @@ trait PathFunctions
         bool    $allowFilePath = true,
         bool    $trailingSlash = false,
     ) : ?string {
-        trigger_deprecation( 'northrook/support', 'dev-env', "Use Northrook/Core/normalizePath() instead." );
-        return \Northrook\Core\normalizePath( $string, $trailingSlash );
+        trigger_deprecation( 'northrook/support', 'dev-env', "Use Northrook/normalizePath() instead." );
+        return \Northrook\normalizePath( $string, $trailingSlash );
     }
 
     public static function normalizeRealPath( string $path ) : string {
-        trigger_deprecation( 'northrook/support', 'dev-env', 'Use Northrook/Core/normalizePath() instead.' );
-        return \Northrook\Core\normalizePath( $path );
+        trigger_deprecation( 'northrook/support', 'dev-env', 'Use Northrook/normalizePath() instead.' );
+        return \Northrook\normalizePath( $path );
     }
 
     /**
@@ -171,8 +171,8 @@ trait PathFunctions
         ?string $string,
         bool    $trailingSlash = true,
     ) : ?string {
-        trigger_deprecation( 'northrook/support', 'dev-env', 'Use Northrook/Core/normalizeUrl() instead.' );
-        return \Northrook\Core\normalizeUrl( $string );
+        trigger_deprecation( 'northrook/support', 'dev-env', 'Use Northrook/normalizeUrl() instead.' );
+        return \Northrook\normalizeUrl( $string );
     }
 
     public static function href( string $string ) : string {
